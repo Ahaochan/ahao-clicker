@@ -1,0 +1,7 @@
+<resources>
+  <dimen name="padding">9dp</dimen>
+  <dimen name="top_padding">57dp</dimen>
+  <dimen name="target_width">228dp</dimen>
+  <dimen name="target_height">152dp</dimen>
+  <dimen name="text_size">24sp</dimen>
+</resources>

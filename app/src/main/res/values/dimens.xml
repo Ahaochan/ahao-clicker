@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <dimen name="content_padding">24dp</dimen>
+  <dimen name="section_spacing">20dp</dimen>
+  <dimen name="body_text">16sp</dimen>
+  <dimen name="heading_text">21sp</dimen>
+  <dimen name="control_padding_horizontal">12dp</dimen>
+  <dimen name="control_padding_vertical">8dp</dimen>
+  <dimen name="control_width">240dp</dimen>
+</resources>

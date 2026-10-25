@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">阿浩点击器</string>
+  <string name="app_description">轻量、稳定的 Android 自动点击工具</string>
+  <string name="setup_status">配置时间源与点击步骤，再设置执行时间窗。任务次数和截止时刻先达到即停止。</string>
+  <string name="time_source">外部时间</string>
+  <string name="source_url">时间源 URL（HTTPS）</string>
+  <string name="source_format">返回时间格式</string>
+  <string name="source_field">JSON 字段路径，例如 data.timestamp</string>
+  <string name="sync_interval">同步间隔（毫秒，1000—86400000）</string>
+  <string name="periodic_sync">开启周期同步</string>
+  <string name="save_source">保存时间源</string>
+  <string name="sync_now">立即同步</string>
+  <string name="click_task">定时点击任务</string>
+  <string name="step_help">每行一个点：x,y,点击前等待毫秒。一个点为连点，多个点依次循环。任务首点立即执行；后续点击等待其对应行的间隔，以上次手势完成为起点。坐标使用屏幕像素。</string>
+  <string name="steps">点击步骤</string>
+  <string name="click_count">总点击次数（不是循环次数）</string>
+  <string name="start_time">开始时间</string>
+  <string name="end_time">结束时间</string>
+  <string name="fresh_window">设为 3 秒后开始，持续 10 秒</string>
+  <string name="record_hint">录制会实际点击目标应用。请先进入目标页面，再在采集层点选；每次完成后可继续点选。浮动按钮区域不用于录制。最多 500 点，结束后返回本应用编辑各点间隔。录制的是点按，不包括拖动和长按。</string>
+  <string name="record_points">开始录制并实际点击</string>
+  <string name="start_task">启动定时点击</string>
+  <string name="stop">停止</string>
+  <string name="finish_recording">结束录制</string>
+  <string name="status_idle">已停止</string>
+  <string name="status_running">点击任务运行中</string>
+  <string name="status_waiting">等待开始时刻</string>
+  <string name="status_recording">正在录制：点击下方页面采集点位</string>
+  <string name="status_completed">已完成 %1$d 次手势</string>
+  <string name="status_expired">时间窗结束，完成 %1$d 次手势</string>
+  <string name="status_failed">执行失败、取消或超时，已停止</string>
+  <string name="progress">已完成 %1$d / %2$d 次手势</string>
+  <string name="syncing">正在同步</string>
+  <string name="sync_failed">同步失败，本次未更新时间</string>
+  <string name="time_origin">%1$s · %2$s</string>
+  <string name="synced">已同步</string>
+  <string name="device_time">尚未同步，使用设备时间</string>
+  <string name="time_status">%1$s\n%2$s · 往返 %3$d 毫秒 · 上次同步 %4$d 秒前（-1 表示无记录）</string>
+  <string name="accessibility_settings">启用无障碍点击服务</string>
+  <string name="accessibility_description">仅执行用户主动启动的定时点击与录制点击，显示录制层和停止控制。不会读取屏幕内容。</string>
+  <string name="accessibility_disclosure">本应用使用无障碍服务，在其他应用上显示录制层和停止按钮，并发送你指定的点击。录制时会真实执行点击，可能触发目标页面的操作。不会读取页面文字或截图，也不会上传点位。只有点击“启动”或“录制”后才执行。你可随时通过浮动停止按钮或系统无障碍设置关闭服务。是否同意并打开系统设置？</string>
+  <string name="agree_open">同意并打开设置</string>
+  <string name="enable_service">请先启用无障碍点击服务</string>
+  <string name="invalid_settings">请检查输入格式、坐标、时间窗和次数；如有手势尚未完成，请稍后重试</string>
+  <string name="error_busy">请等待当前手势完成</string>
+  <string name="record_pending">正在执行点击，请等录制层恢复后再点</string>
+  <string name="error_bounds">点位超出当前屏幕</string>
+  <string name="error_window">结束时刻必须晚于当前时间</string>
+  <string-array name="time_formats">
+    <item>HTTP Date 响应头（秒级精度）</item>
+    <item>JSON Unix 时间戳（毫秒）</item>
+    <item>JSON Unix 时间戳（秒）</item>
+  </string-array>
+</resources>

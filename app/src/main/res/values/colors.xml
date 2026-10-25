@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="background">#FAFAFA</color>
+  <color name="text_primary">#18231E</color>
+  <color name="text_secondary">#46564D</color>
+  <color name="accent">#216E4A</color>
+  <color name="launcher_background">#216E4A</color>
+  <color name="launcher_foreground">#FFFFFF</color>
+  <color name="control_background">#EE18231E</color>
+  <color name="control_text">#FFFFFF</color>
+  <color name="capture_tint">#09216E4A</color>
+</resources>

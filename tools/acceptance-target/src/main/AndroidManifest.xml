@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application android:theme="@android:style/Theme.Material.Light.NoActionBar" android:label="@string/app_name" android:allowBackup="false">
+    <activity android:name=".TargetActivity" android:exported="true" />
+    <provider android:name=".ReceiptProvider" android:authorities="com.ahao.clicker.acceptance.target" android:exported="true" />
+  </application>
+</manifest>

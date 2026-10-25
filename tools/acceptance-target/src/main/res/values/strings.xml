@@ -1,0 +1,5 @@
+<resources>
+  <string name="app_name">点击验收计数器</string>
+  <string name="target">验收点 %1$s</string>
+  <string name="receipts">目标实际接收：%1$d 次</string>
+</resources>
