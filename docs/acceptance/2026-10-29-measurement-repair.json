@@ -1,0 +1,226 @@
+{
+  "date": "2026-10-29",
+  "scope": "emulator_only_local_deadline_exploration",
+  "archiveRoot": ".tools/measurement-repair/20261028T172912",
+  "archiveManifest": "final-archive-manifest.json",
+  "sourceBefore": "source-before.json",
+  "sourceAfter": "source-after.json",
+  "sourceChanges": "source-changes.json",
+  "sourcePatch": "source-changes.patch",
+  "statistics": "final-statistics.json",
+  "status": {
+    "experimentConcluded": true,
+    "allPerformanceGatesPassed": false,
+    "frameAssociation": "local_pass",
+    "timebase": "local_pass_1.4288ms",
+    "fullPresentation": "failed_unknown_666_of_3246",
+    "probeAdmission": "failed",
+    "productionCandidate": "withdrawn",
+    "confirmation": "not_run_candidate_failed",
+    "historicalFailure": "unknown_no_stage_data",
+    "absolute50ms": "not_proven",
+    "longRun": "not_run",
+    "realDevice": "not_run"
+  },
+  "counts": {
+    "measuredPerVariant": 100,
+    "warmupsPerVariant": 40,
+    "allActualReceived": 280,
+    "functionalCases": 32,
+    "unit": {
+      "core": {
+        "tests": 64,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "app": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "target": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "profilingTests": 35,
+    "timingReportTests": 5
+  },
+  "actualMetrics": {
+    "A": {
+      "downMs": {
+        "n": 100,
+        "min": 1.6660000002011657,
+        "max": 11.690300000831485,
+        "p50": 2.975200000219047,
+        "p95": 7.892000000923872,
+        "p99": 10.555400000885129,
+        "over50": 0,
+        "early": 0
+      },
+      "clickMs": {
+        "n": 100,
+        "min": 5.047500000335276,
+        "max": 44.319199999794364,
+        "p50": 14.625499999150634,
+        "p95": 34.087600000202656,
+        "p99": 39.57259999960661,
+        "over50": 0,
+        "early": 0
+      },
+      "armLeadMs": {
+        "n": 100,
+        "min": 3962,
+        "max": 4208,
+        "p50": 3994,
+        "p95": 4003,
+        "p99": 4131
+      }
+    },
+    "B": {
+      "downMs": {
+        "n": 100,
+        "min": 1.8421000000089407,
+        "max": 9.723400000482798,
+        "p50": 2.7339000003412366,
+        "p95": 6.205199999734759,
+        "p99": 7.533299999311566,
+        "over50": 0,
+        "early": 0
+      },
+      "clickMs": {
+        "n": 100,
+        "min": 5.781999999657273,
+        "max": 42.21779999975115,
+        "p50": 16.36490000039339,
+        "p95": 29.78579999972135,
+        "p99": 40.09429999999702,
+        "over50": 0,
+        "early": 0
+      },
+      "armLeadMs": {
+        "n": 100,
+        "min": 3502,
+        "max": 4463,
+        "p50": 3995,
+        "p95": 4010,
+        "p99": 4021
+      }
+    }
+  },
+  "decisionReasons": [
+    "clickMs_p50_regression",
+    "fewer_than_three_consistent_pairs"
+  ],
+  "restored": {
+    "originalApkSha256": "e06d2d7657d8aadda131ae74c972b04c5fbfc54def4ee539ce21946e8b1ee92f",
+    "preferencesExact": true,
+    "afterStartup": true,
+    "servicesRestored": true,
+    "systemSettingsRestored": true,
+    "addedTestPackagesRemoved": true,
+    "activeTraces": 0
+  },
+  "evidence": [
+    {
+      "path": "final-statistics.json",
+      "sha256": "49cac583eef5186756d53a0dda9ba0a454818a7c8854db7ec1cd484494bf3216"
+    },
+    {
+      "path": "boot2/discovery-v3/discovery-comparison.json",
+      "sha256": "50877c8bd609ff96cfd0950bc475af9ca2ba327afc23f30c32802d51bddc28eb"
+    },
+    {
+      "path": "boot2/discovery-v3/discovery-matrix.json",
+      "sha256": "8527fd50e3ef774cf89eba5932605191f4a26ddba42373a95b1adb54faf418ff"
+    },
+    {
+      "path": "boot2/discovery-v3/quality-audit-all8.json",
+      "sha256": "f53173bc4458ca340233d68e0e730c3ba2eab9e1b64f997a409cc766cd281357"
+    },
+    {
+      "path": "boot2/discovery-v3/public-flow-audit-all8.json",
+      "sha256": "1b01f9dcdf7ec7e188051d82b4ccb527ca6b934284f9fd93ffb29ddd2f3cc3c2"
+    },
+    {
+      "path": "boot2/discovery-v3/analysis-quality-v2/hashes.json",
+      "sha256": "bb197deb6cbf9870684d5b99ab08d8191aa733eae63ea36b3e9424cb521fa001"
+    },
+    {
+      "path": "boot2/discovery-v3/plot-input.json",
+      "sha256": "92df2ede801ccac2585701692b3d29a048bc135c6c29934a72f106ec8ea7bd22"
+    },
+    {
+      "path": "controls-20261029/summary.json",
+      "sha256": "8e0c7999d4332b80b3567b7fcfc472cc36e245b9695a5e6d736054bcfba3e1ec"
+    },
+    {
+      "path": "controls-20261029/python-tests.txt",
+      "sha256": "c7cec21ea103ee44fa199673a6fa60c3c7f5b5a7bd317e08307bb65685b6ca1b"
+    },
+    {
+      "path": "final-standard-check.txt",
+      "sha256": "2dc60fafa2957b814b26d18238fef62f7dce0556c69ac2ecb81052cc67499f6d"
+    },
+    {
+      "path": "final-timing-report-tests.txt",
+      "sha256": "95d4f5c46c2a11bebb0495d6f239b33444c4f8e27db3d853698809cdd2de13d3"
+    },
+    {
+      "path": "final-functional/result.json",
+      "sha256": "877b102f2e974f403d780450c4bdc17184ad7a908b3747727b90422af0b72feb"
+    },
+    {
+      "path": "final-process-death/process-recreation.json",
+      "sha256": "7f3aa47d8e9ebecba01d4792d68f547f51e70aa20ec6a3a4fbc3bf1a74c39747"
+    },
+    {
+      "path": "final-build/manifest-audit.json",
+      "sha256": "00d49b66ec24a3c6b0544f6d845d823ffe00458b7bd324bad69cb18b3db11489"
+    },
+    {
+      "path": "restoration/result.json",
+      "sha256": "ce96971dd89d19a6154b5f55d11246e4aa2eae5adc058a31672c2ac6aa725cc2"
+    },
+    {
+      "path": "final-diff-check.txt",
+      "sha256": "76b89b11288248bac2e7f636ac8de0704cee22b7327f0a80e99bec492738950b"
+    },
+    {
+      "path": "failure-diagnostics/clock-alignment-recheck.json",
+      "sha256": "b1bae96659c8957a60bc0e47d559d7954bff567ea126e9bff6229882108dad9d"
+    },
+    {
+      "path": "overhead-resources-summary.json",
+      "sha256": "f539b1702785c756faffca4e0562171295af9c848c2b6c5e137515153381d287"
+    }
+  ],
+  "figures": [
+    {
+      "path": "docs/performance/measurement-repair-cdf-20261029.png",
+      "sha256": "b72b1cac41c8ad6d7e21114121ba50e22026ce57e6875c4194798d5ea91b0906"
+    },
+    {
+      "path": "docs/performance/measurement-repair-cdf-20261029.svg",
+      "sha256": "470c40eb73996fd2ae9fc445843c7fc1ebee46ba58c25ee8efdefd4ebe950838"
+    },
+    {
+      "path": "docs/performance/measurement-repair-pairs-20261029.png",
+      "sha256": "d8717813464b9a538f374539f10d1e79ebd1f60786052377a2341ffc56d600a5"
+    },
+    {
+      "path": "docs/performance/measurement-repair-pairs-20261029.svg",
+      "sha256": "f31de61de3a797edc7e35872cef78ab6c4e3792d019380ce8ed7c9fe46b04055"
+    }
+  ],
+  "limitations": [
+    "All latencies relative to local production deadline; no absolute-source precision claim",
+    "Unknown primary presentation types and high probe overhead still fail admission",
+    "Old missing failure-stage evidence cannot be reconstructed",
+    "No new production algorithm retained; prior uncommitted work preserved; no commit/push"
+  ]
+}

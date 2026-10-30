@@ -1,0 +1,374 @@
+{
+  "version": "0.2.0",
+  "date": "2026-10-25",
+  "unitTests": {
+    "core": 29,
+    "app": 3,
+    "failures": 0,
+    "errors": 0
+  },
+  "checks": {
+    "lintDebug": "passed",
+    "assembleDebug": "passed",
+    "assembleRelease": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "toolchain": {
+    "jdk": "17.0.12",
+    "gradle": "9.3.1",
+    "agp": "9.1.1",
+    "gradleCacheDrive": "D",
+    "emulatorApi": 37,
+    "renderer": "swiftshader"
+  },
+  "functional": {
+    "passed": true,
+    "cases": [
+      {
+        "name": "permission_and_disclosure",
+        "passed": true,
+        "durationMillis": 2090
+      },
+      {
+        "name": "https_time_formats_periodic_failure_recovery",
+        "passed": true,
+        "durationMillis": 8753
+      },
+      {
+        "name": "single_point_count_and_start_time",
+        "passed": true,
+        "durationMillis": 5892
+      },
+      {
+        "name": "deadline_limits_count",
+        "passed": true,
+        "durationMillis": 4467
+      },
+      {
+        "name": "actual_recording_and_multistep_replay",
+        "passed": true,
+        "durationMillis": 11138
+      },
+      {
+        "name": "recording_repeat_and_cancel",
+        "passed": true,
+        "durationMillis": 20726
+      },
+      {
+        "name": "floating_stop_waiting_and_running",
+        "passed": true,
+        "durationMillis": 7381
+      },
+      {
+        "name": "rotation_screen_off_and_service_disconnect",
+        "passed": true,
+        "durationMillis": 14127
+      },
+      {
+        "name": "source_change_clears_old_time",
+        "passed": true,
+        "durationMillis": 1094
+      },
+      {
+        "name": "v2_picker_and_two_setting_page",
+        "passed": true,
+        "durationMillis": 4277
+      },
+      {
+        "name": "v2_crosshair_and_one_shot",
+        "passed": true,
+        "durationMillis": 11381
+      },
+      {
+        "name": "v2_cancelled_one_shot_never_replays",
+        "passed": true,
+        "durationMillis": 7141
+      },
+      {
+        "name": "v2_floating_clock_lifecycle",
+        "passed": true,
+        "durationMillis": 1591
+      },
+      {
+        "name": "v2_landscape_large_font_stop_visible",
+        "passed": true,
+        "durationMillis": 3978
+      },
+      {
+        "name": "v2_builtin_ntp_reachability",
+        "passed": true,
+        "durationMillis": 6578
+      }
+    ],
+    "evidence": {
+      "singlePointReceipts": [
+        {
+          "point": "A",
+          "elapsed": 3403346,
+          "epoch": 1792913308478
+        },
+        {
+          "point": "A",
+          "elapsed": 3403464,
+          "epoch": 1792913308596
+        },
+        {
+          "point": "A",
+          "elapsed": 3403676,
+          "epoch": 1792913308807
+        },
+        {
+          "point": "A",
+          "elapsed": 3403878,
+          "epoch": 1792913309009
+        },
+        {
+          "point": "A",
+          "elapsed": 3404069,
+          "epoch": 1792913309200
+        }
+      ],
+      "deadlineReceipts": [
+        {
+          "point": "A",
+          "elapsed": 3407511,
+          "epoch": 1792913312642
+        },
+        {
+          "point": "A",
+          "elapsed": 3407747,
+          "epoch": 1792913312879
+        },
+        {
+          "point": "A",
+          "elapsed": 3407986,
+          "epoch": 1792913313118
+        },
+        {
+          "point": "A",
+          "elapsed": 3408296,
+          "epoch": 1792913313428
+        }
+      ],
+      "lastFloatingControl": {
+        "text": "关闭悬浮时钟",
+        "x": 347,
+        "y": 692
+      },
+      "recordedSteps": "323.0,442.0,0\n323.0,841.0,1105\n323.0,442.0,1059",
+      "replayReceipts": [
+        {
+          "point": "A",
+          "elapsed": 3417973,
+          "epoch": 1792913323104
+        },
+        {
+          "point": "B",
+          "elapsed": 3418471,
+          "epoch": 1792913323603
+        },
+        {
+          "point": "A",
+          "elapsed": 3418723,
+          "epoch": 1792913323854
+        },
+        {
+          "point": "A",
+          "elapsed": 3418939,
+          "epoch": 1792913324071
+        },
+        {
+          "point": "B",
+          "elapsed": 3419465,
+          "epoch": 1792913324597
+        },
+        {
+          "point": "A",
+          "elapsed": 3419673,
+          "epoch": 1792913324805
+        }
+      ],
+      "replayReceiptGapsMillis": [
+        498,
+        252,
+        216,
+        526,
+        208
+      ],
+      "replayInputGapsMillis": [
+        465,
+        209,
+        159,
+        473,
+        208
+      ],
+      "repeatedRecordingReceipts": [
+        {
+          "point": "A",
+          "elapsed": 3422988,
+          "epoch": 1792913328120
+        },
+        {
+          "point": "B",
+          "elapsed": 3424178,
+          "epoch": 1792913329310
+        },
+        {
+          "point": "A",
+          "elapsed": 3425275,
+          "epoch": 1792913330406
+        },
+        {
+          "point": "B",
+          "elapsed": 3426412,
+          "epoch": 1792913331544
+        },
+        {
+          "point": "A",
+          "elapsed": 3427578,
+          "epoch": 1792913332710
+        },
+        {
+          "point": "B",
+          "elapsed": 3428729,
+          "epoch": 1792913333861
+        },
+        {
+          "point": "A",
+          "elapsed": 3429834,
+          "epoch": 1792913334966
+        },
+        {
+          "point": "B",
+          "elapsed": 3430944,
+          "epoch": 1792913336076
+        },
+        {
+          "point": "A",
+          "elapsed": 3432030,
+          "epoch": 1792913337161
+        },
+        {
+          "point": "B",
+          "elapsed": 3433162,
+          "epoch": 1792913338294
+        },
+        {
+          "point": "A",
+          "elapsed": 3434275,
+          "epoch": 1792913339407
+        },
+        {
+          "point": "B",
+          "elapsed": 3435383,
+          "epoch": 1792913340515
+        }
+      ],
+      "pickerValue": "2026-10-25T07:31:30.750Z[GMT]",
+      "timePageEditableFields": 2,
+      "crosshairDrag": {
+        "from": [
+          540,
+          1200
+        ],
+        "target": [
+          323,
+          442
+        ],
+        "savedX": "323.0",
+        "savedY": "442.0"
+      },
+      "oneShotReceipts": [
+        {
+          "point": "A",
+          "elapsed": 3478608,
+          "epoch": 1792913383739
+        }
+      ],
+      "oneShotReceiptDeviationMillis": 58,
+      "frozenClockAcrossSync": true,
+      "oneShotTiming": {
+        "targetEpoch": 1792913384062,
+        "plannedElapsed": 3478550,
+        "dispatchedElapsed": 3478556,
+        "callbackElapsed": 3478633
+      },
+      "cancelledOneShotReceived": 0,
+      "clockStandaloneDidNotClick": true,
+      "clockClosePausedSync": true,
+      "landscapeFontScale": 1.5,
+      "pinnedCloseControlVisible": true,
+      "dnsFailureBoundedMillis": 2027,
+      "builtinSourceProbes": [
+        {
+          "source": "ALIYUN",
+          "host": "ntp.aliyun.com",
+          "succeeded": true,
+          "rttMillis": 46,
+          "failure": "NONE"
+        },
+        {
+          "source": "TENCENT",
+          "host": "ntp.tencent.com",
+          "succeeded": false,
+          "rttMillis": 0,
+          "failure": "TIMEOUT"
+        },
+        {
+          "source": "CLOUDFLARE",
+          "host": "time.cloudflare.com",
+          "succeeded": false,
+          "rttMillis": 0,
+          "failure": "TIMEOUT"
+        }
+      ]
+    }
+  },
+  "processRecreation": {
+    "observationMillis": 3000,
+    "oldPid": 17594,
+    "receivedBeforeDeath": 2,
+    "passed": true,
+    "newPid": "17748",
+    "stableReceivedAfterDeath": 2
+  },
+  "resourceObservations": {
+    "build": "R8 release, test-signed only for emulator, no instrumentation attached",
+    "home": {
+      "pssKiB": [
+        22228,
+        22036,
+        21961,
+        21513,
+        21509,
+        21513
+      ],
+      "observationSeconds": 14.747,
+      "cpuTicks": 36,
+      "ticksPerSecond": 100,
+      "cpuPercentOfOneCore": 2.441
+    },
+    "floatingClock": {
+      "pssKiB": [
+        22846,
+        22966,
+        23002,
+        23077,
+        23125,
+        23197
+      ],
+      "observationSeconds": 17.765,
+      "cpuTicks": 431,
+      "ticksPerSecond": 100,
+      "cpuPercentOfOneCore": 24.262
+    },
+    "unsignedApkBytes": 158310
+  },
+  "limitations": [
+    "No physical-device timing, resource, vendor-compatibility or long-duration validation.",
+    "Functional one-shot timing used a local HTTPS fixture; the observation is not UTC accuracy or a timing SLA.",
+    "Public NTP reachability varies; all three providers succeeded in some probes, while two timed out in the final full suite.",
+    "CPU observations use short windows on a software-rendered emulator and do not establish low CPU use on a phone.",
+    "API 26-28 legacy DNS fallback is bounded by the caller but has not been exercised on a device."
+  ]
+}

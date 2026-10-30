@@ -1,0 +1,467 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "name": "v3_setup_steps",
+      "passed": true,
+      "durationMillis": 4436
+    },
+    {
+      "name": "permission_and_disclosure",
+      "passed": true,
+      "durationMillis": 1614
+    },
+    {
+      "name": "https_time_formats_periodic_failure_recovery",
+      "passed": true,
+      "durationMillis": 8765
+    },
+    {
+      "name": "v3_jd_options_protocol",
+      "passed": true,
+      "durationMillis": 8177
+    },
+    {
+      "name": "v7_two_step_entries",
+      "passed": true,
+      "durationMillis": 1884
+    },
+    {
+      "name": "single_point_count_and_start_time",
+      "passed": true,
+      "durationMillis": 5879
+    },
+    {
+      "name": "deadline_limits_count",
+      "passed": true,
+      "durationMillis": 4339
+    },
+    {
+      "name": "actual_recording_and_multistep_replay",
+      "passed": true,
+      "durationMillis": 11063
+    },
+    {
+      "name": "recording_repeat_and_cancel",
+      "passed": true,
+      "durationMillis": 20909
+    },
+    {
+      "name": "floating_stop_waiting_and_running",
+      "passed": true,
+      "durationMillis": 7369
+    },
+    {
+      "name": "rotation_screen_off_and_service_disconnect",
+      "passed": true,
+      "durationMillis": 13881
+    },
+    {
+      "name": "source_change_clears_old_time",
+      "passed": true,
+      "durationMillis": 1041
+    },
+    {
+      "name": "v3_independent_samples_and_cancellation",
+      "passed": true,
+      "durationMillis": 4287
+    },
+    {
+      "name": "v3_same_display_preserves_point",
+      "passed": true,
+      "durationMillis": 1125
+    },
+    {
+      "name": "v4_time_wheels_layout",
+      "passed": true,
+      "durationMillis": 7770
+    },
+    {
+      "name": "v3_tabs_and_time_sources",
+      "passed": true,
+      "durationMillis": 4977
+    },
+    {
+      "name": "v2_crosshair_and_one_shot",
+      "passed": true,
+      "durationMillis": 11431
+    },
+    {
+      "name": "v2_cancelled_one_shot_never_replays",
+      "passed": true,
+      "durationMillis": 16132
+    },
+    {
+      "name": "v5_crosshair_cancel_before_dispatch",
+      "passed": true,
+      "durationMillis": 4101
+    },
+    {
+      "name": "v2_floating_clock_lifecycle",
+      "passed": true,
+      "durationMillis": 1185
+    },
+    {
+      "name": "v4_floating_play_stop",
+      "passed": true,
+      "durationMillis": 17608
+    },
+    {
+      "name": "v6_minimal_overlay_time",
+      "passed": true,
+      "durationMillis": 16424
+    },
+    {
+      "name": "v2_landscape_large_font_stop_visible",
+      "passed": true,
+      "durationMillis": 3489
+    },
+    {
+      "name": "v3_time_page_large_font_dark",
+      "passed": true,
+      "durationMillis": 4467
+    },
+    {
+      "name": "v3_builtin_source_reachability",
+      "passed": true,
+      "durationMillis": 1675
+    },
+    {
+      "name": "v3_jd_live_source",
+      "passed": true,
+      "durationMillis": 2784
+    }
+  ],
+  "evidence": {
+    "physicalDevice": false,
+    "setupSteps": {
+      "liveTransitions": "red-green-red",
+      "ordinaryOverlayPermission": false,
+      "realAccessibilityOverlay": true,
+      "clickTaskStarted": false,
+      "sameActivity": true,
+      "resumeRefresh": true
+    },
+    "jdOptionsProtocol": {
+      "empty204Accepted": true,
+      "method": "OPTIONS",
+      "offsetMillis": 868,
+      "fixtureDifferenceMillis": 49,
+      "failureModesRejected": [
+        "missing",
+        "malformed",
+        "stale",
+        "age",
+        "error",
+        "slow"
+      ],
+      "cancelledResponseIgnored": true,
+      "periodicCancelled": true
+    },
+    "twoStepEntries": {
+      "thirdStepRemoved": true,
+      "recordingDisabled": true,
+      "recordingDidNotOpenOrStart": true,
+      "timedEntryOpensWithoutClicking": true,
+      "openingIsIdempotent": true
+    },
+    "singlePointReceipts": [
+      {
+        "point": "A",
+        "elapsed": 10484736,
+        "epoch": 1793024441194
+      },
+      {
+        "point": "A",
+        "elapsed": 10484868,
+        "epoch": 1793024441326
+      },
+      {
+        "point": "A",
+        "elapsed": 10485119,
+        "epoch": 1793024441577
+      },
+      {
+        "point": "A",
+        "elapsed": 10485298,
+        "epoch": 1793024441756
+      },
+      {
+        "point": "A",
+        "elapsed": 10485467,
+        "epoch": 1793024441925
+      }
+    ],
+    "deadlineReceipts": [
+      {
+        "point": "A",
+        "elapsed": 10488738,
+        "epoch": 1793024445196
+      },
+      {
+        "point": "A",
+        "elapsed": 10488967,
+        "epoch": 1793024445425
+      },
+      {
+        "point": "A",
+        "elapsed": 10489223,
+        "epoch": 1793024445681
+      },
+      {
+        "point": "A",
+        "elapsed": 10489491,
+        "epoch": 1793024445948
+      }
+    ],
+    "lastFloatingControl": {
+      "text": "关闭悬浮时钟",
+      "x": 556,
+      "y": 241
+    },
+    "recordedSteps": "323.0,442.0,0\n323.0,841.0,1074\n323.0,442.0,1089",
+    "replayReceipts": [
+      {
+        "point": "A",
+        "elapsed": 10499115,
+        "epoch": 1793024455573
+      },
+      {
+        "point": "B",
+        "elapsed": 10499659,
+        "epoch": 1793024456117
+      },
+      {
+        "point": "A",
+        "elapsed": 10499878,
+        "epoch": 1793024456336
+      },
+      {
+        "point": "A",
+        "elapsed": 10500086,
+        "epoch": 1793024456544
+      },
+      {
+        "point": "B",
+        "elapsed": 10500641,
+        "epoch": 1793024457099
+      },
+      {
+        "point": "A",
+        "elapsed": 10500878,
+        "epoch": 1793024457336
+      }
+    ],
+    "replayReceiptGapsMillis": [
+      544,
+      219,
+      208,
+      555,
+      237
+    ],
+    "replayInputGapsMillis": [
+      462,
+      209,
+      164,
+      460,
+      231
+    ],
+    "repeatedRecordingReceipts": [
+      {
+        "point": "A",
+        "elapsed": 10504072,
+        "epoch": 1793024460530
+      },
+      {
+        "point": "B",
+        "elapsed": 10505236,
+        "epoch": 1793024461693
+      },
+      {
+        "point": "A",
+        "elapsed": 10506347,
+        "epoch": 1793024462805
+      },
+      {
+        "point": "B",
+        "elapsed": 10507516,
+        "epoch": 1793024463974
+      },
+      {
+        "point": "A",
+        "elapsed": 10508656,
+        "epoch": 1793024465114
+      },
+      {
+        "point": "B",
+        "elapsed": 10509785,
+        "epoch": 1793024466243
+      },
+      {
+        "point": "A",
+        "elapsed": 10510999,
+        "epoch": 1793024467457
+      },
+      {
+        "point": "B",
+        "elapsed": 10512121,
+        "epoch": 1793024468579
+      },
+      {
+        "point": "A",
+        "elapsed": 10513216,
+        "epoch": 1793024469674
+      },
+      {
+        "point": "B",
+        "elapsed": 10514409,
+        "epoch": 1793024470867
+      },
+      {
+        "point": "A",
+        "elapsed": 10515522,
+        "epoch": 1793024471980
+      },
+      {
+        "point": "B",
+        "elapsed": 10516756,
+        "epoch": 1793024473213
+      }
+    ],
+    "sourceSamplesIsolated": true,
+    "cancelledResponseIgnored": true,
+    "sameDisplayPreservesSelectedPoint": true,
+    "timeWheelLayout": {
+      "fontScale": 1.5,
+      "portraitAndLandscape": true,
+      "fourColumnsFullyVisible": true,
+      "realMillisecondSwipe": true,
+      "cancelPreservesTarget": true
+    },
+    "timeWheels": {
+      "columns": 4,
+      "millisecondMaximum": 999,
+      "noDatePicker": true,
+      "cancelPreservesTarget": true
+    },
+    "pickerValue": "2026-10-26T14:23:56.750Z[GMT]",
+    "timePageEditableFields": 1,
+    "sourceColumns": 2,
+    "sourceCount": 5,
+    "sourceClockExample": "14:21:58:802(+851)",
+    "tabAndUnsavedIntervalRestored": true,
+    "hiddenSourceSchedulesCancelled": true,
+    "crosshairDrag": {
+      "from": [
+        540,
+        1200
+      ],
+      "target": [
+        323,
+        442
+      ],
+      "savedX": "323.0",
+      "savedY": "442.0"
+    },
+    "floatingDragIconMovedWindow": true,
+    "oneShotReceipts": [
+      {
+        "point": "B",
+        "elapsed": 10573626,
+        "epoch": 1793024530084
+      }
+    ],
+    "oneShotReceiptDeviationMillis": 100,
+    "frozenClockAcrossSync": true,
+    "latestCrosshairReceived": "B",
+    "dragDidNotClick": true,
+    "oneShotTiming": {
+      "targetEpoch": 1793024530058,
+      "plannedElapsed": 10573526,
+      "dispatchedElapsed": 10573583,
+      "callbackElapsed": 10573625
+    },
+    "armedOverlayCloseCancelledClick": true,
+    "cancelledOneShotReconnectChecked": true,
+    "cancelledOneShotReceived": 0,
+    "cancelledDuringMarkerRemoval": true,
+    "markerRestoredAfterCancellation": true,
+    "clockHardwareAccelerated": true,
+    "clockStandaloneDidNotClick": true,
+    "clockClosePausedSync": true,
+    "clockCloseIconTopRight": true,
+    "floatingPlayStop": {
+      "stoppedWithoutClosing": true,
+      "rapidToggleCancelled": true,
+      "invalidConfigurationStayedStopped": true,
+      "completedResetToPlay": true,
+      "preparedTaskPaused": true,
+      "noLegacyTextButtons": true,
+      "visibleFeedbackOnEveryToggle": true,
+      "feedbackAutoHidden": true,
+      "actualReceived": 1,
+      "targetMillis": 1793024562244
+    },
+    "minimalOverlayTime": {
+      "removedRepeatedText": true,
+      "editOnlySaves": true,
+      "missingAndExpiredPlayOpenPicker": true,
+      "cancelDoesNotStart": true,
+      "confirmFromPlayArms": true,
+      "validTimePlaysDirectly": true,
+      "closeDismissesPicker": true,
+      "stalePickerCannotStartOrReplace": true,
+      "actualReceived": 1
+    },
+    "landscapeFontScale": 1.5,
+    "pinnedCloseControlVisible": true,
+    "timePageLargeFontScale": 1.5,
+    "timePageLandscapeDark": true,
+    "timePageSaveReachable": true,
+    "dnsFailureBoundedMillis": 240,
+    "builtinSourceProbes": [
+      {
+        "source": "ALIYUN",
+        "host": "ntp.aliyun.com",
+        "succeeded": true,
+        "rttMillis": 61,
+        "failure": "NONE"
+      },
+      {
+        "source": "TENCENT",
+        "host": "ntp.tencent.com",
+        "succeeded": true,
+        "rttMillis": 13,
+        "failure": "NONE"
+      },
+      {
+        "source": "CLOUDFLARE",
+        "host": "time.cloudflare.com",
+        "succeeded": true,
+        "rttMillis": 173,
+        "failure": "NONE"
+      },
+      {
+        "source": "JD",
+        "host": "api.m.jd.com",
+        "succeeded": true,
+        "rttMillis": 123,
+        "failure": "NONE"
+      },
+      {
+        "source": "TAOBAO",
+        "host": "acs.m.taobao.com",
+        "succeeded": true,
+        "rttMillis": 48,
+        "failure": "NONE"
+      }
+    ],
+    "jdLiveSource": {
+      "url": "https://api.m.jd.com",
+      "method": "OPTIONS",
+      "fresh": true,
+      "rttMillis": 125,
+      "display": "14:23:18:978(+223)"
+    }
+  }
+}

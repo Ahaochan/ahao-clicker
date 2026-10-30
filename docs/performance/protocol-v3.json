@@ -1,0 +1,701 @@
+{
+  "schemaVersion": 1,
+  "protocolVersion": "timing-v3",
+  "date": "2026-10-28",
+  "scope": "existing_emulator_independent_target_only",
+  "planDocument": "../PERFORMANCE_ANALYSIS_PLAN.md",
+  "runPermission": "planning_only_no_device_collection",
+  "source": {
+    "id": "jd-options",
+    "url": "https://api.m.jd.com",
+    "method": "OPTIONS",
+    "epochHeader": "x-api-request-id",
+    "epochPattern": "^[0-9]+-[0-9]+-([0-9]{13})$",
+    "epochCaptureGroup": 1,
+    "epochUnit": "unix_milliseconds",
+    "epochRangeInclusiveStart": 946684800000,
+    "epochRangeExclusiveEnd": 4102444800000,
+    "conflictingDuplicateHeaders": "reject",
+    "probePlanMoment": "target_persisted_before_wheels_and_play",
+    "taskIntervalAggregation": "both_valid_overlapping_then_convex_hull_else_not_evaluable",
+    "pilotPairs": 20,
+    "pilotPlannedRequests": 40,
+    "intervalModel": "request_generation_and_short_window_equal_rate",
+    "modelConditional": true,
+    "apiSlaCertified": false,
+    "requestStart": "before_connect",
+    "connectTimeoutMs": 3000,
+    "readTimeoutMs": 3000,
+    "minimumOracleStartGapMs": 1000,
+    "maxExtrapolationMs": 5000
+  },
+  "order": {
+    "seed": 20261028,
+    "serializeAllClicks": true,
+    "interleavePairs": [
+      [
+        "A1",
+        "A2"
+      ],
+      [
+        "B1",
+        "B2"
+      ],
+      [
+        "C1",
+        "C2"
+      ],
+      [
+        "R1",
+        "R2"
+      ],
+      [
+        "W1",
+        "W2"
+      ],
+      [
+        "G3",
+        "G4"
+      ]
+    ],
+    "balance": [
+      "D0",
+      "D1",
+      "D2"
+    ]
+  },
+  "gates": {
+    "document": "independent_review_and_static_consistency",
+    "pilot": "not_run",
+    "formal": "not_started",
+    "runtimeEvidenceReusableFromHistoricalRuns": false
+  },
+  "warmup": {
+    "compilationMode": "speed",
+    "fixedClickLeadMs": 4000,
+    "reuseWithinSameGroupProcessSession": true,
+    "clockStableWaitMs": 10000,
+    "recordSeparately": true
+  },
+  "traceModes": {
+    "none": {
+      "hasCpuSamples": false,
+      "hasScheduling": false,
+      "hasPresentation": false
+    },
+    "system": {
+      "hasCpuSamples": false,
+      "hasScheduling": true,
+      "hasPresentation": true,
+      "maxDurationSec": 180,
+      "maxFileMiB": 128,
+      "plannedDurationLimitSec": 90,
+      "plannedFileLimitMiB": 64
+    },
+    "cpu": {
+      "hasCpuSamples": true,
+      "cpuHz": 49,
+      "hasScheduling": true,
+      "hasPresentation": true,
+      "maxDurationSec": 180,
+      "maxFileMiB": 128,
+      "plannedDurationLimitSec": 90,
+      "plannedFileLimitMiB": 64
+    },
+    "blocking": {
+      "hasCpuSamples": true,
+      "cpuHz": 49,
+      "hasScheduling": true,
+      "hasPresentation": true,
+      "filteredSchedEventStacks": true,
+      "maxDurationSec": 180,
+      "maxFileMiB": 128,
+      "plannedDurationLimitSec": 90,
+      "plannedFileLimitMiB": 64
+    },
+    "frame": {
+      "hasCpuSamples": false,
+      "hasScheduling": false,
+      "hasPresentation": true,
+      "maxDurationSec": 180,
+      "maxFileMiB": 128,
+      "plannedDurationLimitSec": 90,
+      "plannedFileLimitMiB": 64
+    },
+    "blocking_long": {
+      "hasCpuSamples": true,
+      "cpuHz": 49,
+      "hasScheduling": true,
+      "hasPresentation": true,
+      "filteredSchedEventStacks": true,
+      "maxDurationSec": 360,
+      "maxFileMiB": 512,
+      "plannedDurationLimitSec": 180,
+      "plannedFileLimitMiB": 256
+    },
+    "frame_long": {
+      "hasCpuSamples": false,
+      "hasScheduling": false,
+      "hasPresentation": true,
+      "maxDurationSec": 3630,
+      "maxFileMiB": 8192,
+      "plannedDurationLimitSec": 3610,
+      "plannedFileLimitMiB": 4096,
+      "centralBufferMiB": 64,
+      "peakBetweenWritesLimitMiB": 32,
+      "fileWritePeriodMs": 5000
+    }
+  },
+  "metrics": {
+    "timeUnit": "elapsed_ns_raw_ms_report",
+    "clickAllowedIntervalMs": [
+      0,
+      50
+    ],
+    "displayAllowedIntervalMs": [
+      -50,
+      50
+    ],
+    "percentileMethod": "nearest_rank",
+    "productFailuresAreValidData": true,
+    "unknownIsNotPass": true,
+    "missingIsNotZero": true,
+    "formalReplacementsAllowed": false
+  },
+  "acceptanceGroups": {
+    "localClick": ["A0", "A1", "A2", "R1", "R2", "G1", "G2", "G3", "G4"],
+    "sourceClick": ["R1", "R2", "G1", "G2", "G3", "G4"],
+    "drawClock": ["E", "F"],
+    "presentClock": ["P-short", "P-long"]
+  },
+  "capture": {
+    "eventBufferMiBPerProcess": 2,
+    "resourceIntervalMs": 30000,
+    "hostIntervalMs": 1000,
+    "heartbeatMs": 1000,
+    "heartbeatMissingLimitMs": 5000,
+    "criticalBeforePreparationMs": 500,
+    "criticalAfterTerminalMs": 500,
+    "maxBufferedSilenceMs": 30000
+  },
+  "overheadBudget": {
+    "totalCpuMedianIncrementSingleCorePercentagePoints": 2,
+    "appTargetDriverPssIncrementMiBEach": 4,
+    "tracingServicesPssIncrementMiBTotal": 128,
+    "recordConfiguredBuffersSeparately": true
+  },
+  "timeouts": {
+    "uiPreparationMs": 15000,
+    "playReturnMs": 3000,
+    "receiptAfterFinalDeadlineMs": 3000,
+    "stopConfirmMs": 2000,
+    "quietDrainMs": 1000,
+    "shortTraceMs": 180000,
+    "outerLongDeadlineRule": "initialD + 1000*ceil(waitMs/60000) + 10000"
+  },
+  "questions": [
+    {
+      "id": "Q1",
+      "groups": [
+        "A0",
+        "A1",
+        "A2"
+      ],
+      "requiredDatasets": [
+        "events",
+        "receipts",
+        "clocks"
+      ]
+    },
+    {
+      "id": "Q2",
+      "groups": [
+        "B1",
+        "B2",
+        "C1",
+        "C2",
+        "W1",
+        "W2",
+        "W8",
+        "W90",
+        "W30",
+        "W60"
+      ],
+      "requiredDatasets": [
+        "events",
+        "receipts",
+        "trace",
+        "trace-quality"
+      ]
+    },
+    {
+      "id": "Q3",
+      "groups": [
+        "R1",
+        "R2",
+        "G1",
+        "G2",
+        "G3",
+        "G4"
+      ],
+      "requiredDatasets": [
+        "events",
+        "receipts",
+        "sync",
+        "oracle"
+      ]
+    },
+    {
+      "id": "Q4",
+      "groups": [
+        "E",
+        "F",
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "H"
+      ],
+      "requiredDatasets": [
+        "sync",
+        "frames",
+        "clock-observations",
+        "oracle"
+      ]
+    },
+    {
+      "id": "Q5",
+      "groups": [
+        "P-short",
+        "P-long"
+      ],
+      "requiredDatasets": [
+        "frames",
+        "clock-observations",
+        "oracle",
+        "trace",
+        "trace-quality"
+      ]
+    },
+    {
+      "id": "Q6",
+      "groups": [
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "W8",
+        "W90",
+        "W30",
+        "W60"
+      ],
+      "requiredDatasets": [
+        "events",
+        "receipts",
+        "sync",
+        "oracle"
+      ]
+    },
+    {
+      "id": "Q7",
+      "groups": [
+        "D0",
+        "D1",
+        "D2",
+        "F",
+        "P-long",
+        "W30",
+        "W60"
+      ],
+      "requiredDatasets": [
+        "resources",
+        "host",
+        "trace-quality"
+      ]
+    }
+  ],
+  "requiredRunArtifacts": [
+    "manifest",
+    "planned",
+    "events",
+    "receipts",
+    "sync",
+    "oracle",
+    "frames",
+    "clock-observations",
+    "clocks",
+    "resources",
+    "host",
+    "terminal",
+    "trace-quality",
+    "report",
+    "sha256-index"
+  ],
+  "groups": [
+    {
+      "id": "A0",
+      "kind": "click",
+      "plannedTasks": 20,
+      "batchSize": 1,
+      "leadMs": 1800,
+      "traceMode": "none",
+      "oracleMode": "none",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "startup": "cold_process",
+      "warmupTasks": 0
+    },
+    {
+      "id": "A1",
+      "kind": "click",
+      "plannedTasks": 1000,
+      "batchSize": 100,
+      "leadMs": 1800,
+      "traceMode": "none",
+      "oracleMode": "none",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "startup": "warm",
+      "warmupTasks": 10
+    },
+    {
+      "id": "A2",
+      "kind": "click",
+      "plannedTasks": 1000,
+      "batchSize": 100,
+      "leadMs": 4000,
+      "traceMode": "none",
+      "oracleMode": "none",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "startup": "warm",
+      "warmupTasks": 10
+    },
+    {
+      "id": "B1",
+      "kind": "click",
+      "plannedTasks": 100,
+      "batchSize": 10,
+      "leadMs": 1800,
+      "traceMode": "system",
+      "oracleMode": "none",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "startup": "warm",
+      "warmupTasks": 10
+    },
+    {
+      "id": "B2",
+      "kind": "click",
+      "plannedTasks": 100,
+      "batchSize": 10,
+      "leadMs": 4000,
+      "traceMode": "system",
+      "oracleMode": "none",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "startup": "warm",
+      "warmupTasks": 10
+    },
+    {
+      "id": "C1",
+      "kind": "click",
+      "plannedTasks": 40,
+      "batchSize": 10,
+      "leadMs": 1800,
+      "traceMode": "cpu",
+      "oracleMode": "none",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "startup": "warm",
+      "warmupTasks": 10
+    },
+    {
+      "id": "C2",
+      "kind": "click",
+      "plannedTasks": 40,
+      "batchSize": 10,
+      "leadMs": 4000,
+      "traceMode": "cpu",
+      "oracleMode": "none",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "startup": "warm",
+      "warmupTasks": 10
+    },
+    {
+      "id": "R1",
+      "kind": "click",
+      "plannedTasks": 100,
+      "batchSize": 10,
+      "leadMs": 1800,
+      "traceMode": "none",
+      "oracleMode": "event_probes",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "startup": "warm",
+      "warmupTasks": 10
+    },
+    {
+      "id": "R2",
+      "kind": "click",
+      "plannedTasks": 100,
+      "batchSize": 10,
+      "leadMs": 4000,
+      "traceMode": "none",
+      "oracleMode": "event_probes",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "startup": "warm",
+      "warmupTasks": 10
+    },
+    {
+      "id": "W1",
+      "kind": "click",
+      "plannedTasks": 10,
+      "batchSize": 5,
+      "leadMs": 1800,
+      "traceMode": "blocking",
+      "oracleMode": "event_probes",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "startup": "warm",
+      "warmupTasks": 10
+    },
+    {
+      "id": "W2",
+      "kind": "click",
+      "plannedTasks": 10,
+      "batchSize": 5,
+      "leadMs": 4000,
+      "traceMode": "blocking",
+      "oracleMode": "event_probes",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "startup": "warm",
+      "warmupTasks": 10
+    },
+    {
+      "id": "D0",
+      "kind": "click",
+      "plannedTasks": 100,
+      "batchSize": 10,
+      "leadMs": 4000,
+      "traceMode": "none",
+      "oracleMode": "none",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "condition": "normal_clock_normal_button",
+      "warmupTasks": 10
+    },
+    {
+      "id": "D1",
+      "kind": "click",
+      "plannedTasks": 100,
+      "batchSize": 10,
+      "leadMs": 4000,
+      "traceMode": "none",
+      "oracleMode": "none",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "condition": "clock_self_redraw_off_normal_button",
+      "warmupTasks": 10
+    },
+    {
+      "id": "D2",
+      "kind": "click",
+      "plannedTasks": 100,
+      "batchSize": 10,
+      "leadMs": 4000,
+      "traceMode": "none",
+      "oracleMode": "none",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "condition": "normal_clock_light_receiver",
+      "warmupTasks": 10
+    },
+    {
+      "id": "E",
+      "kind": "clock",
+      "repeats": 3,
+      "durationSec": 120,
+      "localGridMs": 1000,
+      "plannedLocalPointsPerRepeat": 121,
+      "oracleIntervalMs": 1000,
+      "plannedOraclePointsPerRepeat": 121,
+      "traceMode": "none",
+      "syncIntervalMs": 60000
+    },
+    {
+      "id": "F",
+      "kind": "clock",
+      "repeats": 1,
+      "durationSec": 3600,
+      "localGridMs": 1000,
+      "plannedLocalPointsPerRepeat": 3601,
+      "oracleIntervalMs": 30000,
+      "plannedOraclePointsPerRepeat": 121,
+      "traceMode": "none",
+      "syncIntervalMs": 60000
+    },
+    {
+      "id": "G1",
+      "kind": "click",
+      "plannedTasks": 10,
+      "batchSize": 5,
+      "leadMs": 8000,
+      "traceMode": "none",
+      "oracleMode": "periodic_and_event",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "oracleIntervalMs": 30000,
+      "warmupTasks": 10
+    },
+    {
+      "id": "G2",
+      "kind": "click",
+      "plannedTasks": 10,
+      "batchSize": 5,
+      "leadMs": 90000,
+      "traceMode": "none",
+      "oracleMode": "periodic_and_event",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "oracleIntervalMs": 30000,
+      "warmupTasks": 10
+    },
+    {
+      "id": "G3",
+      "kind": "click",
+      "plannedTasks": 3,
+      "batchSize": 1,
+      "leadMs": 1800000,
+      "traceMode": "none",
+      "oracleMode": "periodic_and_event",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "oracleIntervalMs": 30000,
+      "warmupTasks": 10
+    },
+    {
+      "id": "G4",
+      "kind": "click",
+      "plannedTasks": 3,
+      "batchSize": 1,
+      "leadMs": 3600000,
+      "traceMode": "none",
+      "oracleMode": "periodic_and_event",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "oracleIntervalMs": 30000,
+      "warmupTasks": 10
+    },
+    {
+      "id": "H",
+      "kind": "controlled",
+      "plannedTasks": 30,
+      "batchSize": 1,
+      "scenarios": [
+        "pre_freeze_plus_200",
+        "pre_freeze_minus_200",
+        "post_freeze_plus_200",
+        "post_freeze_minus_200",
+        "pre_freeze_plus_1001",
+        "rebase_crosses_freeze",
+        "rebase_target_expired",
+        "source_identity_changed",
+        "outage_recover_before_freeze",
+        "stale_callback_after_stop"
+      ],
+      "repeatsPerScenario": 3,
+      "traceMode": "none",
+      "oracleMode": "controlled",
+      "leadMs": 20000,
+      "syncIntervalMs": 60000
+    },
+    {
+      "id": "P-short",
+      "kind": "clock",
+      "repeats": 6,
+      "durationSec": 60,
+      "localGridMs": 1000,
+      "plannedLocalPointsPerRepeat": 61,
+      "oracleIntervalMs": 1000,
+      "plannedOraclePointsPerRepeat": 61,
+      "traceMode": "frame",
+      "syncIntervalMs": 60000
+    },
+    {
+      "id": "P-long",
+      "kind": "clock",
+      "repeats": 1,
+      "durationSec": 3600,
+      "localGridMs": 1000,
+      "plannedLocalPointsPerRepeat": 3601,
+      "oracleIntervalMs": 30000,
+      "plannedOraclePointsPerRepeat": 121,
+      "traceMode": "frame_long",
+      "syncIntervalMs": 60000
+    },
+    {
+      "id": "W8",
+      "kind": "click",
+      "plannedTasks": 1,
+      "batchSize": 1,
+      "leadMs": 8000,
+      "traceMode": "blocking_long",
+      "oracleMode": "periodic_and_event",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "oracleIntervalMs": 30000,
+      "traceStartBeforeDeadlineMs": 75000,
+      "traceCoverageMustIncludeFinalFreeze": true,
+      "warmupTasks": 10
+    },
+    {
+      "id": "W90",
+      "kind": "click",
+      "plannedTasks": 1,
+      "batchSize": 1,
+      "leadMs": 90000,
+      "traceMode": "blocking_long",
+      "oracleMode": "periodic_and_event",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "oracleIntervalMs": 30000,
+      "traceStartBeforeDeadlineMs": 75000,
+      "traceCoverageMustIncludeFinalFreeze": true,
+      "warmupTasks": 10
+    },
+    {
+      "id": "W30",
+      "kind": "click",
+      "plannedTasks": 1,
+      "batchSize": 1,
+      "leadMs": 1800000,
+      "traceMode": "blocking_long",
+      "oracleMode": "periodic_and_event",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "oracleIntervalMs": 30000,
+      "traceStartBeforeDeadlineMs": 75000,
+      "traceCoverageMustIncludeFinalFreeze": true,
+      "warmupTasks": 10
+    },
+    {
+      "id": "W60",
+      "kind": "click",
+      "plannedTasks": 1,
+      "batchSize": 1,
+      "leadMs": 3600000,
+      "traceMode": "blocking_long",
+      "oracleMode": "periodic_and_event",
+      "localGridMs": 1000,
+      "syncIntervalMs": 60000,
+      "oracleIntervalMs": 30000,
+      "traceStartBeforeDeadlineMs": 75000,
+      "traceCoverageMustIncludeFinalFreeze": true,
+      "warmupTasks": 10
+    }
+  ]
+}

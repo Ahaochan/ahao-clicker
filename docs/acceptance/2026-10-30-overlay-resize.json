@@ -1,0 +1,303 @@
+{
+  "date": "2026-10-30",
+  "feature": "Translucent timed/multipoint panels with bottom-corner resizing",
+  "backgroundAlpha": 179,
+  "windowAlpha": 1,
+  "textAndIconsOpaque": true,
+  "behavior": "Free width/height resize, opposite horizontal edge anchored, fixed top; safe/minimum bounds; frozen while playing; session-only size",
+  "unitTests": {
+    "core": 83,
+    "app": 12
+  },
+  "newGeometryTests": 6,
+  "tddObservedFailures": 6,
+  "checks": [
+    "core:test",
+    "app:testDebugUnitTest",
+    "app:lintDebug",
+    "app:assembleDebug",
+    "app:assembleRelease",
+    "git diff --check"
+  ],
+  "functionalCases": [
+    {
+      "name": "v13_overlay_resize",
+      "passed": true,
+      "durationMillis": 15768
+    },
+    {
+      "name": "v2_landscape_large_font_stop_visible",
+      "passed": true,
+      "durationMillis": 9077
+    },
+    {
+      "name": "v12_multipoint_overlay",
+      "passed": true,
+      "durationMillis": 37210
+    },
+    {
+      "name": "v2_crosshair_and_one_shot",
+      "passed": true,
+      "durationMillis": 15211
+    }
+  ],
+  "resize": {
+    "modes": [
+      {
+        "multi": false,
+        "initial": [
+          32,
+          147,
+          630,
+          609
+        ],
+        "grown": [
+          32,
+          147,
+          750,
+          709
+        ],
+        "minimum": [
+          32,
+          147,
+          505,
+          462
+        ],
+        "leftGrown": [
+          112,
+          297,
+          625,
+          562
+        ],
+        "leftSmaller": [
+          192,
+          297,
+          545,
+          502
+        ],
+        "maximum": [
+          192,
+          297,
+          888,
+          2040
+        ]
+      },
+      {
+        "multi": true,
+        "initial": [
+          32,
+          147,
+          714,
+          462
+        ],
+        "grown": [
+          32,
+          147,
+          834,
+          562
+        ],
+        "minimum": [
+          32,
+          147,
+          652,
+          462
+        ],
+        "leftGrown": [
+          112,
+          297,
+          772,
+          562
+        ],
+        "leftSmaller": [
+          192,
+          297,
+          692,
+          502
+        ],
+        "maximum": [
+          192,
+          297,
+          888,
+          2040
+        ]
+      }
+    ],
+    "backgroundAlpha": 179,
+    "bothCornersGrowAndShrink": true,
+    "controlsFullyVisible": true,
+    "systemBarsRespected": true,
+    "clockDrawnAfterResize": true,
+    "markersUnchanged": true,
+    "noInjectedClick": true,
+    "resizeFrozenWhilePlaying": true,
+    "stopReachable": true
+  },
+  "largeFontLandscape": {
+    "physicalDevice": false,
+    "lastFloatingControl": {
+      "text": "关闭多点点击浮窗",
+      "x": 640,
+      "y": 241
+    },
+    "landscapeFontScale": 1.5,
+    "pinnedCloseControlVisible": true,
+    "multiResizeControlsVisible": true
+  },
+  "multipointRegression": {
+    "actualOrder": "A,B,C,A,B,C",
+    "actualDownGapsMillis": [
+      532,
+      538,
+      975,
+      409,
+      656
+    ],
+    "firstDelayMillis": 1326,
+    "numberedMarkers": true,
+    "continuousLoop": true,
+    "manualStopAfterTwoCycles": true,
+    "markersRemainVisible": true,
+    "sameMarkerWindows": true,
+    "runningMarkersPassThrough": true,
+    "stoppedMarkersTouchable": true,
+    "stopBeforeFirst": true,
+    "stopBetweenPoints": true,
+    "defaultDelay1000": true,
+    "invalidDelayRejected": true,
+    "cancelKeepsDelay": true,
+    "mutuallyExclusive": true,
+    "deleteRenumbers": true,
+    "closeCancelsWaiting": true,
+    "closeDoesNotRestore": true,
+    "serviceDisconnectCancels": true,
+    "reconnectDoesNotResume": true
+  },
+  "timedRegression": {
+    "physicalDevice": false,
+    "crosshairDrag": {
+      "from": [
+        540,
+        1200
+      ],
+      "target": [
+        323,
+        442
+      ],
+      "savedX": "323.0",
+      "savedY": "442.0"
+    },
+    "floatingDragIconMovedWindow": true,
+    "lastFloatingControl": {
+      "text": "开启自动点击",
+      "x": 555,
+      "y": 1822
+    },
+    "oneShotReceipts": [
+      {
+        "point": "B",
+        "elapsed": 148852622,
+        "epoch": 1793341505912
+      }
+    ],
+    "oneShotReceiptDeviationMillis": 53,
+    "frozenClockAcrossSync": true,
+    "latestCrosshairReceived": "B",
+    "dragDidNotClick": true,
+    "oneShotTiming": {
+      "targetEpoch": 1793341506748,
+      "plannedElapsed": 148852569,
+      "dispatchedElapsed": 148852582,
+      "callbackElapsed": 148852596
+    }
+  },
+  "retainedFailures": [
+    "resize-failed-01.json",
+    "resize-insets-red.json",
+    "clock-red.json",
+    "build-failed-01.log"
+  ],
+  "failureNotes": [
+    "Initial left-corner driver did not resize a horizontally mirrored ImageView; replaced view mirroring with a separate left vector asset.",
+    "Stronger system-window-metrics check rejected an initial apparent pass: overlay root insets were zero and panel reached2400 instead of2337. Fixed bounds and final bottom is2337.",
+    "Screenshot review found multipoint clock height0. Stronger draw/dimension assertions reproduced650x0/value=null; fillViewport fixes ScrollView child measurement. Earlier passing cases without this assertion are retained under pre-clock.",
+    "Initial build used an unresolved ScrollView.LayoutParams type; corrected to FrameLayout.LayoutParams before passing builds."
+  ],
+  "supersededPilotResults": [
+    "resize-initial-passed.json",
+    "resize-passed.json",
+    "layout-initial-passed.json",
+    "pre-clock/"
+  ],
+  "sourceChecks": [
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/OneShotRunner.kt",
+      "unchanged": true
+    },
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/TimeSync.kt",
+      "unchanged": true
+    },
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/ClickRunner.kt",
+      "unchanged": true
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/time/TimeSyncManager.kt",
+      "unchanged": true
+    },
+    {
+      "path": "app/build.gradle.kts",
+      "unchanged": true
+    },
+    {
+      "path": "gradle/libs.versions.toml",
+      "unchanged": true
+    },
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/MultiPointRunner.kt",
+      "unchanged": true
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/MultiPointController.kt",
+      "unchanged": true
+    }
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/OverlayResize.kt",
+      "sha256": "ecc60948c12e76c7f891ad55eeeaab4b969ca27b21ab2ae887f614e6f2ecc6fc"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/OverlayPanel.kt",
+      "sha256": "52c8dff395080ef7ecfe0a7c714054d276c604c4fd2d3a564e590006dd9c9ef5"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/TimedOverlay.kt",
+      "sha256": "33e1216ae8281cfed31d3dbd24f5b2acca0abe7c4db1ff7ba4451f9a7a2b2fec"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/MultiPointOverlay.kt",
+      "sha256": "955ccf73a2955f325a13e0bef7d01c76c6ec2ac0cbbe3656c062f753c523d89b"
+    }
+  ],
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "sha256": "6ba8be0bf83b634ded0cb4fac0a3b93bd27c0523af0511eb9ee90b1f88002ef8"
+  },
+  "rawRoot": ".tools/overlay-resize-20261030",
+  "rawResults": [
+    "resize-final.json",
+    "layout-final.json",
+    "multipoint-final.json",
+    "timed-final.json"
+  ],
+  "device": "emulator-5554",
+  "deviceApi": 37,
+  "physicalDeviceTested": false,
+  "fullMatrixRun": false,
+  "performanceCertification": false,
+  "emulatorPreferencesRestored": true,
+  "newTestPackagesRemoved": true,
+  "committed": false,
+  "pushed": false
+}

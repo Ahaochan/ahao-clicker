@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/overlay_feedback" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:layout_gravity="bottom" android:visibility="gone" android:maxLines="2" android:ellipsize="end"
+    android:paddingHorizontal="@dimen/control_padding_horizontal" android:paddingVertical="@dimen/control_padding_vertical"
+    android:textSize="@dimen/caption_text" android:textColor="@color/control_background"
+    android:background="@drawable/overlay_feedback_background" android:accessibilityLiveRegion="polite" />

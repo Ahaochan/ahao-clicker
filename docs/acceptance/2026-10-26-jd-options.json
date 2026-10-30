@@ -1,0 +1,496 @@
+{
+  "date": "2026-10-26",
+  "source": {
+    "httpDateToleranceMillis": 2000,
+    "method": "OPTIONS",
+    "format": "JD_REQUEST_ID",
+    "header": "X-API-Request-Id",
+    "url": "https://api.m.jd.com"
+  },
+  "environment": {
+    "rendering": "SwiftShader",
+    "api": 37,
+    "abi": "x86_64",
+    "type": "Android emulator"
+  },
+  "checks": {
+    "unitTests": {
+      "core": 35,
+      "app": 6
+    },
+    "gradleCacheDrive": "D",
+    "releaseBuild": true,
+    "debugBuild": true,
+    "java": 17,
+    "lint": {
+      "warnings": 0,
+      "hints": 5,
+      "errors": 0
+    }
+  },
+  "originalCurlProbe": {
+    "suppliedValue": 1792980614483,
+    "suppliedUtc": "2026-10-26T10:10:14.483+08:00",
+    "suppliedBeijing": "2026-10-26T10:10:14.483+08:00",
+    "method": "OPTIONS",
+    "url": "https://api.m.jd.com",
+    "samples": [
+      {
+        "status": "HTTP/1.1 200 ",
+        "curlExitCode": 0,
+        "rttMillis": 2909.284,
+        "sentEpochMillis": 1792980768678,
+        "receivedEpochMillis": 1792980771588,
+        "headers": {
+          "x-api-request-id": "10108170117-125745-1792980771441",
+          "date": "Mon, 26 Oct 2026 02:12:51 GMT",
+          "age": null,
+          "cache-control": null,
+          "server": "jfe"
+        },
+        "suffixEpochMillis": 1792980771441,
+        "suffixBeijing": "2026-10-26T10:12:51.441+08:00",
+        "offsetFromLocalMidpointMillis": 1308,
+        "offsetFromHttpDateMillis": 441
+      },
+      {
+        "status": "HTTP/1.1 200 ",
+        "curlExitCode": 0,
+        "rttMillis": 1382.754,
+        "sentEpochMillis": 1792980772788,
+        "receivedEpochMillis": 1792980774171,
+        "headers": {
+          "x-api-request-id": "10105444930-142216-1792980774021",
+          "date": "Mon, 26 Oct 2026 02:12:54 GMT",
+          "age": null,
+          "cache-control": null,
+          "server": "jfe"
+        },
+        "suffixEpochMillis": 1792980774021,
+        "suffixBeijing": "2026-10-26T10:12:54.021+08:00",
+        "offsetFromLocalMidpointMillis": 542,
+        "offsetFromHttpDateMillis": 21
+      },
+      {
+        "status": "HTTP/1.1 200 ",
+        "curlExitCode": 0,
+        "rttMillis": 1665.787,
+        "sentEpochMillis": 1792980775371,
+        "receivedEpochMillis": 1792980777037,
+        "headers": {
+          "x-api-request-id": "10192124207-107347-1792980776881",
+          "date": "Mon, 26 Oct 2026 02:12:56 GMT",
+          "age": null,
+          "cache-control": null,
+          "server": "jfe"
+        },
+        "suffixEpochMillis": 1792980776881,
+        "suffixBeijing": "2026-10-26T10:12:56.881+08:00",
+        "offsetFromLocalMidpointMillis": 677,
+        "offsetFromHttpDateMillis": 881
+      },
+      {
+        "status": "HTTP/1.1 200 ",
+        "curlExitCode": 0,
+        "rttMillis": 1408.254,
+        "sentEpochMillis": 1792980778238,
+        "receivedEpochMillis": 1792980779646,
+        "headers": {
+          "x-api-request-id": "10104698160-156956-1792980779495",
+          "date": "Mon, 26 Oct 2026 02:12:59 GMT",
+          "age": null,
+          "cache-control": null,
+          "server": "jfe"
+        },
+        "suffixEpochMillis": 1792980779495,
+        "suffixBeijing": "2026-10-26T10:12:59.495+08:00",
+        "offsetFromLocalMidpointMillis": 553,
+        "offsetFromHttpDateMillis": 495
+      }
+    ]
+  },
+  "regression": {
+    "passed": true,
+    "cases": [
+      {
+        "name": "permission_and_disclosure",
+        "passed": true,
+        "durationMillis": 1244
+      },
+      {
+        "name": "https_time_formats_periodic_failure_recovery",
+        "passed": true,
+        "durationMillis": 8732
+      },
+      {
+        "name": "v3_jd_options_protocol",
+        "passed": true,
+        "durationMillis": 8185
+      },
+      {
+        "name": "single_point_count_and_start_time",
+        "passed": true,
+        "durationMillis": 4919
+      },
+      {
+        "name": "deadline_limits_count",
+        "passed": true,
+        "durationMillis": 4266
+      },
+      {
+        "name": "actual_recording_and_multistep_replay",
+        "passed": true,
+        "durationMillis": 10388
+      },
+      {
+        "name": "recording_repeat_and_cancel",
+        "passed": true,
+        "durationMillis": 22900
+      },
+      {
+        "name": "floating_stop_waiting_and_running",
+        "passed": true,
+        "durationMillis": 7113
+      },
+      {
+        "name": "rotation_screen_off_and_service_disconnect",
+        "passed": true,
+        "durationMillis": 13184
+      },
+      {
+        "name": "source_change_clears_old_time",
+        "passed": true,
+        "durationMillis": 845
+      },
+      {
+        "name": "v3_independent_samples_and_cancellation",
+        "passed": true,
+        "durationMillis": 4374
+      },
+      {
+        "name": "v3_same_display_preserves_point",
+        "passed": true,
+        "durationMillis": 750
+      },
+      {
+        "name": "v3_tabs_and_time_sources",
+        "passed": true,
+        "durationMillis": 2809
+      },
+      {
+        "name": "v2_crosshair_and_one_shot",
+        "passed": true,
+        "durationMillis": 10375
+      },
+      {
+        "name": "v2_cancelled_one_shot_never_replays",
+        "passed": true,
+        "durationMillis": 6981
+      },
+      {
+        "name": "v2_floating_clock_lifecycle",
+        "passed": true,
+        "durationMillis": 1313
+      },
+      {
+        "name": "v2_landscape_large_font_stop_visible",
+        "passed": true,
+        "durationMillis": 3346
+      },
+      {
+        "name": "v3_time_page_large_font_dark",
+        "passed": true,
+        "durationMillis": 3635
+      },
+      {
+        "name": "v3_builtin_source_reachability",
+        "passed": true,
+        "durationMillis": 1269
+      },
+      {
+        "name": "v3_jd_live_source",
+        "passed": true,
+        "durationMillis": 2516
+      }
+    ],
+    "evidence": {
+      "physicalDevice": false,
+      "jdOptionsProtocol": {
+        "empty204Accepted": true,
+        "method": "OPTIONS",
+        "offsetMillis": 6166,
+        "fixtureDifferenceMillis": 43,
+        "failureModesRejected": [
+          "missing",
+          "malformed",
+          "stale",
+          "age",
+          "error",
+          "slow"
+        ],
+        "cancelledResponseIgnored": true,
+        "periodicCancelled": true
+      },
+      "singlePointReceipts": [
+        {
+          "point": "A",
+          "elapsed": 8018119,
+          "epoch": 1792985656176
+        },
+        {
+          "point": "A",
+          "elapsed": 8018305,
+          "epoch": 1792985656362
+        },
+        {
+          "point": "A",
+          "elapsed": 8018498,
+          "epoch": 1792985656555
+        },
+        {
+          "point": "A",
+          "elapsed": 8018691,
+          "epoch": 1792985656749
+        },
+        {
+          "point": "A",
+          "elapsed": 8018884,
+          "epoch": 1792985656942
+        }
+      ],
+      "deadlineReceipts": [
+        {
+          "point": "A",
+          "elapsed": 8022082,
+          "epoch": 1792985660140
+        },
+        {
+          "point": "A",
+          "elapsed": 8022300,
+          "epoch": 1792985660358
+        },
+        {
+          "point": "A",
+          "elapsed": 8022523,
+          "epoch": 1792985660580
+        },
+        {
+          "point": "A",
+          "elapsed": 8022755,
+          "epoch": 1792985660813
+        }
+      ],
+      "lastFloatingControl": {
+        "text": "关闭悬浮时钟",
+        "x": 347,
+        "y": 692
+      },
+      "recordedSteps": "323.0,442.0,0\n323.0,841.0,1034\n323.0,442.0,1024",
+      "replayReceipts": [
+        {
+          "point": "A",
+          "elapsed": 8031861,
+          "epoch": 1792985669919
+        },
+        {
+          "point": "B",
+          "elapsed": 8032355,
+          "epoch": 1792985670413
+        },
+        {
+          "point": "A",
+          "elapsed": 8032600,
+          "epoch": 1792985670658
+        },
+        {
+          "point": "A",
+          "elapsed": 8032796,
+          "epoch": 1792985670854
+        },
+        {
+          "point": "B",
+          "elapsed": 8033287,
+          "epoch": 1792985671345
+        },
+        {
+          "point": "A",
+          "elapsed": 8033531,
+          "epoch": 1792985671588
+        }
+      ],
+      "replayReceiptGapsMillis": [
+        494,
+        245,
+        196,
+        491,
+        244
+      ],
+      "replayInputGapsMillis": [
+        453,
+        205,
+        155,
+        453,
+        203
+      ],
+      "repeatedRecordingReceipts": [
+        {
+          "point": "A",
+          "elapsed": 8036691,
+          "epoch": 1792985674749
+        },
+        {
+          "point": "B",
+          "elapsed": 8037760,
+          "epoch": 1792985675818
+        },
+        {
+          "point": "A",
+          "elapsed": 8038825,
+          "epoch": 1792985676882
+        },
+        {
+          "point": "B",
+          "elapsed": 8039889,
+          "epoch": 1792985677947
+        },
+        {
+          "point": "A",
+          "elapsed": 8040981,
+          "epoch": 1792985679038
+        },
+        {
+          "point": "B",
+          "elapsed": 8045139,
+          "epoch": 1792985683196
+        },
+        {
+          "point": "A",
+          "elapsed": 8046228,
+          "epoch": 1792985684286
+        },
+        {
+          "point": "B",
+          "elapsed": 8047355,
+          "epoch": 1792985685412
+        },
+        {
+          "point": "A",
+          "elapsed": 8048463,
+          "epoch": 1792985686520
+        },
+        {
+          "point": "B",
+          "elapsed": 8049591,
+          "epoch": 1792985687648
+        },
+        {
+          "point": "A",
+          "elapsed": 8050682,
+          "epoch": 1792985688739
+        },
+        {
+          "point": "B",
+          "elapsed": 8051797,
+          "epoch": 1792985689854
+        }
+      ],
+      "sourceSamplesIsolated": true,
+      "cancelledResponseIgnored": true,
+      "sameDisplayPreservesSelectedPoint": true,
+      "pickerValue": "2026-10-26T03:37:22.750Z[GMT]",
+      "timePageEditableFields": 1,
+      "sourceColumns": 2,
+      "sourceCount": 5,
+      "sourceClockExample": "03:35:29:515(+6147)",
+      "tabAndUnsavedIntervalRestored": true,
+      "hiddenSourceSchedulesCancelled": true,
+      "crosshairDrag": {
+        "from": [
+          540,
+          1200
+        ],
+        "target": [
+          323,
+          442
+        ],
+        "savedX": "323.0",
+        "savedY": "442.0"
+      },
+      "oneShotReceipts": [
+        {
+          "point": "A",
+          "elapsed": 8096042,
+          "epoch": 1792985734099
+        }
+      ],
+      "oneShotReceiptDeviationMillis": 46,
+      "frozenClockAcrossSync": true,
+      "oneShotTiming": {
+        "targetEpoch": 1792985739419,
+        "plannedElapsed": 8095996,
+        "dispatchedElapsed": 8095999,
+        "callbackElapsed": 8096041
+      },
+      "cancelledOneShotReconnectChecked": true,
+      "cancelledOneShotReceived": 0,
+      "clockHardwareAccelerated": true,
+      "clockStandaloneDidNotClick": true,
+      "clockClosePausedSync": true,
+      "landscapeFontScale": 1.5,
+      "pinnedCloseControlVisible": true,
+      "timePageLargeFontScale": 1.5,
+      "timePageLandscapeDark": true,
+      "timePageSaveReachable": true,
+      "dnsFailureBoundedMillis": 249,
+      "builtinSourceProbes": [
+        {
+          "source": "ALIYUN",
+          "host": "ntp.aliyun.com",
+          "succeeded": true,
+          "rttMillis": 53,
+          "failure": "NONE"
+        },
+        {
+          "source": "TENCENT",
+          "host": "ntp.tencent.com",
+          "succeeded": true,
+          "rttMillis": 15,
+          "failure": "NONE"
+        },
+        {
+          "source": "CLOUDFLARE",
+          "host": "time.cloudflare.com",
+          "succeeded": true,
+          "rttMillis": 167,
+          "failure": "NONE"
+        },
+        {
+          "source": "JD",
+          "host": "api.m.jd.com",
+          "succeeded": true,
+          "rttMillis": 93,
+          "failure": "NONE"
+        },
+        {
+          "source": "TAOBAO",
+          "host": "acs.m.taobao.com",
+          "succeeded": true,
+          "rttMillis": 46,
+          "failure": "NONE"
+        }
+      ],
+      "jdLiveSource": {
+        "url": "https://api.m.jd.com",
+        "method": "OPTIONS",
+        "fresh": true,
+        "rttMillis": 44,
+        "display": "03:35:59:091(+5423)"
+      }
+    }
+  },
+  "limitations": [
+    "Request-ID time semantics are inferred from observed response headers; no absolute timing accuracy guarantee.",
+    "Curl RTT includes connection setup; Android JD request timing starts after connection preparation.",
+    "API 37 emulator verified; physical-device accuracy, API 26-36 behavior and long-duration resource measurements were not repeated."
+  ]
+}

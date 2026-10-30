@@ -7,7 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public final class TargetActivity extends Activity {
-    @Override public boolean dispatchTouchEvent(android.view.MotionEvent event) { Receipts.touch(event); return super.dispatchTouchEvent(event); }
+    @Override public boolean dispatchTouchEvent(android.view.MotionEvent event) { ReceiverJournal.touch(event); Receipts.touch(event); return super.dispatchTouchEvent(event); }
     @Override public void onWindowFocusChanged(boolean focused) { super.onWindowFocusChanged(focused); Receipts.focused(focused); }
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -25,6 +25,7 @@ public final class TargetActivity extends Activity {
             button.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_size));
             root.addView(button, new LinearLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.target_width), getResources().getDimensionPixelSize(R.dimen.target_height)));
             button.setOnClickListener(view -> {
+                ReceiverJournal.click(name);
                 Receipts.click(name);
                 count.setText(getString(R.string.receipts, Receipts.size()));
             });

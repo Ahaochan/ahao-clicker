@@ -1,0 +1,390 @@
+{
+  "date": "2026-10-29",
+  "archiveRoot": ".tools/accuracy/20261029T011625Z",
+  "archiveManifest": "final-archive-manifest.json",
+  "status": {
+    "analysisConcluded": true,
+    "allAccuracyTargetsPassed": false,
+    "clockFullHourAdmission": "failed_transport_and_missing_pixels",
+    "clockConditionalOutside50": 2,
+    "clockInconclusive": 94,
+    "clockMissingOrFailed": 25,
+    "clicksConditionalWithin50": 46,
+    "clicksConditionalOutside50": 2,
+    "clicksInconclusive": 52,
+    "productionAlgorithmChanged": false
+  },
+  "counts": {
+    "clockPlanned": 121,
+    "clockValid": 96,
+    "formalClicks": 100,
+    "actualFormalDown": 100,
+    "warmup": 10,
+    "longWait": 1,
+    "unit": {
+      "core": {
+        "tests": 64,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      "app": {
+        "tests": 6,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      "target": {
+        "tests": 9,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      }
+    },
+    "profilingTests": 49,
+    "timingReportTests": 5,
+    "coreAppUnitResultsReused": true
+  },
+  "statistics": {
+    "clock": {
+      "planned": 121,
+      "observed": 121,
+      "valid": 96,
+      "failed": 25,
+      "classification": {
+        "within": 0,
+        "outside": 2,
+        "inconclusive": 94
+      },
+      "anchors": 48,
+      "quarters": {
+        "first": {
+          "signed": {
+            "n": 24,
+            "min": -102.502197265625,
+            "p50": -64.672119140625,
+            "p95": -46.030517578125,
+            "p99": -40.53076171875,
+            "max": -40.53076171875
+          },
+          "absolute": {
+            "n": 24,
+            "min": 40.53076171875,
+            "p50": 64.3623046875,
+            "p95": 90.925048828125,
+            "p99": 102.502197265625,
+            "max": 102.502197265625
+          },
+          "pointEstimateOver50": 22
+        },
+        "last": {
+          "signed": {
+            "n": 24,
+            "min": -87.98046875,
+            "p50": -60.613037109375,
+            "p95": -46.65869140625,
+            "p99": -44.596923828125,
+            "max": -44.596923828125
+          },
+          "absolute": {
+            "n": 24,
+            "min": 44.596923828125,
+            "p50": 54.281005859375,
+            "p95": 82.10205078125,
+            "p99": 87.98046875,
+            "max": 87.98046875
+          },
+          "pointEstimateOver50": 16
+        }
+      },
+      "qualityErrors": [
+        "host_failure"
+      ],
+      "transportInterrupted": true
+    },
+    "clicks": {
+      "requested": 100,
+      "received": 100,
+      "receiveRate": 1.0,
+      "classification": {
+        "within": 46,
+        "outside": 2,
+        "inconclusive": 52
+      },
+      "failedReference": 0
+    },
+    "warmup": {
+      "requested": 10,
+      "received": 10
+    },
+    "longWait": {
+      "requested": 1,
+      "received": 1,
+      "classification": {
+        "within": 1,
+        "outside": 0,
+        "inconclusive": 0
+      },
+      "local": {
+        "dispatchRecordedMs": {
+          "n": 1,
+          "min": 1,
+          "max": 1,
+          "p50": 1,
+          "p95": 1,
+          "p99": 1,
+          "over50": 0,
+          "early": 0
+        },
+        "downMs": {
+          "n": 1,
+          "min": 3.0143999978899956,
+          "max": 3.0143999978899956,
+          "p50": 3.0143999978899956,
+          "p95": 3.0143999978899956,
+          "p99": 3.0143999978899956,
+          "over50": 0,
+          "early": 0
+        },
+        "upMs": {
+          "n": 1,
+          "min": 5.045000001788139,
+          "max": 5.045000001788139,
+          "p50": 5.045000001788139,
+          "p95": 5.045000001788139,
+          "p99": 5.045000001788139,
+          "over50": 0,
+          "early": 0
+        },
+        "clickMs": {
+          "n": 1,
+          "min": 43.34359999746084,
+          "max": 43.34359999746084,
+          "p50": 43.34359999746084,
+          "p95": 43.34359999746084,
+          "p99": 43.34359999746084,
+          "over50": 0,
+          "early": 0
+        },
+        "armLeadMs": {
+          "n": 1,
+          "min": 1200148,
+          "max": 1200148,
+          "p50": 1200148,
+          "p95": 1200148,
+          "p99": 1200148
+        }
+      },
+      "external": {
+        "signed": {
+          "n": 1,
+          "min": 1.232666015625,
+          "p50": 1.232666015625,
+          "p95": 1.232666015625,
+          "p99": 1.232666015625,
+          "max": 1.232666015625
+        },
+        "absolute": {
+          "n": 1,
+          "min": 1.232666015625,
+          "p50": 1.232666015625,
+          "p95": 1.232666015625,
+          "p99": 1.232666015625,
+          "max": 1.232666015625
+        },
+        "pointEstimateOver50": 0
+      },
+      "failedReference": 0
+    },
+    "quantileMethod": "Conventional median; nearest-rank P95/P99; original nearest-rank P50 preserved separately",
+    "originalAnalysis": "accuracy_report.py frozen at collection; original analysis.json unmodified",
+    "metrics": {
+      "reference": {
+        "n": 96,
+        "median": 3.725341796875,
+        "p50NearestRank": 3.72265625,
+        "p95": 27.5517578125,
+        "p99": 190.1875,
+        "max": 190.1875,
+        "min": 0.02880859375
+      },
+      "screen": {
+        "n": 96,
+        "median": 63.7701416015625,
+        "p50NearestRank": 63.177978515625,
+        "p95": 92.843994140625,
+        "p99": 143.303466796875,
+        "max": 143.303466796875,
+        "min": 19.353271484375
+      },
+      "externalDown": {
+        "n": 100,
+        "median": 6.24755859375,
+        "p50NearestRank": 6.205078125,
+        "p95": 37.264892578125,
+        "p99": 163.6318359375,
+        "max": 165.38818359375,
+        "min": 0.274169921875
+      },
+      "localDown": {
+        "n": 100,
+        "median": 2.9346500001847744,
+        "p50NearestRank": 2.9311000034213066,
+        "p95": 6.697700001299381,
+        "p99": 10.943800002336502,
+        "max": 12.347499996423721,
+        "min": 1.5381999984383583
+      }
+    },
+    "signed": {
+      "reference": {
+        "n": 96,
+        "median": -2.10205078125,
+        "p50NearestRank": -2.113525390625,
+        "p95": 27.333251953125,
+        "p99": 190.1875,
+        "max": 190.1875,
+        "min": -27.5517578125
+      },
+      "screen": {
+        "n": 96,
+        "median": -62.30322265625,
+        "p50NearestRank": -62.798583984375,
+        "p95": -19.904541015625,
+        "p99": 143.303466796875,
+        "max": 143.303466796875,
+        "min": -102.502197265625
+      },
+      "externalDown": {
+        "n": 100,
+        "median": 4.8238525390625,
+        "p50NearestRank": 4.767578125,
+        "p95": 36.8203125,
+        "p99": 40.665771484375,
+        "max": 41.133544921875,
+        "min": -165.38818359375
+      }
+    }
+  },
+  "measuredBuilds": [
+    {
+      "file": "measurement-build/app.apk",
+      "sha256": "b0287dad1530a69efb8562b79b86dcaef9a51e676588f1f1c81a1eace2bbc2e4"
+    },
+    {
+      "file": "target-build-03/target.apk",
+      "sha256": "6a994a7fc078c697282715afec5188801364579e3ddf529ce5653841231db6ee"
+    }
+  ],
+  "postCaptureToolFixes": {
+    "usedInMeasurements": false,
+    "items": [
+      "transport_nonzero_exit",
+      "optional_package_inventory"
+    ]
+  },
+  "restoration": {
+    "passed": true,
+    "originalApkSha256": "e06d2d7657d8aadda131ae74c972b04c5fbfc54def4ee539ce21946e8b1ee92f",
+    "preferencesExactAfterStartup": true,
+    "packagesExact": true,
+    "servicesAndSettingsExact": true,
+    "activeTraces": 0,
+    "originalInterruptedReport": "result.json",
+    "reason": "Optional instrumentation was absent; package inventory verifies no added test packages remain"
+  },
+  "sourceBefore": "source-before.json",
+  "measuredSource": "source-frozen.json",
+  "sourceAfter": "source-after.json",
+  "sourceChanges": "source-changes.json",
+  "sourcePatch": "source-changes.patch",
+  "evidence": [
+    {
+      "path": "presentation-statistics.json",
+      "sha256": "0297e1cc1d9b2a21099dc693eec2d999279f77efb7d1ad968b2bd28d69869fe7"
+    },
+    {
+      "path": "anomaly-findings.json",
+      "sha256": "2ca88ce0281183a309561b8ad61b8cf56a4b68edf974e7c8896de9fad48db8bd"
+    },
+    {
+      "path": "manual-checks.json",
+      "sha256": "fb513f143b31c0c9b3634910afe22faa10d6b9f0345e5de8c7b126b976221e51"
+    },
+    {
+      "path": "plot-input.json",
+      "sha256": "d3791c0f46ae7605085a135fd22e8a8f0e39588e7823baf739ed61cdf7f68fd3"
+    },
+    {
+      "path": "pipeline-state.json",
+      "sha256": "aa3852d12852359d491e25e2339f82b085fa9e378834259e0819949eaf663f59"
+    },
+    {
+      "path": "continuation-state.json",
+      "sha256": "89b9366861b022cd887b9dd7cd2fb43f674ecab7ba61f5be181161df312815e5"
+    },
+    {
+      "path": "clock-60min/host-report.json",
+      "sha256": "308c7d83d74acf706c55aa5663475ae6cc6a16f0b5e521aa561957e2a1dbc37d"
+    },
+    {
+      "path": "clock-60min-recovered/analysis.json",
+      "sha256": "2c6253342fa225cdf47ea6acfa49bd40c2b3920ff1412dfc52679fb820bb9c2a"
+    },
+    {
+      "path": "click-short100/analysis.json",
+      "sha256": "05a5454fe9d3ff52c412bbeb580de4ebace2a16c49c95e02e7a0efb2e78b1315"
+    },
+    {
+      "path": "click-long20min/analysis.json",
+      "sha256": "151773d024e7496c61793ea81cc17711372375fd4b0a66e9f12e44ae76d1f2fb"
+    },
+    {
+      "path": "profiling-tests-final.txt",
+      "sha256": "9c55a9fbd29819e40639ab04ec7034106b2511361208d4f5f9a0d4d89dc60e18"
+    },
+    {
+      "path": "timing-report-tests-final.txt",
+      "sha256": "6966ea89e117de75a071ed698a90b46f4a17e9c5e2dca3f771464ce7fbc00211"
+    },
+    {
+      "path": "final-standard-check.txt",
+      "sha256": "5e0bb94c461de5ef428824fba9a2174e255552050164fac1096532c905e242fc"
+    },
+    {
+      "path": "final-measurement-check.txt",
+      "sha256": "b712f0c625358a125ce89619d0b513cf42b9626148eb8f423ef65e461f887778"
+    },
+    {
+      "path": "final-checks/manifest-audit.json",
+      "sha256": "03e79ff005436bbf204a61d9eccdf80c3939d68102aafd814d3a42e7ac645ae1"
+    },
+    {
+      "path": "restoration/result.json",
+      "sha256": "1bccf4a8572c323e6da1eea5c2f1d712a5caca48eff0ad0cdaed73221ae115c2"
+    },
+    {
+      "path": "restoration/continuation-result.json",
+      "sha256": "bdd2be14b535892cb89e6c18537d6919265f0eda8e10ac0ba86d79b8e4827847"
+    }
+  ],
+  "figures": [
+    {
+      "path": "docs/performance/accuracy-clock-20261029.png",
+      "sha256": "c2c7385f1a606708452528db3372dc42ebf9c6b3bcbe701be7418f1997a07a56"
+    },
+    {
+      "path": "docs/performance/accuracy-clock-20261029.svg",
+      "sha256": "6d8ed252fd8c09041bdd779441c86a15f9b6733aca84cf228607933746e3609e"
+    },
+    {
+      "path": "docs/performance/accuracy-down-20261029.png",
+      "sha256": "cf383a13b9615c2f82dac211ca23e24236834a4f6bc3a5a6749fba1c3935ee58"
+    },
+    {
+      "path": "docs/performance/accuracy-down-20261029.svg",
+      "sha256": "a2296d54b9670cba42e2c849894b3140f16517e55e03226c12097edb055ffcda"
+    }
+  ],
+  "scope": "Existing emulator, conditional independent JD reference, composed pixels not physical panel; original failures retained"
+}

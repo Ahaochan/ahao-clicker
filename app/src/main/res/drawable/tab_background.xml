@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:state_checked="true">
+    <layer-list>
+      <item><shape><solid android:color="@color/capture_tint" /></shape></item>
+      <item android:gravity="bottom"><shape><size android:height="@dimen/selection_stroke" /><solid android:color="@color/accent" /></shape></item>
+    </layer-list>
+  </item>
+  <item android:state_focused="true"><shape><stroke android:width="@dimen/selection_stroke" android:color="@color/accent" /></shape></item>
+  <item android:state_pressed="true"><shape><solid android:color="@color/capture_tint" /></shape></item>
+  <item><shape><solid android:color="@android:color/transparent" /></shape></item>
+</selector>

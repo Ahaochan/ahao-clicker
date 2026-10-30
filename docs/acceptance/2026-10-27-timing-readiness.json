@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "physicalDevice": false,
+  "productScheduleChanged": false,
+  "sameOptimizedAppSha256": "aa01ceca6a13ac3fbc5d39a2bccb17f62a1b88495ebe7b1d459a697b5db5b07f",
+  "missingServiceTimeoutNoClick": true,
+  "sameTestProcessReconnectAndOneReceipt": true,
+  "hostScriptReadyGatePassed": true,
+  "timeoutResult": {
+    "error": "java.lang.IllegalStateException: Accessibility service did not connect; enable the clicker service and rerun\n\tat com.ahao.clicker.acceptance.target.TimingAcceptance.waitForService(TimingAcceptance.java:34)\n\tat com.ahao.clicker.acceptance.target.TimingAcceptance.onStart(TimingAcceptance.java:70)\n\tat android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2637)\n",
+    "passed": false,
+    "samples": [],
+    "soak": []
+  },
+  "reconnectResult": {
+    "readinessWaitMillis": 3543,
+    "appInstrumentationAttached": false,
+    "optimized": true,
+    "passed": true,
+    "samples": [
+      {
+        "index": 0,
+        "targetEpoch": 1793034795502,
+        "plannedElapsed": 20838816,
+        "dispatchedElapsed": 20838819,
+        "callbackElapsed": 20838833,
+        "rtt": 52,
+        "downReceivedElapsed": 20838822,
+        "downEventUptime": 20838820,
+        "upReceivedElapsed": 20838832,
+        "upEventUptime": 20838821,
+        "clickReceivedElapsed": 20838849
+      }
+    ],
+    "soak": []
+  },
+  "hostSmoke": {
+    "readinessWaitMillis": 3,
+    "appInstrumentationAttached": false,
+    "optimized": true,
+    "passed": true,
+    "samples": [
+      {
+        "index": 0,
+        "targetEpoch": 1793034943996,
+        "plannedElapsed": 20987305,
+        "dispatchedElapsed": 20987313,
+        "callbackElapsed": 20987322,
+        "rtt": 46,
+        "downReceivedElapsed": 20987316,
+        "downEventUptime": 20987315,
+        "upReceivedElapsed": 20987318,
+        "upEventUptime": 20987316,
+        "clickReceivedElapsed": 20987327
+      }
+    ],
+    "soak": []
+  }
+}

@@ -1,0 +1,21 @@
+# Partial frame-association capability pilot. No CPU or full scheduler collection.
+duration_ms: 180000
+write_into_file: true
+file_write_period_ms: 5000
+max_file_size_bytes: 134217728
+buffers { size_kb: 65536 fill_policy: DISCARD }
+data_sources {
+  config {
+    name: "linux.ftrace"
+    ftrace_config {
+      atrace_categories: "gfx"
+      atrace_categories: "view"
+      atrace_apps: "com.ahao.clicker"
+      atrace_apps: "com.ahao.clicker.acceptance.target"
+      drain_period_ms: 250
+    }
+  }
+}
+data_sources { config { name: "linux.process_stats" process_stats_config { scan_all_processes_on_start: true } } }
+data_sources { config { name: "android.surfaceflinger.frametimeline" } }
+data_sources { config { name: "android.packages_list" } }

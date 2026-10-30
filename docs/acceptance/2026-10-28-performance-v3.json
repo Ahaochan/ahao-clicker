@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-28",
+  "protocolVersion": "timing-v3",
+  "scope": "existing_emulator_only",
+  "productionBehaviorOrAlgorithmsChanged": false,
+  "measurementToolsAndOptionalHooksChanged": true,
+  "designAdmission": "passed",
+  "measuredAdmission": "not_passed",
+  "formalCollection": "not_started",
+  "completeV3Collection": false,
+  "performance50msCertified": false,
+  "artifactRoot": ".tools/performance-analysis/20261028T143912-analysis-only",
+  "rawIndex": "bundle-index.json",
+  "rawIndexSha256": "9e8ac6379723d589937ecbd7f4fa5ec4cc416bfb739b7dc54e60de95dcb39b54",
+  "localFilesIndexed": 470,
+  "localBytesIndexed": 897764437,
+  "executedLocalPilotSessions": 7,
+  "formalGroups": 27,
+  "formalPlannedTasks": 2880,
+  "formalAttemptedTasks": 0,
+  "referenceScreening": {
+    "plannedRequests": 40,
+    "validRequests": 40,
+    "compatiblePairs": 20,
+    "widthLe50msPairs": 0,
+    "minimumPairWidthMillis": 107.249267578125,
+    "taskLevelP": false
+  },
+  "successfulPublicPilot": {
+    "tasks": 1,
+    "dispatchLateMillis": 7.9153,
+    "downLateMillis": 21.928,
+    "clickLateMillis": 40.6767
+  },
+  "framePilots": {
+    "secondsEach": 120,
+    "draws": [
+      3160,
+      3590
+    ],
+    "uniqueAssociations": [
+      3157,
+      3584
+    ],
+    "parserErrors": [
+      792,
+      738
+    ],
+    "formalQuality": false
+  },
+  "historical": {
+    "results": 47,
+    "recordedClickRows": 481,
+    "recordedClockRows": 1573,
+    "measuredApkHashes": 15,
+    "tracesReplayed": 15,
+    "tracesReplayedSuccessfully": 15,
+    "traceHashesVerified": true,
+    "pooledPercentiles": false
+  },
+  "tests": {
+    "core": 61,
+    "app": 6,
+    "independentParser": 3,
+    "profilingPython": 22,
+    "reportPython": 5,
+    "failed": 0
+  },
+  "buildsAndLintPassed": true,
+  "completeUIRegressionRerun": false,
+  "gitDiffCheck": "passed",
+  "restoration": {
+    "passed": true,
+    "originalApkSha256": "e06d2d7657d8aadda131ae74c972b04c5fbfc54def4ee539ce21946e8b1ee92f",
+    "preferencesExact": true,
+    "serviceBound": true,
+    "activeTraceSessions": 0,
+    "testTargetRemoved": true
+  },
+  "outputs": [
+    "PERFORMANCE_ANALYSIS_RESULTS_V3.md",
+    "PERFORMANCE_ANALYSIS_METHODS.md"
+  ],
+  "conclusion": "P failed; executed evidence analyzed and archived. Full V3 remains incomplete; no worst-case or physical-limit claim."
+}

@@ -1,9 +1,16 @@
 [CmdletBinding()]
-param([string]$Serial = 'emulator-5554', [ValidatePattern('^[a-z_]*$')][string]$Case = '')
+param([string]$Serial = 'emulator-5554', [ValidatePattern('^[a-z0-9_]*$')][string]$Case = '', [switch]$PhysicalDevice, [switch]$SkipAppInstall,
+    [switch]$KeepOverlaySizesForRestart)
 
 $ErrorActionPreference = 'Stop'
+if ($KeepOverlaySizesForRestart -and ($PhysicalDevice -or $Case -ne 'v15_overlay_size_memory')) {
+    throw 'Keeping the two size fixture keys is only supported for the emulator size-memory case. Back up and restore preferences around the restart check.'
+}
 $projectRoot = Split-Path -Parent $PSScriptRoot
-if ($Serial -notmatch '^emulator-\d+$') { throw 'This acceptance script only operates on an Android emulator.' }
+if ($PhysicalDevice) {
+    if ($Serial -notmatch '^[A-Za-z0-9]+$' -or $Serial -eq 'emulator-5554') { throw 'Specify the connected physical device serial explicitly.' }
+    if ($Case -in @('process_death','permission_and_disclosure','v3_setup_steps','rotation_screen_off_and_service_disconnect','v2_landscape_large_font_stop_visible','v3_time_page_large_font_dark')) { throw 'This case is excluded from physical acceptance.' }
+} elseif ($Serial -notmatch '^emulator-\d+$') { throw 'Physical acceptance requires explicit -PhysicalDevice and -Serial.' }
 if (-not $env:GRADLE_USER_HOME) { $env:GRADLE_USER_HOME = Join-Path $projectRoot '.gradle-user-home' }
 if ([IO.Path]::GetFullPath($env:GRADLE_USER_HOME) -match '^[Cc]:[\\/]') { throw 'Gradle cache must not be on C.' }
 if (-not $env:JAVA_HOME) { throw 'Set JAVA_HOME to JDK 17.' }
@@ -18,7 +25,7 @@ if (-not $sdk) {
 }
 $adb = Join-Path $sdk 'platform-tools/adb.exe'
 $env:ANDROID_HOME = $sdk
-$work = Join-Path $projectRoot '.tools/mvp-acceptance'
+$work = Join-Path $projectRoot $(if ($PhysicalDevice) { '.tools/physical-acceptance' } else { '.tools/mvp-acceptance' })
 $assets = Join-Path $projectRoot 'app/build/generated/acceptance-assets'
 New-Item -ItemType Directory -Force -Path $work,$assets | Out-Null
 function Invoke-Adb {
@@ -27,7 +34,8 @@ function Invoke-Adb {
     if ($LASTEXITCODE -ne 0) { throw "ADB failed: $($AdbArgs -join ' ')" }
     return $output
 }
-if ((Invoke-Adb shell getprop sys.boot_completed | Out-String).Trim() -ne '1') { throw 'Boot the selected emulator before running acceptance.' }
+if ((Invoke-Adb shell getprop sys.boot_completed | Out-String).Trim() -ne '1') { throw 'Boot and unlock the selected device before running acceptance.' }
+if ($PhysicalDevice -and (Invoke-Adb shell getprop ro.kernel.qemu | Out-String).Trim() -eq '1') { throw 'Physical mode requires a physical device.' }
 $deviceApi = [int](Invoke-Adb shell getprop ro.build.version.sdk | Out-String).Trim()
 if ($deviceApi -lt 29) { throw 'This test harness requires an API 29+ emulator; production minSdk stays 26.' }
 $previousServices = (Invoke-Adb shell settings get secure enabled_accessibility_services | Out-String).Trim()
@@ -35,6 +43,7 @@ $previousEnabled = (Invoke-Adb shell settings get secure accessibility_enabled |
 $previousRotation = (Invoke-Adb shell settings get system user_rotation | Out-String).Trim()
 $previousAutoRotation = (Invoke-Adb shell settings get system accelerometer_rotation | Out-String).Trim()
 $server = $null
+$instrumentation = $null
 $port = $null
 Push-Location $projectRoot
 try {
@@ -62,21 +71,47 @@ try {
     Invoke-Adb reverse "tcp:$port" "tcp:$port"
     & ./gradlew.bat -Pacceptance=true :app:assembleDebug :app:assembleDebugAndroidTest :acceptance-target:assembleDebug --offline --no-watch-fs --quiet
     if ($LASTEXITCODE -ne 0) { throw 'Acceptance APK build failed.' }
-    Invoke-Adb shell am force-stop com.ahao.clicker
+    if (-not $PhysicalDevice) { Invoke-Adb shell am force-stop com.ahao.clicker }
     Invoke-Adb shell am force-stop com.ahao.clicker.acceptance.target
-    Invoke-Adb install -r -t app/build/outputs/apk/debug/app-debug.apk
-    $targetInstall = @('install','-r','-t')
-    if ($deviceApi -ge 30) { $targetInstall += '--force-queryable' }
-    $targetInstall += 'tools/acceptance-target/build/outputs/apk/debug/acceptance-target-debug.apk'
-    Invoke-Adb @targetInstall
+    if (-not $SkipAppInstall) {
+        Invoke-Adb install -r -t app/build/outputs/apk/debug/app-debug.apk
+        $targetInstall = @('install','-r','-t')
+        if ($deviceApi -ge 30) { $targetInstall += '--force-queryable' }
+        $targetInstall += 'tools/acceptance-target/build/outputs/apk/debug/acceptance-target-debug.apk'
+        Invoke-Adb @targetInstall
+    }
     Invoke-Adb install -r -t app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
     Invoke-Adb shell run-as com.ahao.clicker rm -f files/mvp-acceptance.json files/mvp-death-checkpoint.json
-    Invoke-Adb shell input keyevent KEYCODE_WAKEUP
-    Invoke-Adb shell wm dismiss-keyguard
+    if ($PhysicalDevice) {
+        Invoke-Adb shell am start -n com.ahao.clicker.acceptance.target/.TargetActivity
+        Write-Host 'Waiting for the user to enable the clicker accessibility service on the phone...'
+        $permissionDeadline = [DateTime]::UtcNow.AddSeconds(90)
+        while ((Invoke-Adb shell settings get secure enabled_accessibility_services | Out-String) -notmatch 'com.ahao.clicker/com.ahao.clicker.ClickService') {
+            if ([DateTime]::UtcNow -ge $permissionDeadline) { throw 'Enable the clicker accessibility service manually, then rerun.' }
+            Start-Sleep -Milliseconds 1000
+        }
+    }
+    if (-not $PhysicalDevice) {
+        Invoke-Adb shell input keyevent KEYCODE_WAKEUP
+        Invoke-Adb shell wm dismiss-keyguard
+    }
     $runnerArguments = @('shell','am','instrument','-w','-r','-e','timePort',"$port")
     if ($Case) { $runnerArguments += @('-e','only',$Case) }
+    if ($PhysicalDevice) { $runnerArguments += @('-e','physical','true') }
+    if ($KeepOverlaySizesForRestart) { $runnerArguments += @('-e','keepOverlaySizes','true') }
     $runnerArguments += 'com.ahao.clicker.test/com.ahao.clicker.acceptance.MvpAcceptance'
-    & $adb -s $Serial @runnerArguments 2>&1 | Tee-Object -FilePath (Join-Path $work 'instrumentation.txt')
+    if ($PhysicalDevice) {
+        $instrumentation = Start-Process -FilePath $adb -ArgumentList (@('-s', $Serial) + $runnerArguments) -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $work 'instrumentation.txt') -RedirectStandardError (Join-Path $work 'instrumentation-error.txt')
+        # The runner launches its own pages via shell with bounded activity monitors.
+        $testDeadline = [DateTime]::UtcNow.AddMinutes(6)
+        while (-not $instrumentation.HasExited) {
+            if ([DateTime]::UtcNow -ge $testDeadline) { throw 'Physical acceptance timed out.' }
+            Start-Sleep -Milliseconds 200
+        }
+        Get-Content (Join-Path $work 'instrumentation.txt')
+    } else {
+        & $adb -s $Serial @runnerArguments 2>&1 | Tee-Object -FilePath (Join-Path $work 'instrumentation.txt')
+    }
     if ($Case -eq 'process_death') {
         $checkpoint = (Invoke-Adb shell run-as com.ahao.clicker cat files/mvp-death-checkpoint.json | Out-String) | ConvertFrom-Json
         if ($checkpoint.receivedBeforeDeath -lt 2) { throw 'The process-death task never received clicks.' }
@@ -97,18 +132,24 @@ try {
     }
     $report = Invoke-Adb shell run-as com.ahao.clicker cat files/mvp-acceptance.json | Out-String
     [IO.File]::WriteAllText((Join-Path $work 'result.json'), $report)
-    if (-not ($report | ConvertFrom-Json).passed) { throw 'Device acceptance failed; inspect .tools/mvp-acceptance/result.json.' }
+    if (-not ($report | ConvertFrom-Json).passed) { throw "Device acceptance failed; inspect $work/result.json." }
 } finally {
+    if ($instrumentation -and -not $instrumentation.HasExited) {
+        & $adb -s $Serial shell am force-stop com.ahao.clicker | Out-Null
+        Stop-Process -Id $instrumentation.Id -ErrorAction SilentlyContinue
+    }
     if ($port) { & $adb -s $Serial reverse --remove "tcp:$port" | Out-Null }
     if ($server -and -not $server.HasExited) { Stop-Process -Id $server.Id }
     if ($storeFile -and (Test-Path -LiteralPath $storeFile)) { Remove-Item -LiteralPath $storeFile }
     if ($passwordFile -and (Test-Path -LiteralPath $passwordFile)) { Remove-Item -LiteralPath $passwordFile }
-    foreach ($setting in @(@('secure','enabled_accessibility_services',$previousServices), @('secure','accessibility_enabled',$previousEnabled), @('system','user_rotation',$previousRotation), @('system','accelerometer_rotation',$previousAutoRotation))) {
-        if ($setting[2] -eq 'null' -or $setting[2] -eq '') { & $adb -s $Serial shell settings delete $setting[0] $setting[1] | Out-Null }
-        else { & $adb -s $Serial shell settings put $setting[0] $setting[1] $setting[2] | Out-Null }
+    if (-not $PhysicalDevice) {
+        foreach ($setting in @(@('secure','enabled_accessibility_services',$previousServices), @('secure','accessibility_enabled',$previousEnabled), @('system','user_rotation',$previousRotation), @('system','accelerometer_rotation',$previousAutoRotation))) {
+            if ($setting[2] -eq 'null' -or $setting[2] -eq '') { & $adb -s $Serial shell settings delete $setting[0] $setting[1] | Out-Null }
+            else { & $adb -s $Serial shell settings put $setting[0] $setting[1] $setting[2] | Out-Null }
+        }
+        & $adb -s $Serial shell input keyevent KEYCODE_WAKEUP | Out-Null
+        & $adb -s $Serial shell wm dismiss-keyguard | Out-Null
     }
-    & $adb -s $Serial shell input keyevent KEYCODE_WAKEUP | Out-Null
-    & $adb -s $Serial shell wm dismiss-keyguard | Out-Null
     & $adb -s $Serial shell am start -n com.ahao.clicker/.MainActivity | Out-Null
     Pop-Location
 }

@@ -1,0 +1,180 @@
+{
+  "date": "2026-10-30",
+  "feature": "Independent persistent sizes for timed and multipoint overlays",
+  "unitTests": {
+    "core": {
+      "tests": 83,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "app": {
+      "tests": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "tdd": {
+    "newTests": 6,
+    "redFailures": 6,
+    "greenFailures": 0
+  },
+  "functionalCases": [
+    {
+      "name": "v15_overlay_size_memory",
+      "passed": true,
+      "durationMillis": 22453
+    },
+    {
+      "name": "v15_overlay_size_restart",
+      "passed": true,
+      "durationMillis": 2743
+    },
+    {
+      "name": "v14_responsive_overlay",
+      "passed": true,
+      "durationMillis": 41629
+    }
+  ],
+  "evidence": {
+    "overlaySizeMemory": {
+      "pid": 21694,
+      "values": {
+        "timedOverlaySize": "137.14285,259.0476",
+        "multiOverlaySize": "224.7619,601.9048"
+      },
+      "TIMED": [
+        360,
+        680
+      ],
+      "MULTI_POINT": [
+        590,
+        1580
+      ],
+      "bothCornersSaved": true,
+      "reopenRestored": true,
+      "modesIndependent": true,
+      "landscapeCropDoesNotOverwrite": true,
+      "noInjectedClick": true
+    },
+    "overlaySizeRestart": {
+      "previousPid": 21694,
+      "currentPid": 22273,
+      "bothSizesRestoredFromDisk": true
+    },
+    "responsiveOverlay": [
+      {
+        "multi": false,
+        "orientation": 0,
+        "fontScale": "1.0",
+        "compactSizePixels": [
+          336,
+          420
+        ],
+        "singleRowAt128dp": true,
+        "singleRowAtWideSize": true,
+        "paddingTransitionDoesNotRewrap": true,
+        "clockAndControlsVisible": true,
+        "targetTimeEditableOrLoopControlsWorking": true
+      },
+      {
+        "multi": true,
+        "orientation": 0,
+        "fontScale": "1.0",
+        "compactSizePixels": [
+          336,
+          268
+        ],
+        "singleRowAt128dp": true,
+        "singleRowAtWideSize": true,
+        "paddingTransitionDoesNotRewrap": true,
+        "clockAndControlsVisible": true,
+        "targetTimeEditableOrLoopControlsWorking": true
+      },
+      {
+        "multi": false,
+        "orientation": 1,
+        "fontScale": "1.5",
+        "compactSizePixels": [
+          336,
+          420
+        ],
+        "singleRowAt128dp": true,
+        "singleRowAtWideSize": true,
+        "paddingTransitionDoesNotRewrap": true,
+        "clockAndControlsVisible": true,
+        "targetTimeEditableOrLoopControlsWorking": true
+      },
+      {
+        "multi": true,
+        "orientation": 1,
+        "fontScale": "1.5",
+        "compactSizePixels": [
+          336,
+          268
+        ],
+        "singleRowAt128dp": true,
+        "singleRowAtWideSize": true,
+        "paddingTransitionDoesNotRewrap": true,
+        "clockAndControlsVisible": true,
+        "targetTimeEditableOrLoopControlsWorking": true
+      }
+    ]
+  },
+  "checks": [
+    "core:test",
+    "app:testDebugUnitTest",
+    "app:lintDebug",
+    "app:assembleDebug",
+    "app:assembleRelease",
+    "git diff --check"
+  ],
+  "preferencesRestored": true,
+  "testPackagesRemoved": true,
+  "screenshotsReviewed": true,
+  "device": {
+    "serial": "emulator-5554",
+    "api": 37
+  },
+  "limitations": [
+    "No physical-device validation",
+    "No new click latency or clock accuracy benchmark",
+    "API26-36 not exercised"
+  ],
+  "rawArtifactsIgnoredDirectory": ".tools/overlay-size-memory-20261030/",
+  "sources": [
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/OverlaySize.kt",
+      "sha256": "3b5307bc47243fa27f2d22c2c58e675ab2a23b0d18585ae6e3bcc675d2caa1ce"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/OverlayPanel.kt",
+      "sha256": "c0cd9991ade109945f8073afacb3c380cc5958b8b4556ecbb4d92beb8090e0b2"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/TimedOverlay.kt",
+      "sha256": "c70f4d3dc25d1d519f21e03459f1e55c7e98110bd16b104e037beabfd15713cd"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/MultiPointOverlay.kt",
+      "sha256": "83f1cd5a3c7cf58815e15225c426d9c694ae4c484d2183fac2151e16153296a7"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/SettingsStore.kt",
+      "sha256": "f2a02b15effd7712c17e906bfd04356f54d675fa9702ef66d7f2731feb780e63"
+    },
+    {
+      "path": "app/src/test/kotlin/com/ahao/clicker/OverlaySizeTest.kt",
+      "sha256": "46a32538a9a8eba2cf8c99326627c25ad822b801a12dd5391e84ecd079a2334d"
+    },
+    {
+      "path": "app/src/androidTest/kotlin/com/ahao/clicker/acceptance/MvpAcceptance.kt",
+      "sha256": "6eb1d87cfe31c26f212ddcfa04830e3ba3238cc44c2f79fb8eefc04900c01390"
+    },
+    {
+      "path": "scripts/acceptance.ps1",
+      "sha256": "ef1f50b362e5301941fb3a469d8876303cde57d49572896661a513c994b19871"
+    }
+  ]
+}

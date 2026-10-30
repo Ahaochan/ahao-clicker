@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <style name="SetupHeading">
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_marginTop">@dimen/section_spacing</item>
+    <item name="android:textSize">@dimen/heading_text</item>
+    <item name="android:textColor">@color/text_primary</item>
+    <item name="android:textStyle">bold</item>
+  </style>
+  <style name="SetupStatus">
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_marginTop">@dimen/source_gap</item>
+    <item name="android:textSize">@dimen/body_text</item>
+    <item name="android:textColor">@color/status_unavailable</item>
+    <item name="android:accessibilityLiveRegion">polite</item>
+  </style>
+  <style name="FeatureTab">
+    <item name="android:layout_width">0dp</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_weight">1</item>
+    <item name="android:minHeight">@dimen/touch_target</item>
+    <item name="android:button">@null</item>
+    <item name="android:gravity">center</item>
+    <item name="android:background">@drawable/tab_background</item>
+    <item name="android:textSize">@dimen/body_text</item>
+    <item name="android:textColor">@color/text_primary</item>
+    <item name="android:textStyle">bold</item>
+  </style>
+</resources>

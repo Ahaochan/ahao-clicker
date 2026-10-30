@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+  <permission android:name="com.ahao.clicker.TIMING_BENCHMARK" android:protectionLevel="signature" />
+  <application>
+    <profileable android:shell="true" tools:targetApi="29" />
+    <provider android:name="com.ahao.clicker.benchmark.TimingProvider"
+        android:authorities="com.ahao.clicker.timing.benchmark" android:exported="true"
+        android:permission="com.ahao.clicker.TIMING_BENCHMARK" />
+  </application>
+</manifest>

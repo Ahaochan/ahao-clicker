@@ -1,0 +1,141 @@
+{
+  "date": "2026-10-30",
+  "feature": "Numbered multipoint click overlay",
+  "confirmedBehavior": "One pass in point order; first delay from play, later delays from previous dispatch start; default1000ms",
+  "maxPoints": 50,
+  "delayRangeMillis": [
+    0,
+    86400000
+  ],
+  "unitTests": {
+    "core": 81,
+    "app": 6
+  },
+  "newCoreTests": 11,
+  "tddObservedInitialFailures": 7,
+  "tddObservedReentrantStopFailure": 1,
+  "checks": [
+    "core:test",
+    "app:testDebugUnitTest",
+    "app:lintDebug",
+    "app:assembleDebug",
+    "app:assembleRelease",
+    "git diff --check"
+  ],
+  "device": "emulator-5554",
+  "functionalCases": [
+    {
+      "name": "v12_multipoint_overlay",
+      "passed": true,
+      "durationMillis": 25957
+    },
+    {
+      "name": "v7_two_step_entries",
+      "passed": true,
+      "durationMillis": 2349
+    },
+    {
+      "name": "v2_crosshair_and_one_shot",
+      "passed": true,
+      "durationMillis": 13391
+    },
+    {
+      "name": "v8_overlay_defaults_to_now",
+      "passed": true,
+      "durationMillis": 11809
+    },
+    {
+      "name": "permission_and_disclosure",
+      "passed": true,
+      "durationMillis": 2197
+    }
+  ],
+  "multipoint": {
+    "actualOrder": "A,B,C",
+    "actualDownGapsMillis": [
+      382,
+      669
+    ],
+    "firstDelayMillis": 470,
+    "numberedMarkers": true,
+    "onePassOnly": true,
+    "stopBeforeFirst": true,
+    "stopBetweenPoints": true,
+    "defaultDelay1000": true,
+    "invalidDelayRejected": true,
+    "cancelKeepsDelay": true,
+    "mutuallyExclusive": true,
+    "deleteRenumbers": true,
+    "closeCancelsWaiting": true,
+    "closeDoesNotRestore": true,
+    "serviceDisconnectCancels": true,
+    "reconnectDoesNotResume": true
+  },
+  "firstDelayReadingIncludesUiDriverOverhead": true,
+  "performanceCertification": false,
+  "sourceChecks": [
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/OneShotRunner.kt",
+      "unchanged": true
+    },
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/TimeSync.kt",
+      "unchanged": true
+    },
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/ClickRunner.kt",
+      "unchanged": true
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/time/TimeSyncManager.kt",
+      "unchanged": true
+    },
+    {
+      "path": "app/build.gradle.kts",
+      "unchanged": true
+    },
+    {
+      "path": "gradle/libs.versions.toml",
+      "unchanged": true
+    }
+  ],
+  "newSources": [
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/MultiPointRunner.kt",
+      "sha256": "e6e1d92d666c1b643c79f1befaccc27122d19a1d9951bf8befe5582aad3a757f"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/MultiPointController.kt",
+      "sha256": "773eec9fb98965d7b80dcb0cb056d857a1a0b85e4a4f9bdf47f6083c344eeb77"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/MultiPointOverlay.kt",
+      "sha256": "f4eaefea87e8c5e43f74ce197b4af9f76b5ff67630ecd097cc29d25a58568b3e"
+    }
+  ],
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "sha256": "f5fabf85fec056a714928fc1d5af71957f1e79eba11fd92350dc47d88c0c092d"
+  },
+  "rawRoot": ".tools/multipoint-20261030",
+  "rawResults": [
+    "multipoint-final-passed.json",
+    "entries-passed.json",
+    "timed-passed.json",
+    "time-memory-passed.json",
+    "permission-passed.json"
+  ],
+  "retainedFailures": [
+    "multipoint-failed-01.json",
+    "multipoint-failed-02.json"
+  ],
+  "secondFailureCause": "Not uniquely established; retained separately. Diagnostic rerun passed; final driver adds post-move input settling.",
+  "testDriverInputSettleMillis": 200,
+  "emulatorPreferencesRestored": true,
+  "newTestPackagesRemoved": true,
+  "newFullFunctionalMatrixRun": false,
+  "physicalDeviceConnected": false,
+  "physicalDeviceInstalled": false,
+  "committed": false,
+  "pushed": false
+}

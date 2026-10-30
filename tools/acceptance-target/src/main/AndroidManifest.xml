@@ -1,6 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="com.ahao.clicker.TIMING_BENCHMARK" />
+  <uses-permission android:name="android.permission.INTERNET" />
   <application android:theme="@android:style/Theme.Material.Light.NoActionBar" android:label="@string/app_name" android:allowBackup="false">
+    <profileable android:shell="true" />
     <activity android:name=".TargetActivity" android:exported="true" />
     <provider android:name=".ReceiptProvider" android:authorities="com.ahao.clicker.acceptance.target" android:exported="true" />
   </application>
+  <instrumentation android:name=".ReleaseAcceptance" android:targetPackage="com.ahao.clicker.acceptance.target" />
+  <instrumentation android:name=".TimingAcceptance" android:targetPackage="com.ahao.clicker.acceptance.target" />
+  <instrumentation android:name=".ClockDriftAcceptance" android:targetPackage="com.ahao.clicker.acceptance.target" />
+  <instrumentation android:name=".V3Acceptance" android:targetPackage="com.ahao.clicker.acceptance.target" />
+  <instrumentation android:name=".AccuracyClockAcceptance" android:targetPackage="com.ahao.clicker.acceptance.target" />
 </manifest>

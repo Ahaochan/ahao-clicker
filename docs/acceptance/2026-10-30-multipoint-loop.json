@@ -1,0 +1,181 @@
+{
+  "date": "2026-10-30",
+  "feature": "Continuous multipoint loop with visible numbered markers",
+  "behavior": "Repeat point order until manual stop; last-to-first delay uses the first point delay; faults still stop",
+  "unitTests": {
+    "core": 83,
+    "app": 6
+  },
+  "multipointRunnerTests": 13,
+  "tddObservedFailuresOnOldImplementation": 4,
+  "checks": [
+    "core:test",
+    "app:testDebugUnitTest",
+    "app:lintDebug",
+    "app:assembleDebug",
+    "app:assembleRelease",
+    "git diff --check"
+  ],
+  "functionalCases": [
+    {
+      "name": "v12_multipoint_overlay",
+      "passed": true,
+      "durationMillis": 34628
+    },
+    {
+      "name": "v2_crosshair_and_one_shot",
+      "passed": true,
+      "durationMillis": 14889
+    }
+  ],
+  "multipoint": {
+    "actualOrder": "A,B,C,A,B,C",
+    "actualDownGapsMillis": [
+      423,
+      758,
+      969,
+      438,
+      652
+    ],
+    "firstDelayMillis": 1231,
+    "numberedMarkers": true,
+    "continuousLoop": true,
+    "manualStopAfterTwoCycles": true,
+    "markersRemainVisible": true,
+    "sameMarkerWindows": true,
+    "runningMarkersPassThrough": true,
+    "stoppedMarkersTouchable": true,
+    "stopBeforeFirst": true,
+    "stopBetweenPoints": true,
+    "defaultDelay1000": true,
+    "invalidDelayRejected": true,
+    "cancelKeepsDelay": true,
+    "mutuallyExclusive": true,
+    "deleteRenumbers": true,
+    "closeCancelsWaiting": true,
+    "closeDoesNotRestore": true,
+    "serviceDisconnectCancels": true,
+    "reconnectDoesNotResume": true
+  },
+  "functionalGapToleranceMillis": 150,
+  "retainedFailures": [
+    {
+      "file": "loop-failed-01.json",
+      "actualDownGapsMillis": [
+        439,
+        676,
+        987,
+        398,
+        858
+      ]
+    },
+    {
+      "file": "loop-failed-02.json",
+      "actualDownGapsMillis": [
+        531,
+        1198,
+        710,
+        600,
+        716
+      ]
+    }
+  ],
+  "failureCause": "Not established; functional interval checks exceeded the unchanged tolerance. Later driver inspects windows after each receipt instead of every40ms. Rerun is not proof of performance benefit.",
+  "performanceCertification": false,
+  "firstDelayReadingIncludesUiDriverOverhead": true,
+  "timedOneShotRegression": {
+    "physicalDevice": false,
+    "crosshairDrag": {
+      "from": [
+        540,
+        1200
+      ],
+      "target": [
+        323,
+        442
+      ],
+      "savedX": "323.0",
+      "savedY": "442.0"
+    },
+    "floatingDragIconMovedWindow": true,
+    "lastFloatingControl": {
+      "text": "开启自动点击",
+      "x": 555,
+      "y": 1900
+    },
+    "oneShotReceipts": [
+      {
+        "point": "B",
+        "elapsed": 146715688,
+        "epoch": 1793339368978
+      }
+    ],
+    "oneShotReceiptDeviationMillis": 104,
+    "frozenClockAcrossSync": true,
+    "latestCrosshairReceived": "B",
+    "dragDidNotClick": true,
+    "oneShotTiming": {
+      "targetEpoch": 1793339369780,
+      "plannedElapsed": 146715584,
+      "dispatchedElapsed": 146715611,
+      "callbackElapsed": 146715641
+    }
+  },
+  "sourceChecksAgainstPriorAccuracyArchive": [
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/OneShotRunner.kt",
+      "unchanged": true
+    },
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/TimeSync.kt",
+      "unchanged": true
+    },
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/ClickRunner.kt",
+      "unchanged": true
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/time/TimeSyncManager.kt",
+      "unchanged": true
+    },
+    {
+      "path": "app/build.gradle.kts",
+      "unchanged": true
+    },
+    {
+      "path": "gradle/libs.versions.toml",
+      "unchanged": true
+    }
+  ],
+  "sources": [
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/MultiPointRunner.kt",
+      "sha256": "2b3bb1251164a090fda4674c5f3ed394f7a21d70feff7bdbf2c16807ce5fd225"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/MultiPointController.kt",
+      "sha256": "0dcb70e33faa1f26ed55e511924b3d13e46710e2998e7418fea35bd36811877d"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/MultiPointOverlay.kt",
+      "sha256": "5eadcc3f970d1ee5018a911b701b24ec1c26d5889bdd33cf94a8ff8f3ee5b890"
+    }
+  ],
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "sha256": "f82ad8a24bd6e607072cdb8729e7901113fcb03822b2333de3a08c33f1d681bf"
+  },
+  "rawRoot": ".tools/multipoint-loop-20261030",
+  "rawResults": [
+    "loop-passed.json",
+    "timed-passed.json"
+  ],
+  "screenshot": ".tools/multipoint-loop-20261030/loop-visible.png",
+  "emulatorPreferencesRestored": true,
+  "newTestPackagesRemoved": true,
+  "device": "emulator-5554",
+  "physicalDeviceTested": false,
+  "fullMatrixRun": false,
+  "committed": false,
+  "pushed": false
+}

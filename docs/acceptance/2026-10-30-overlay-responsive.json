@@ -1,0 +1,370 @@
+{
+  "date": "2026-10-30",
+  "feature": "Responsive compact timed/multipoint panels",
+  "backgroundAlpha": 179,
+  "windowAlpha": 1,
+  "textAndIconsOpaque": true,
+  "behavior": "Minimum width128dp;48dp controls reflow to two rows; dynamic minimum height; clock fits width and height; single-line autosize target time; compact padding; frozen while playing",
+  "unitTests": {
+    "core": 83,
+    "app": 19
+  },
+  "newLayoutTests": 7,
+  "tddObservedFailures": 6,
+  "checks": [
+    "core:test",
+    "app:testDebugUnitTest",
+    "app:lintDebug",
+    "app:assembleDebug",
+    "app:assembleRelease",
+    "git diff --check"
+  ],
+  "functionalCases": [
+    {
+      "name": "v14_responsive_overlay",
+      "passed": true,
+      "durationMillis": 54294
+    },
+    {
+      "name": "v13_overlay_resize",
+      "passed": true,
+      "durationMillis": 26405
+    },
+    {
+      "name": "v12_multipoint_overlay",
+      "passed": true,
+      "durationMillis": 33157
+    },
+    {
+      "name": "v2_crosshair_and_one_shot",
+      "passed": true,
+      "durationMillis": 14819
+    }
+  ],
+  "responsive": [
+    {
+      "multi": false,
+      "orientation": 0,
+      "fontScale": "1.0",
+      "compactSizePixels": [
+        336,
+        568
+      ],
+      "twoRowsAt128dp": true,
+      "restoresSingleRow": true,
+      "paddingTransitionDoesNotRewrap": true,
+      "clockAndControlsVisible": true,
+      "targetTimeEditableOrLoopControlsWorking": true
+    },
+    {
+      "multi": true,
+      "orientation": 0,
+      "fontScale": "1.0",
+      "compactSizePixels": [
+        336,
+        442
+      ],
+      "twoRowsAt128dp": true,
+      "restoresSingleRow": true,
+      "paddingTransitionDoesNotRewrap": true,
+      "clockAndControlsVisible": true,
+      "targetTimeEditableOrLoopControlsWorking": true
+    },
+    {
+      "multi": false,
+      "orientation": 1,
+      "fontScale": "1.5",
+      "compactSizePixels": [
+        336,
+        568
+      ],
+      "twoRowsAt128dp": true,
+      "restoresSingleRow": true,
+      "paddingTransitionDoesNotRewrap": true,
+      "clockAndControlsVisible": true,
+      "targetTimeEditableOrLoopControlsWorking": true
+    },
+    {
+      "multi": true,
+      "orientation": 1,
+      "fontScale": "1.5",
+      "compactSizePixels": [
+        336,
+        442
+      ],
+      "twoRowsAt128dp": true,
+      "restoresSingleRow": true,
+      "paddingTransitionDoesNotRewrap": true,
+      "clockAndControlsVisible": true,
+      "targetTimeEditableOrLoopControlsWorking": true
+    }
+  ],
+  "widthTransitionSamplesDp": [
+    204,
+    208,
+    216,
+    224,
+    232
+  ],
+  "compactPaddingBreakpointDp": 224,
+  "resize": {
+    "modes": [
+      {
+        "multi": false,
+        "initial": [
+          32,
+          147,
+          630,
+          462
+        ],
+        "grown": [
+          32,
+          147,
+          750,
+          662
+        ],
+        "minimum": [
+          32,
+          147,
+          350,
+          568
+        ],
+        "leftGrown": [
+          112,
+          297,
+          470,
+          668
+        ],
+        "leftSmaller": [
+          192,
+          297,
+          390,
+          608
+        ],
+        "maximum": [
+          192,
+          297,
+          888,
+          2040
+        ]
+      },
+      {
+        "multi": true,
+        "initial": [
+          32,
+          147,
+          714,
+          336
+        ],
+        "grown": [
+          32,
+          147,
+          834,
+          536
+        ],
+        "minimum": [
+          32,
+          147,
+          434,
+          442
+        ],
+        "leftGrown": [
+          112,
+          297,
+          554,
+          542
+        ],
+        "leftSmaller": [
+          192,
+          297,
+          474,
+          482
+        ],
+        "maximum": [
+          192,
+          297,
+          888,
+          2040
+        ]
+      }
+    ],
+    "backgroundAlpha": 179,
+    "bothCornersGrowAndShrink": true,
+    "controlsFullyVisible": true,
+    "systemBarsRespected": true,
+    "clockDrawnAfterResize": true,
+    "markersUnchanged": true,
+    "noInjectedClick": true,
+    "resizeFrozenWhilePlaying": true,
+    "stopReachable": true
+  },
+  "multipointRegression": {
+    "actualOrder": "A,B,C,A,B,C",
+    "actualDownGapsMillis": [
+      414,
+      657,
+      994,
+      450,
+      647
+    ],
+    "firstDelayMillis": 1190,
+    "numberedMarkers": true,
+    "continuousLoop": true,
+    "manualStopAfterTwoCycles": true,
+    "markersRemainVisible": true,
+    "sameMarkerWindows": true,
+    "runningMarkersPassThrough": true,
+    "stoppedMarkersTouchable": true,
+    "stopBeforeFirst": true,
+    "stopBetweenPoints": true,
+    "defaultDelay1000": true,
+    "invalidDelayRejected": true,
+    "cancelKeepsDelay": true,
+    "mutuallyExclusive": true,
+    "deleteRenumbers": true,
+    "closeCancelsWaiting": true,
+    "closeDoesNotRestore": true,
+    "serviceDisconnectCancels": true,
+    "reconnectDoesNotResume": true
+  },
+  "timedRegression": {
+    "physicalDevice": false,
+    "crosshairDrag": {
+      "from": [
+        540,
+        1200
+      ],
+      "target": [
+        323,
+        442
+      ],
+      "savedX": "323.0",
+      "savedY": "442.0"
+    },
+    "floatingDragIconMovedWindow": true,
+    "lastFloatingControl": {
+      "text": "开启自动点击",
+      "x": 545,
+      "y": 1900
+    },
+    "oneShotReceipts": [
+      {
+        "point": "B",
+        "elapsed": 158061441,
+        "epoch": 1793350714731
+      }
+    ],
+    "oneShotReceiptDeviationMillis": 26,
+    "frozenClockAcrossSync": true,
+    "latestCrosshairReceived": "B",
+    "dragDidNotClick": true,
+    "oneShotTiming": {
+      "targetEpoch": 1793350715688,
+      "plannedElapsed": 158061415,
+      "dispatchedElapsed": 158061423,
+      "callbackElapsed": 158061430
+    }
+  },
+  "retainedFunctionalFailures": [
+    "multipoint-failed-01.json"
+  ],
+  "failedIntervalReading": {
+    "actualDownGapsMillis": [
+      565,
+      545,
+      975,
+      432,
+      641
+    ],
+    "firstGapExcessMillis": 165,
+    "toleranceUnchangedMillis": 150,
+    "cause": "Not established. Same-condition rerun retained separately; no timing algorithm change."
+  },
+  "toolBatchApprovalTimedOut": true,
+  "toolTimeoutResolution": "Batch never started; retry as individual authorized emulator cases.",
+  "preliminaryReports": [
+    "responsive-before-breakpoint.json",
+    "responsive-before-width-assertion.json",
+    "timed-before-breakpoint.json"
+  ],
+  "sourceChecks": [
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/OneShotRunner.kt",
+      "unchanged": true
+    },
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/TimeSync.kt",
+      "unchanged": true
+    },
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/ClickRunner.kt",
+      "unchanged": true
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/time/TimeSyncManager.kt",
+      "unchanged": true
+    },
+    {
+      "path": "app/build.gradle.kts",
+      "unchanged": true
+    },
+    {
+      "path": "gradle/libs.versions.toml",
+      "unchanged": true
+    },
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/MultiPointRunner.kt",
+      "unchanged": true
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/MultiPointController.kt",
+      "unchanged": true
+    }
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/OverlayResize.kt",
+      "sha256": "ecc60948c12e76c7f891ad55eeeaab4b969ca27b21ab2ae887f614e6f2ecc6fc"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/OverlayLayout.kt",
+      "sha256": "39f58e0e3acc6ecf8bada3d76fb2d38113be51ffbf27bbfda0163cdf7d602ded"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/OverlayHeader.kt",
+      "sha256": "594cbab738387e2617df33deb30612c35f1813bc0956fefff406a7cf9a0e153e"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/OverlayPanel.kt",
+      "sha256": "900578f044b03abaa324cfef2d80ecfb5e10923d608c3991db711e98762a06e6"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/TimedOverlay.kt",
+      "sha256": "d8875dbbd938cc0af119b683dcf1d2ac26a1bc398410f1c1039e1a5b87332c65"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/MultiPointOverlay.kt",
+      "sha256": "bf6903d38efae4a06fbf84879ef8b122ad76d384ab4467d5cdb1465d49b55804"
+    }
+  ],
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "sha256": "f02dda4bb13e0f1954e71575e9d30423d1475bd0942cf85bc7ae79c91ef8622a"
+  },
+  "rawRoot": ".tools/overlay-responsive-20261030",
+  "rawResults": [
+    "responsive-passed.json",
+    "resize.json",
+    "multipoint.json",
+    "timed.json"
+  ],
+  "device": "emulator-5554",
+  "deviceApi": 37,
+  "physicalDeviceTested": false,
+  "fullMatrixRun": false,
+  "performanceCertification": false,
+  "emulatorPreferencesRestored": true,
+  "newTestPackagesRemoved": true,
+  "committed": false,
+  "pushed": false
+}

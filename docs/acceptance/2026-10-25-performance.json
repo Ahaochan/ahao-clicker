@@ -1,0 +1,679 @@
+{
+  "date": "2026-10-25",
+  "version": "0.2.0",
+  "status": "round-complete",
+  "device": {
+    "manufacturer": "Xiaomi",
+    "model": "25060RK16C",
+    "android": 16,
+    "api": 36,
+    "hyperOs": "OS3.0",
+    "screenPixels": [
+      1280,
+      2772
+    ],
+    "densityDpi": 520
+  },
+  "method": {
+    "build": "R8 release with temporary local debug signature; no instrumentation/debugger during resource sampling",
+    "samplesPerComparisonScene": 9,
+    "intervalSeconds": 5,
+    "warmupSeconds": 10,
+    "cpuTickHz": 100,
+    "cpuUnit": "percent of one core",
+    "foreground": "Own app home or independent receipt target; existing services preserved"
+  },
+  "changes": {
+    "normalClockIntervalMillis": 100,
+    "lastFiveSecondsIntervalMillis": 33,
+    "hiddenLifecycleIntervalMillis": 250,
+    "deadlineSchedulerChanged": false,
+    "productionDependenciesAdded": 0
+  },
+  "checks": {
+    "unitTests": 35,
+    "coreTests": 32,
+    "appTests": 3,
+    "appLintErrors": 0,
+    "appLintWarnings": 0,
+    "appLintHints": 5,
+    "helperLintErrors": 0,
+    "helperLintWarnings": 4,
+    "debugBuild": "passed",
+    "releaseBuild": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "tdd": {
+    "red": "ClockRefresh tests failed compilation before implementation",
+    "green": "3 new boundary cases passed with the full suite"
+  },
+  "comparison": {
+    "home": {
+      "before": {
+        "cpuPercentOfOneCore": 7.443,
+        "pssMinimumKiB": 59675,
+        "pssMedianKiB": 79065,
+        "pssMaximumKiB": 87691,
+        "observationSeconds": 47.697
+      },
+      "after": {
+        "cpuPercentOfOneCore": 0.927,
+        "pssMinimumKiB": 69414,
+        "pssMedianKiB": 71422,
+        "pssMaximumKiB": 71712,
+        "observationSeconds": 47.45
+      },
+      "cpuReductionPercent": 87.545
+    },
+    "floatingClockOverTestTarget": {
+      "before": {
+        "cpuPercentOfOneCore": 17.705,
+        "pssMinimumKiB": 57911,
+        "pssMedianKiB": 58206,
+        "pssMaximumKiB": 58523,
+        "observationSeconds": 47.502
+      },
+      "after": {
+        "cpuPercentOfOneCore": 6.421,
+        "pssMinimumKiB": 54991,
+        "pssMedianKiB": 57266,
+        "pssMaximumKiB": 57754,
+        "observationSeconds": 47.654
+      },
+      "cpuReductionPercent": 63.733
+    }
+  },
+  "rawBefore": {
+    "build": "R8 release, local debug test signature, no instrumentation or debugger attached",
+    "home": {
+      "pssKiB": [
+        77486,
+        79100,
+        79065,
+        79049,
+        86071,
+        82101,
+        60372,
+        59675,
+        87691
+      ],
+      "observationSeconds": 47.697,
+      "cpuTicks": 355,
+      "ticksPerSecond": 100,
+      "cpuPercentOfOneCore": 7.443
+    },
+    "floatingClockOverTestTarget": {
+      "pssKiB": [
+        58269,
+        57925,
+        57911,
+        58015,
+        58146,
+        58206,
+        58311,
+        58419,
+        58523
+      ],
+      "observationSeconds": 47.502,
+      "cpuTicks": 841,
+      "ticksPerSecond": 100,
+      "cpuPercentOfOneCore": 17.705
+    },
+    "targetReceivedDuringClockProfile": 0,
+    "unsignedApkBytes": 158122,
+    "debugRestored": true
+  },
+  "rawAfter": {
+    "build": "R8 release, local debug test signature, no instrumentation or debugger attached",
+    "home": {
+      "pssKiB": [
+        69414,
+        71419,
+        71562,
+        71420,
+        71311,
+        71476,
+        71422,
+        71474,
+        71712
+      ],
+      "observationSeconds": 47.45,
+      "cpuTicks": 44,
+      "ticksPerSecond": 100,
+      "cpuPercentOfOneCore": 0.927
+    },
+    "floatingClockOverTestTarget": {
+      "pssKiB": [
+        57754,
+        54991,
+        57059,
+        57102,
+        57134,
+        57278,
+        57266,
+        57302,
+        57333
+      ],
+      "observationSeconds": 47.654,
+      "cpuTicks": 306,
+      "ticksPerSecond": 100,
+      "cpuPercentOfOneCore": 6.421
+    },
+    "targetReceivedDuringClockProfile": 0,
+    "unsignedApkBytes": 158346,
+    "debugRestored": true
+  },
+  "extendedClockObservation": {
+    "build": "R8 release, local debug test signature, no instrumentation or debugger attached",
+    "home": "not sampled in this extended run",
+    "floatingClockOverTestTarget": {
+      "pssKiB": [
+        52694,
+        54774,
+        54768,
+        54838,
+        54880,
+        54892,
+        54932,
+        54964,
+        55160,
+        55192,
+        55224,
+        55259,
+        54737,
+        54725,
+        54701,
+        54785,
+        52697,
+        52709,
+        52737,
+        54821,
+        54853,
+        54889,
+        52284,
+        52285,
+        52212,
+        54283,
+        54460,
+        54531,
+        54466,
+        54506,
+        54537,
+        54609,
+        54582,
+        54604,
+        54472,
+        54500
+      ],
+      "observationSeconds": 190.68,
+      "cpuTicks": 1352,
+      "ticksPerSecond": 100,
+      "cpuPercentOfOneCore": 7.09
+    },
+    "targetReceivedDuringClockProfile": 0,
+    "unsignedApkBytes": 158346,
+    "debugRestored": true
+  },
+  "threadBefore": [
+    {
+      "thread": "RenderThread",
+      "ticks": 103,
+      "cpuPercentOfOneCore": 10.202
+    },
+    {
+      "thread": "om.ahao.clicker",
+      "ticks": 61,
+      "cpuPercentOfOneCore": 6.042
+    },
+    {
+      "thread": "binder:21053_5",
+      "ticks": 13,
+      "cpuPercentOfOneCore": 1.288
+    }
+  ],
+  "threadAfter": [
+    {
+      "thread": "RenderThread",
+      "ticks": 27,
+      "cpuPercentOfOneCore": 2.675
+    },
+    {
+      "thread": "om.ahao.clicker",
+      "ticks": 22,
+      "cpuPercentOfOneCore": 2.18
+    },
+    {
+      "thread": "binder:30991_5",
+      "ticks": 12,
+      "cpuPercentOfOneCore": 1.189
+    }
+  ],
+  "functional": {
+    "passed": true,
+    "cases": [
+      {
+        "name": "https_time_formats_periodic_failure_recovery",
+        "passed": true,
+        "durationMillis": 8657
+      },
+      {
+        "name": "single_point_count_and_start_time",
+        "passed": true,
+        "durationMillis": 3900
+      },
+      {
+        "name": "deadline_limits_count",
+        "passed": true,
+        "durationMillis": 3670
+      },
+      {
+        "name": "actual_recording_and_multistep_replay",
+        "passed": true,
+        "durationMillis": 9237
+      },
+      {
+        "name": "recording_repeat_and_cancel",
+        "passed": true,
+        "durationMillis": 17992
+      },
+      {
+        "name": "floating_stop_waiting_and_running",
+        "passed": true,
+        "durationMillis": 5479
+      },
+      {
+        "name": "source_change_clears_old_time",
+        "passed": true,
+        "durationMillis": 222
+      },
+      {
+        "name": "v2_picker_and_two_setting_page",
+        "passed": true,
+        "durationMillis": 1223
+      },
+      {
+        "name": "v2_crosshair_and_one_shot",
+        "passed": true,
+        "durationMillis": 10164
+      },
+      {
+        "name": "v2_cancelled_one_shot_never_replays",
+        "passed": true,
+        "durationMillis": 6640
+      },
+      {
+        "name": "v2_floating_clock_lifecycle",
+        "passed": true,
+        "durationMillis": 1348
+      },
+      {
+        "name": "v2_builtin_ntp_reachability",
+        "passed": true,
+        "durationMillis": 852
+      }
+    ],
+    "evidence": {
+      "physicalDevice": true,
+      "singlePointReceipts": [
+        {
+          "point": "A",
+          "elapsed": 6390399006,
+          "epoch": 1792939433686
+        },
+        {
+          "point": "A",
+          "elapsed": 6390399203,
+          "epoch": 1792939433884
+        },
+        {
+          "point": "A",
+          "elapsed": 6390399401,
+          "epoch": 1792939434081
+        },
+        {
+          "point": "A",
+          "elapsed": 6390399598,
+          "epoch": 1792939434279
+        },
+        {
+          "point": "A",
+          "elapsed": 6390399791,
+          "epoch": 1792939434472
+        }
+      ],
+      "deadlineReceipts": [
+        {
+          "point": "A",
+          "elapsed": 6390402415,
+          "epoch": 1792939437096
+        },
+        {
+          "point": "A",
+          "elapsed": 6390402638,
+          "epoch": 1792939437319
+        },
+        {
+          "point": "A",
+          "elapsed": 6390402864,
+          "epoch": 1792939437544
+        },
+        {
+          "point": "A",
+          "elapsed": 6390403090,
+          "epoch": 1792939437771
+        }
+      ],
+      "lastFloatingControl": {
+        "text": "关闭悬浮时钟",
+        "x": 890,
+        "y": 2375
+      },
+      "recordedSteps": "399.0,536.0,0\n399.0,1030.0,1012\n399.0,536.0,991",
+      "replayReceipts": [
+        {
+          "point": "A",
+          "elapsed": 6390411028,
+          "epoch": 1792939445709
+        },
+        {
+          "point": "B",
+          "elapsed": 6390411527,
+          "epoch": 1792939446207
+        },
+        {
+          "point": "A",
+          "elapsed": 6390411769,
+          "epoch": 1792939446450
+        },
+        {
+          "point": "A",
+          "elapsed": 6390411970,
+          "epoch": 1792939446650
+        },
+        {
+          "point": "B",
+          "elapsed": 6390412460,
+          "epoch": 1792939447141
+        },
+        {
+          "point": "A",
+          "elapsed": 6390412707,
+          "epoch": 1792939447387
+        }
+      ],
+      "replayReceiptGapsMillis": [
+        499,
+        242,
+        201,
+        490,
+        247
+      ],
+      "replayInputGapsMillis": [
+        455,
+        205,
+        159,
+        455,
+        204
+      ],
+      "repeatedRecordingReceipts": [
+        {
+          "point": "A",
+          "elapsed": 6390415222,
+          "epoch": 1792939449902
+        },
+        {
+          "point": "B",
+          "elapsed": 6390416273,
+          "epoch": 1792939450954
+        },
+        {
+          "point": "A",
+          "elapsed": 6390417315,
+          "epoch": 1792939451996
+        },
+        {
+          "point": "B",
+          "elapsed": 6390418384,
+          "epoch": 1792939453065
+        },
+        {
+          "point": "A",
+          "elapsed": 6390419409,
+          "epoch": 1792939454089
+        },
+        {
+          "point": "B",
+          "elapsed": 6390420449,
+          "epoch": 1792939455129
+        },
+        {
+          "point": "A",
+          "elapsed": 6390421512,
+          "epoch": 1792939456192
+        },
+        {
+          "point": "B",
+          "elapsed": 6390422552,
+          "epoch": 1792939457232
+        },
+        {
+          "point": "A",
+          "elapsed": 6390423581,
+          "epoch": 1792939458262
+        },
+        {
+          "point": "B",
+          "elapsed": 6390424620,
+          "epoch": 1792939459301
+        },
+        {
+          "point": "A",
+          "elapsed": 6390425676,
+          "epoch": 1792939460357
+        },
+        {
+          "point": "B",
+          "elapsed": 6390426723,
+          "epoch": 1792939461404
+        }
+      ],
+      "pickerValue": "2026-10-25T22:46:32.750+08:00[Asia/Shanghai]",
+      "timePageEditableFields": 2,
+      "crosshairDrag": {
+        "from": [
+          640,
+          1386
+        ],
+        "target": [
+          399,
+          536
+        ],
+        "savedX": "399.0",
+        "savedY": "536.0"
+      },
+      "oneShotReceipts": [
+        {
+          "point": "A",
+          "elapsed": 6390447638,
+          "epoch": 1792939482319
+        }
+      ],
+      "oneShotReceiptDeviationMillis": 50,
+      "frozenClockAcrossSync": true,
+      "oneShotTiming": {
+        "targetEpoch": 1792939481939,
+        "plannedElapsed": 6390447588,
+        "dispatchedElapsed": 6390447590,
+        "callbackElapsed": 6390447637
+      },
+      "cancelledOneShotReconnectChecked": false,
+      "cancelledOneShotReceived": 0,
+      "clockHardwareAccelerated": true,
+      "clockStandaloneDidNotClick": true,
+      "clockClosePausedSync": true,
+      "dnsFailureBoundedMillis": 202,
+      "builtinSourceProbes": [
+        {
+          "source": "ALIYUN",
+          "host": "ntp.aliyun.com",
+          "succeeded": true,
+          "rttMillis": 82,
+          "failure": "NONE"
+        },
+        {
+          "source": "TENCENT",
+          "host": "ntp.tencent.com",
+          "succeeded": true,
+          "rttMillis": 16,
+          "failure": "NONE"
+        },
+        {
+          "source": "CLOUDFLARE",
+          "host": "time.cloudflare.com",
+          "succeeded": true,
+          "rttMillis": 198,
+          "failure": "NONE"
+        }
+      ]
+    }
+  },
+  "optimizedActualClicks": {
+    "received": [
+      {
+        "point": "A",
+        "elapsed": 6390573264,
+        "epoch": 1792939607944
+      },
+      {
+        "point": "B",
+        "elapsed": 6390573607,
+        "epoch": 1792939608288
+      },
+      {
+        "point": "A",
+        "elapsed": 6390573754,
+        "epoch": 1792939608435
+      },
+      {
+        "point": "B",
+        "elapsed": 6390574102,
+        "epoch": 1792939608783
+      },
+      {
+        "point": "A",
+        "elapsed": 6390574248,
+        "epoch": 1792939608929
+      },
+      {
+        "point": "B",
+        "elapsed": 6390574595,
+        "epoch": 1792939609276
+      },
+      {
+        "point": "A",
+        "elapsed": 6390574744,
+        "epoch": 1792939609425
+      },
+      {
+        "point": "B",
+        "elapsed": 6390575093,
+        "epoch": 1792939609774
+      },
+      {
+        "point": "A",
+        "elapsed": 6390575236,
+        "epoch": 1792939609916
+      },
+      {
+        "point": "B",
+        "elapsed": 6390575581,
+        "epoch": 1792939610261
+      },
+      {
+        "point": "A",
+        "elapsed": 6390575726,
+        "epoch": 1792939610407
+      },
+      {
+        "point": "B",
+        "elapsed": 6390576071,
+        "epoch": 1792939610751
+      },
+      {
+        "point": "A",
+        "elapsed": 6390576216,
+        "epoch": 1792939610897
+      },
+      {
+        "point": "B",
+        "elapsed": 6390576562,
+        "epoch": 1792939611243
+      },
+      {
+        "point": "A",
+        "elapsed": 6390576709,
+        "epoch": 1792939611390
+      },
+      {
+        "point": "B",
+        "elapsed": 6390577051,
+        "epoch": 1792939611731
+      },
+      {
+        "point": "A",
+        "elapsed": 6390577195,
+        "epoch": 1792939611875
+      },
+      {
+        "point": "B",
+        "elapsed": 6390577541,
+        "epoch": 1792939612222
+      },
+      {
+        "point": "A",
+        "elapsed": 6390577686,
+        "epoch": 1792939612367
+      },
+      {
+        "point": "B",
+        "elapsed": 6390578031,
+        "epoch": 1792939612711
+      }
+    ],
+    "inputGapsMillis": [
+      307,
+      104,
+      310,
+      105,
+      305,
+      112,
+      305,
+      107,
+      305,
+      104,
+      304,
+      105,
+      307,
+      107,
+      304,
+      103,
+      304,
+      107,
+      305
+    ],
+    "count": 20,
+    "appInstrumentationAttached": false,
+    "passed": true
+  },
+  "apkSha256": {
+    "before": "a7f78dfc3684a3b6fd629beb36c2af989c81473d7d942e56e89dc7ccc7ec9ea8",
+    "after": "b250a14c25d165d7a40fbfce0a823d292ffc2589e00fd7a06dfedc7a2d080e60"
+  },
+  "limits": [
+    "One phone and one before/after pair; CPU includes normal runtime and measurement effects",
+    "The last five seconds retain the higher refresh rate; ordinary-clock CPU budget is not a peak guarantee",
+    "190.68 seconds does not establish 30-minute leak freedom, device power or thermal behavior",
+    "Release actual-click test covers multi-point clicks; the single-shot latency sample is Debug and not absolute UTC accuracy",
+    "Physical rotation, screen-off, in-task service interruption and more manufacturers remain separate work"
+  ]
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+    android:paddingHorizontal="@dimen/content_padding" android:paddingVertical="@dimen/control_padding_vertical">
+  <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+      android:text="@string/multi_delay_hint" android:textSize="@dimen/caption_text" />
+  <EditText android:id="@+id/multi_delay_input" android:layout_width="match_parent" android:layout_height="wrap_content"
+      android:minHeight="@dimen/touch_target" android:inputType="number" android:singleLine="true"
+      android:maxLength="8" android:selectAllOnFocus="true" android:hint="@string/multi_delay_millis"
+      android:importantForAutofill="no" />
+</LinearLayout>

@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-30",
+  "feature": "Overlay controls always remain in a single row",
+  "behavior": "Original control order; narrow windows shrink cells, icons and padding; maximum icon24dp; minimum window width128dp",
+  "unitTests": {
+    "core": 83,
+    "app": 19
+  },
+  "updatedLayoutTests": 7,
+  "tddObservedFailuresWithOldTwoRowLayout": 4,
+  "functionalCases": [
+    {
+      "name": "v14_responsive_overlay",
+      "passed": true,
+      "durationMillis": 42212
+    }
+  ],
+  "variants": [
+    {
+      "multi": false,
+      "orientation": 0,
+      "fontScale": "1.0",
+      "compactSizePixels": [
+        336,
+        420
+      ],
+      "singleRowAt128dp": true,
+      "singleRowAtWideSize": true,
+      "paddingTransitionDoesNotRewrap": true,
+      "clockAndControlsVisible": true,
+      "targetTimeEditableOrLoopControlsWorking": true
+    },
+    {
+      "multi": true,
+      "orientation": 0,
+      "fontScale": "1.0",
+      "compactSizePixels": [
+        336,
+        268
+      ],
+      "singleRowAt128dp": true,
+      "singleRowAtWideSize": true,
+      "paddingTransitionDoesNotRewrap": true,
+      "clockAndControlsVisible": true,
+      "targetTimeEditableOrLoopControlsWorking": true
+    },
+    {
+      "multi": false,
+      "orientation": 1,
+      "fontScale": "1.5",
+      "compactSizePixels": [
+        336,
+        420
+      ],
+      "singleRowAt128dp": true,
+      "singleRowAtWideSize": true,
+      "paddingTransitionDoesNotRewrap": true,
+      "clockAndControlsVisible": true,
+      "targetTimeEditableOrLoopControlsWorking": true
+    },
+    {
+      "multi": true,
+      "orientation": 1,
+      "fontScale": "1.5",
+      "compactSizePixels": [
+        336,
+        268
+      ],
+      "singleRowAt128dp": true,
+      "singleRowAtWideSize": true,
+      "paddingTransitionDoesNotRewrap": true,
+      "clockAndControlsVisible": true,
+      "targetTimeEditableOrLoopControlsWorking": true
+    }
+  ],
+  "checks": [
+    "core:test",
+    "app:testDebugUnitTest",
+    "app:lintDebug",
+    "app:assembleDebug",
+    "app:assembleRelease",
+    "git diff --check"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/OverlayLayout.kt",
+      "sha256": "b493aea8db4de64b5d18bd9592bff6d0a772959f0f2d14470efe30d689292c2c"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/OverlayHeader.kt",
+      "sha256": "357b4e437d1a70550c25a36d2ec31f7de81e94afc08287cfbab691d5658641ee"
+    },
+    {
+      "path": "app/src/main/res/layout/overlay_header.xml",
+      "sha256": "bee2693ebd8b7b399a926794f45fb9951685ab031e3761cbf520187617023323"
+    },
+    {
+      "path": "app/src/main/res/values/dimens.xml",
+      "sha256": "13f667a39c3338b238f5c54e0e8c5b290d22a10e3fb34939b22188cb98dcc650"
+    }
+  ],
+  "unchangedRunnerAndController": [
+    "core/src/main/kotlin/com/ahao/clicker/core/MultiPointRunner.kt",
+    "app/src/main/kotlin/com/ahao/clicker/MultiPointController.kt"
+  ],
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "sha256": "2acdfc6cac08563d7cd1e419644ecdd6ce654af4793459211bf032bb2ef7fe3e"
+  },
+  "rawRoot": ".tools/overlay-single-row-20261030",
+  "device": "emulator-5554",
+  "deviceApi": 37,
+  "physicalDeviceTested": false,
+  "newTimingBenchmark": false,
+  "newFullFunctionalMatrix": false,
+  "emulatorPreferencesRestored": true,
+  "newTestPackagesRemoved": true,
+  "committed": false,
+  "pushed": false
+}

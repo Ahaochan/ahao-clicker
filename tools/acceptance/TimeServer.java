@@ -14,6 +14,7 @@ import javax.net.ssl.SSLContext;
 /** Loopback-only, real TLS endpoint. Test APK trusts only its generated certificate. */
 public final class TimeServer {
     private static final AtomicInteger requests = new AtomicInteger();
+    private static final AtomicInteger options = new AtomicInteger();
     private static volatile String mode = "good";
     private static volatile long offset = 5000;
 
@@ -45,9 +46,19 @@ public final class TimeServer {
                     if (mode.equals("slow")) Thread.sleep(2500);
                 }
                 long now = System.currentTimeMillis() + offset;
+                if (path.equals("/jd")) {
+                    boolean isOptions = exchange.getRequestMethod().equals("OPTIONS");
+                    if (isOptions) options.incrementAndGet();
+                    if (!mode.equals("missing")) response.getResponseHeaders().set("x-api-request-id",
+                        mode.equals("malformed") ? "not-a-timestamp" : "10105444978-107668-" + (mode.equals("stale") ? now - 60_000 : now));
+                    response.getResponseHeaders().set("Cache-Control", "no-store");
+                    if (mode.equals("age")) response.getResponseHeaders().set("Age", "30");
+                    response.sendResponseHeaders(!isOptions ? 405 : mode.equals("error") ? 503 : 204, -1);
+                    return;
+                }
                 String body = "{\"data\":{\"timestamp\":" + (path.equals("/seconds") ? now / 1000 : now)
                     + "},\"requests\":" + requests.get() + "}";
-                if (path.equals("/stats") || path.equals("/control")) body = "{\"requests\":" + requests.get() + "}";
+                if (path.equals("/stats") || path.equals("/control")) body = "{\"requests\":" + requests.get() + ",\"jdOptions\":" + options.get() + "}";
                 else if (mode.equals("malformed")) body = "{\"data\":{\"timestamp\":\"invalid\"}}";
                 else if (mode.equals("oversize")) body = "x".repeat(70000);
                 response.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");

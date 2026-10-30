@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/click_start_time" android:layout_width="match_parent" android:layout_height="@dimen/overlay_button_target"
+    android:text="@string/click_start_unset" android:textColor="@color/control_text"
+    android:clickable="true" android:focusable="true" android:gravity="center_vertical" android:maxLines="1"
+    android:autoSizeTextType="uniform" android:autoSizeMinTextSize="8sp"
+    android:autoSizeMaxTextSize="@dimen/start_time_text" android:autoSizeStepGranularity="1sp"
+    android:foreground="?android:attr/selectableItemBackground" android:drawableEnd="@drawable/ic_edit"
+    android:contentDescription="@string/edit_trigger_time"
+    android:textSize="@dimen/start_time_text" android:fontFamily="monospace" />

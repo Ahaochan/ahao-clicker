@@ -1,0 +1,365 @@
+{
+  "date": "2026-10-25",
+  "version": "0.2.0",
+  "status": "functional-scope-passed",
+  "device": {
+    "manufacturer": "Xiaomi",
+    "model": "25060RK16C",
+    "android": 16,
+    "api": 36,
+    "hyperOs": "OS3.0",
+    "screenPixels": [
+      1280,
+      2772
+    ],
+    "densityDpi": 520
+  },
+  "functional": {
+    "build": "debug instrumented",
+    "passed": true,
+    "caseCount": 12,
+    "cases": [
+      {
+        "name": "https_time_formats_periodic_failure_recovery",
+        "passed": true,
+        "durationMillis": 8745
+      },
+      {
+        "name": "single_point_count_and_start_time",
+        "passed": true,
+        "durationMillis": 3783
+      },
+      {
+        "name": "deadline_limits_count",
+        "passed": true,
+        "durationMillis": 3678
+      },
+      {
+        "name": "actual_recording_and_multistep_replay",
+        "passed": true,
+        "durationMillis": 9185
+      },
+      {
+        "name": "recording_repeat_and_cancel",
+        "passed": true,
+        "durationMillis": 18078
+      },
+      {
+        "name": "floating_stop_waiting_and_running",
+        "passed": true,
+        "durationMillis": 5546
+      },
+      {
+        "name": "source_change_clears_old_time",
+        "passed": true,
+        "durationMillis": 387
+      },
+      {
+        "name": "v2_picker_and_two_setting_page",
+        "passed": true,
+        "durationMillis": 1276
+      },
+      {
+        "name": "v2_crosshair_and_one_shot",
+        "passed": true,
+        "durationMillis": 9844
+      },
+      {
+        "name": "v2_cancelled_one_shot_never_replays",
+        "passed": true,
+        "durationMillis": 6630
+      },
+      {
+        "name": "v2_floating_clock_lifecycle",
+        "passed": true,
+        "durationMillis": 1333
+      },
+      {
+        "name": "v2_builtin_ntp_reachability",
+        "passed": true,
+        "durationMillis": 2433
+      }
+    ],
+    "evidence": {
+      "physicalDevice": true,
+      "singlePointReceipts": [
+        {
+          "point": "A",
+          "elapsed": 6388671166,
+          "epoch": 1792937705847
+        },
+        {
+          "point": "A",
+          "elapsed": 6388671362,
+          "epoch": 1792937706043
+        },
+        {
+          "point": "A",
+          "elapsed": 6388671558,
+          "epoch": 1792937706239
+        },
+        {
+          "point": "A",
+          "elapsed": 6388671750,
+          "epoch": 1792937706431
+        },
+        {
+          "point": "A",
+          "elapsed": 6388671942,
+          "epoch": 1792937706622
+        }
+      ],
+      "deadlineReceipts": [
+        {
+          "point": "A",
+          "elapsed": 6388674551,
+          "epoch": 1792937709231
+        },
+        {
+          "point": "A",
+          "elapsed": 6388674774,
+          "epoch": 1792937709455
+        },
+        {
+          "point": "A",
+          "elapsed": 6388674998,
+          "epoch": 1792937709679
+        },
+        {
+          "point": "A",
+          "elapsed": 6388675226,
+          "epoch": 1792937709906
+        }
+      ],
+      "lastFloatingControl": {
+        "text": "关闭悬浮时钟",
+        "x": 890,
+        "y": 2375
+      },
+      "recordedSteps": "399.0,536.0,0\n399.0,1030.0,1012\n399.0,536.0,992",
+      "replayReceipts": [
+        {
+          "point": "A",
+          "elapsed": 6388683108,
+          "epoch": 1792937717789
+        },
+        {
+          "point": "B",
+          "elapsed": 6388683604,
+          "epoch": 1792937718284
+        },
+        {
+          "point": "A",
+          "elapsed": 6388683852,
+          "epoch": 1792937718532
+        },
+        {
+          "point": "A",
+          "elapsed": 6388684046,
+          "epoch": 1792937718727
+        },
+        {
+          "point": "B",
+          "elapsed": 6388684540,
+          "epoch": 1792937719221
+        },
+        {
+          "point": "A",
+          "elapsed": 6388684785,
+          "epoch": 1792937719466
+        }
+      ],
+      "replayReceiptGapsMillis": [
+        496,
+        248,
+        194,
+        494,
+        245
+      ],
+      "replayInputGapsMillis": [
+        455,
+        208,
+        154,
+        455,
+        206
+      ],
+      "repeatedRecordingReceipts": [
+        {
+          "point": "A",
+          "elapsed": 6388687328,
+          "epoch": 1792937722009
+        },
+        {
+          "point": "B",
+          "elapsed": 6388688399,
+          "epoch": 1792937723080
+        },
+        {
+          "point": "A",
+          "elapsed": 6388689425,
+          "epoch": 1792937724105
+        },
+        {
+          "point": "B",
+          "elapsed": 6388690493,
+          "epoch": 1792937725173
+        },
+        {
+          "point": "A",
+          "elapsed": 6388691519,
+          "epoch": 1792937726200
+        },
+        {
+          "point": "B",
+          "elapsed": 6388692599,
+          "epoch": 1792937727280
+        },
+        {
+          "point": "A",
+          "elapsed": 6388693664,
+          "epoch": 1792937728344
+        },
+        {
+          "point": "B",
+          "elapsed": 6388694728,
+          "epoch": 1792937729408
+        },
+        {
+          "point": "A",
+          "elapsed": 6388695769,
+          "epoch": 1792937730450
+        },
+        {
+          "point": "B",
+          "elapsed": 6388696805,
+          "epoch": 1792937731485
+        },
+        {
+          "point": "A",
+          "elapsed": 6388697880,
+          "epoch": 1792937732560
+        },
+        {
+          "point": "B",
+          "elapsed": 6388698917,
+          "epoch": 1792937733597
+        }
+      ],
+      "pickerValue": "2026-10-25T22:17:44.750+08:00[Asia/Shanghai]",
+      "timePageEditableFields": 2,
+      "crosshairDrag": {
+        "from": [
+          640,
+          1386
+        ],
+        "target": [
+          399,
+          536
+        ],
+        "savedX": "399.0",
+        "savedY": "536.0"
+      },
+      "oneShotReceipts": [
+        {
+          "point": "A",
+          "elapsed": 6388720024,
+          "epoch": 1792937754705
+        }
+      ],
+      "oneShotReceiptDeviationMillis": 59,
+      "frozenClockAcrossSync": true,
+      "oneShotTiming": {
+        "targetEpoch": 1792937754315,
+        "plannedElapsed": 6388719965,
+        "dispatchedElapsed": 6388719973,
+        "callbackElapsed": 6388720019
+      },
+      "cancelledOneShotReconnectChecked": false,
+      "cancelledOneShotReceived": 0,
+      "clockStandaloneDidNotClick": true,
+      "clockClosePausedSync": true,
+      "dnsFailureBoundedMillis": 250,
+      "builtinSourceProbes": [
+        {
+          "source": "ALIYUN",
+          "host": "ntp.aliyun.com",
+          "succeeded": true,
+          "rttMillis": 100,
+          "failure": "NONE"
+        },
+        {
+          "source": "TENCENT",
+          "host": "ntp.tencent.com",
+          "succeeded": true,
+          "rttMillis": 17,
+          "failure": "NONE"
+        },
+        {
+          "source": "CLOUDFLARE",
+          "host": "time.cloudflare.com",
+          "succeeded": false,
+          "rttMillis": 0,
+          "failure": "TIMEOUT"
+        }
+      ]
+    },
+    "clockHardwareAccelerated": true
+  },
+  "resourceObservation": {
+    "build": "R8 release, local debug test signature, no instrumentation or debugger attached",
+    "home": {
+      "pssKiB": [
+        75512,
+        77231,
+        77047,
+        76992,
+        76991,
+        76996
+      ],
+      "observationSeconds": 13.811,
+      "cpuTicks": 48,
+      "ticksPerSecond": 100,
+      "cpuPercentOfOneCore": 3.476
+    },
+    "floatingClockOverTestTarget": {
+      "pssKiB": [
+        60237,
+        59967,
+        59995,
+        59978,
+        60057,
+        60105
+      ],
+      "observationSeconds": 13.713,
+      "cpuTicks": 294,
+      "ticksPerSecond": 100,
+      "cpuPercentOfOneCore": 21.44
+    },
+    "targetReceivedDuringClockProfile": 0,
+    "unsignedApkBytes": 158122,
+    "debugRestored": true
+  },
+  "checks": {
+    "unitTests": 32,
+    "lintErrors": 0,
+    "lintWarnings": 0,
+    "lintHints": 5,
+    "assembleDebug": "passed",
+    "assembleRelease": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "history": [
+    "First round: HTTPS formats/recovery, count-limited clicks and deadline passed; recording input was blocked by Xiaomi USB security settings.",
+    "Read-only developer-settings inspection found the USB debugging security switch off; after user enabled and confirmed it, the independent target received shell touch input.",
+    "Removed stale binding.title and unused app_description after the home layout was edited; full build checks passed."
+  ],
+  "notVerified": [
+    "Physical-device rotation, screen-off and in-task service interruption",
+    "Physical-device process termination and reconnect after cancelling a task",
+    "Absolute UTC accuracy",
+    "Optimized-build click-load throughput and timing distribution",
+    "Long-duration CPU, PSS, power and stability"
+  ],
+  "systemSettings": "Other accessibility services preserved; only the user-enabled click service was temporarily rebound for instrumentation/installation. No rotation, font or lock-screen settings changed.",
+  "accountAppsTouched": false
+}

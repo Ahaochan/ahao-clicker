@@ -18,7 +18,8 @@ final class Receipts {
     static synchronized void focused(boolean value) { focused = value; }
     static synchronized void touch(android.view.MotionEvent event) {
         if (touches.size() >= 4096) return;
-        try { touches.add(new JSONObject().put("action", event.getActionMasked()).put("x", event.getRawX()).put("y", event.getRawY()).put("elapsed", SystemClock.elapsedRealtime())); }
+        try { touches.add(new JSONObject().put("action", event.getActionMasked()).put("x", event.getRawX()).put("y", event.getRawY())
+                .put("elapsed", SystemClock.elapsedRealtime()).put("eventUptime", event.getEventTime()).put("downUptime", event.getDownTime())); }
         catch (org.json.JSONException error) { throw new IllegalStateException(error); }
     }
     static synchronized void click(String name) {

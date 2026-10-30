@@ -1,0 +1,408 @@
+{
+  "date": "2026-10-26",
+  "environment": {
+    "api": 37,
+    "display": "1080x2400, 420 dpi",
+    "rendering": "SwiftShader",
+    "abi": "x86_64",
+    "type": "Android emulator"
+  },
+  "checks": {
+    "gradleCacheDrive": "D",
+    "unitTests": {
+      "core": 35,
+      "app": 4
+    },
+    "java": 17,
+    "debugBuild": true,
+    "releaseBuild": true,
+    "lint": {
+      "hints": 5,
+      "warnings": 0,
+      "errors": 0
+    }
+  },
+  "regression": {
+    "passed": true,
+    "cases": [
+      {
+        "name": "permission_and_disclosure",
+        "passed": true,
+        "durationMillis": 1805
+      },
+      {
+        "name": "https_time_formats_periodic_failure_recovery",
+        "passed": true,
+        "durationMillis": 8623
+      },
+      {
+        "name": "single_point_count_and_start_time",
+        "passed": true,
+        "durationMillis": 5641
+      },
+      {
+        "name": "deadline_limits_count",
+        "passed": true,
+        "durationMillis": 4270
+      },
+      {
+        "name": "actual_recording_and_multistep_replay",
+        "passed": true,
+        "durationMillis": 10799
+      },
+      {
+        "name": "recording_repeat_and_cancel",
+        "passed": true,
+        "durationMillis": 19870
+      },
+      {
+        "name": "floating_stop_waiting_and_running",
+        "passed": true,
+        "durationMillis": 7100
+      },
+      {
+        "name": "rotation_screen_off_and_service_disconnect",
+        "passed": true,
+        "durationMillis": 13809
+      },
+      {
+        "name": "source_change_clears_old_time",
+        "passed": true,
+        "durationMillis": 920
+      },
+      {
+        "name": "v3_independent_samples_and_cancellation",
+        "passed": true,
+        "durationMillis": 4385
+      },
+      {
+        "name": "v3_same_display_preserves_point",
+        "passed": true,
+        "durationMillis": 1102
+      },
+      {
+        "name": "v3_tabs_and_time_sources",
+        "passed": true,
+        "durationMillis": 4148
+      },
+      {
+        "name": "v2_crosshair_and_one_shot",
+        "passed": true,
+        "durationMillis": 9454
+      },
+      {
+        "name": "v2_cancelled_one_shot_never_replays",
+        "passed": true,
+        "durationMillis": 7037
+      },
+      {
+        "name": "v2_floating_clock_lifecycle",
+        "passed": true,
+        "durationMillis": 1304
+      },
+      {
+        "name": "v2_landscape_large_font_stop_visible",
+        "passed": true,
+        "durationMillis": 3211
+      },
+      {
+        "name": "v3_time_page_large_font_dark",
+        "passed": true,
+        "durationMillis": 4028
+      },
+      {
+        "name": "v3_builtin_source_reachability",
+        "passed": true,
+        "durationMillis": 1545
+      }
+    ],
+    "evidence": {
+      "physicalDevice": false,
+      "singlePointReceipts": [
+        {
+          "point": "A",
+          "elapsed": 33063087,
+          "epoch": 1792975398439
+        },
+        {
+          "point": "A",
+          "elapsed": 33063214,
+          "epoch": 1792975398567
+        },
+        {
+          "point": "A",
+          "elapsed": 33063434,
+          "epoch": 1792975398786
+        },
+        {
+          "point": "A",
+          "elapsed": 33063656,
+          "epoch": 1792975399008
+        },
+        {
+          "point": "A",
+          "elapsed": 33063862,
+          "epoch": 1792975399214
+        }
+      ],
+      "deadlineReceipts": [
+        {
+          "point": "A",
+          "elapsed": 33067060,
+          "epoch": 1792975402412
+        },
+        {
+          "point": "A",
+          "elapsed": 33067295,
+          "epoch": 1792975402647
+        },
+        {
+          "point": "A",
+          "elapsed": 33067547,
+          "epoch": 1792975402899
+        },
+        {
+          "point": "A",
+          "elapsed": 33067810,
+          "epoch": 1792975403162
+        }
+      ],
+      "lastFloatingControl": {
+        "text": "关闭悬浮时钟",
+        "x": 347,
+        "y": 692
+      },
+      "recordedSteps": "323.0,442.0,0\n323.0,841.0,1031\n323.0,442.0,1059",
+      "replayReceipts": [
+        {
+          "point": "A",
+          "elapsed": 33077211,
+          "epoch": 1792975412563
+        },
+        {
+          "point": "B",
+          "elapsed": 33077709,
+          "epoch": 1792975413061
+        },
+        {
+          "point": "A",
+          "elapsed": 33077965,
+          "epoch": 1792975413317
+        },
+        {
+          "point": "A",
+          "elapsed": 33078198,
+          "epoch": 1792975413550
+        },
+        {
+          "point": "B",
+          "elapsed": 33078679,
+          "epoch": 1792975414031
+        },
+        {
+          "point": "A",
+          "elapsed": 33078927,
+          "epoch": 1792975414279
+        }
+      ],
+      "replayReceiptGapsMillis": [
+        498,
+        256,
+        233,
+        481,
+        248
+      ],
+      "replayInputGapsMillis": [
+        453,
+        213,
+        163,
+        463,
+        205
+      ],
+      "repeatedRecordingReceipts": [
+        {
+          "point": "A",
+          "elapsed": 33082039,
+          "epoch": 1792975417391
+        },
+        {
+          "point": "B",
+          "elapsed": 33083128,
+          "epoch": 1792975418480
+        },
+        {
+          "point": "A",
+          "elapsed": 33084243,
+          "epoch": 1792975419595
+        },
+        {
+          "point": "B",
+          "elapsed": 33085351,
+          "epoch": 1792975420703
+        },
+        {
+          "point": "A",
+          "elapsed": 33086460,
+          "epoch": 1792975421812
+        },
+        {
+          "point": "B",
+          "elapsed": 33087526,
+          "epoch": 1792975422878
+        },
+        {
+          "point": "A",
+          "elapsed": 33088604,
+          "epoch": 1792975423956
+        },
+        {
+          "point": "B",
+          "elapsed": 33089707,
+          "epoch": 1792975425059
+        },
+        {
+          "point": "A",
+          "elapsed": 33090803,
+          "epoch": 1792975426155
+        },
+        {
+          "point": "B",
+          "elapsed": 33091950,
+          "epoch": 1792975427302
+        },
+        {
+          "point": "A",
+          "elapsed": 33093043,
+          "epoch": 1792975428395
+        },
+        {
+          "point": "B",
+          "elapsed": 33094137,
+          "epoch": 1792975429489
+        }
+      ],
+      "sourceSamplesIsolated": true,
+      "cancelledResponseIgnored": true,
+      "sameDisplayPreservesSelectedPoint": true,
+      "pickerValue": "2026-10-26T00:46:23.750Z[GMT]",
+      "timePageEditableFields": 1,
+      "sourceColumns": 2,
+      "sourceCount": 5,
+      "sourceClockExample": "00:44:26:792(+1906)",
+      "tabAndUnsavedIntervalRestored": true,
+      "hiddenSourceSchedulesCancelled": true,
+      "crosshairDrag": {
+        "from": [
+          540,
+          1200
+        ],
+        "target": [
+          323,
+          442
+        ],
+        "savedX": "323.0",
+        "savedY": "442.0"
+      },
+      "oneShotReceipts": [
+        {
+          "point": "A",
+          "elapsed": 33139799,
+          "epoch": 1792975475151
+        }
+      ],
+      "oneShotReceiptDeviationMillis": 54,
+      "frozenClockAcrossSync": true,
+      "oneShotTiming": {
+        "targetEpoch": 1792975476204,
+        "plannedElapsed": 33139745,
+        "dispatchedElapsed": 33139752,
+        "callbackElapsed": 33139796
+      },
+      "cancelledOneShotReconnectChecked": true,
+      "cancelledOneShotReceived": 0,
+      "clockHardwareAccelerated": true,
+      "clockStandaloneDidNotClick": true,
+      "clockClosePausedSync": true,
+      "landscapeFontScale": 1.5,
+      "pinnedCloseControlVisible": true,
+      "timePageLargeFontScale": 1.5,
+      "timePageLandscapeDark": true,
+      "timePageSaveReachable": true,
+      "dnsFailureBoundedMillis": 492,
+      "builtinSourceProbes": [
+        {
+          "source": "ALIYUN",
+          "host": "ntp.aliyun.com",
+          "succeeded": true,
+          "rttMillis": 46,
+          "failure": "NONE"
+        },
+        {
+          "source": "TENCENT",
+          "host": "ntp.tencent.com",
+          "succeeded": true,
+          "rttMillis": 15,
+          "failure": "NONE"
+        },
+        {
+          "source": "CLOUDFLARE",
+          "host": "time.cloudflare.com",
+          "succeeded": true,
+          "rttMillis": 229,
+          "failure": "NONE"
+        },
+        {
+          "source": "JD",
+          "host": "api.m.jd.com",
+          "succeeded": false,
+          "rttMillis": 0,
+          "failure": "NETWORK_OR_SAMPLE"
+        },
+        {
+          "source": "TAOBAO",
+          "host": "acs.m.taobao.com",
+          "succeeded": true,
+          "rttMillis": 46,
+          "failure": "NONE"
+        }
+      ]
+    }
+  },
+  "jdDiagnostics": [
+    {
+      "variant": "current",
+      "httpStatus": 200,
+      "publicResponse": "{\"code\":\"2\",\"echo\":\"the current API does not exist\"}"
+    },
+    {
+      "variant": "web_agent",
+      "httpStatus": 200,
+      "publicResponse": "{\"code\":\"2\",\"echo\":\"the current API does not exist\"}"
+    },
+    {
+      "variant": "without_cache_key",
+      "httpStatus": 200,
+      "publicResponse": "{\"code\":\"2\",\"echo\":\"the current API does not exist\"}"
+    },
+    {
+      "variant": "appid",
+      "httpStatus": 200,
+      "publicResponse": "{\"code\":\"2\",\"echo\":\"the current API does not exist\"}"
+    },
+    {
+      "variant": "jd_ajax",
+      "httpStatus": 302,
+      "publicResponse": ""
+    },
+    {
+      "variant": "jd_gateway_root",
+      "httpStatus": 200,
+      "publicResponse": "{\"code\":\"2\",\"echo\":\"the current API does not exist\"}"
+    }
+  ],
+  "limitations": [
+    "JD endpoint returned code 2: the current API does not exist; its card reports sync failure.",
+    "UI clocks extrapolate at 100 ms display intervals; millisecond formatting is not an accuracy guarantee.",
+    "This UI iteration was verified on an emulator; physical-device CPU/PSS and long-duration tests were not repeated."
+  ]
+}

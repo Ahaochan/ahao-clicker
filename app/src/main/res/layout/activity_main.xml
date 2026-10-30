@@ -1,39 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:padding="@dimen/content_padding">
-  <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="vertical">
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textColor="@color/text_primary"
-        android:textSize="28sp"
-        android:textStyle="bold" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/section_spacing"
-        android:text="@string/app_description"
-        android:textColor="@color/text_secondary"
-        android:textSize="18sp" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/section_spacing"
-        android:text="@string/setup_status"
-        android:textColor="@color/text_secondary"
-        android:textSize="16sp" />
-    <LinearLayout
-        android:id="@+id/form"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" />
-  </LinearLayout>
-</ScrollView>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="@dimen/content_padding">
+  <RadioGroup android:id="@+id/tabs" android:layout_width="match_parent" android:layout_height="wrap_content"
+      android:orientation="horizontal" android:checkedButton="@id/tab_click">
+    <RadioButton android:id="@+id/tab_click" style="@style/FeatureTab" android:text="@string/tab_click" />
+    <RadioButton android:id="@+id/tab_time" style="@style/FeatureTab" android:text="@string/time_settings" />
+  </RadioGroup>
+  <ScrollView android:id="@+id/click_page" android:layout_width="match_parent" android:layout_height="0dp"
+      android:layout_weight="1" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+      <TextView style="@style/SetupHeading" android:text="@string/setup_accessibility_heading" />
+      <TextView android:id="@+id/accessibility_status" style="@style/SetupStatus"
+          android:text="@string/setup_accessibility_unavailable" />
+      <Button android:id="@+id/accessibility_settings" android:layout_width="match_parent" android:layout_height="wrap_content"
+          android:text="@string/accessibility_settings" />
+      <TextView style="@style/SetupHeading" android:text="@string/setup_overlay_heading" />
+      <TextView android:id="@+id/overlay_status" style="@style/SetupStatus"
+          android:text="@string/setup_overlay_unavailable" />
+      <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+          android:text="@string/setup_overlay_hint" android:textSize="@dimen/caption_text" android:textColor="@color/text_secondary" />
+      <Button android:id="@+id/show_clock" android:layout_width="match_parent" android:layout_height="wrap_content"
+          android:minHeight="@dimen/touch_target"
+          android:text="@string/show_clock" />
+      <Button android:id="@+id/show_recording_overlay" android:layout_width="match_parent" android:layout_height="wrap_content"
+          android:minHeight="@dimen/touch_target" android:text="@string/show_recording_overlay" />
+    </LinearLayout>
+  </ScrollView>
+  <include android:id="@+id/time_page" layout="@layout/time_sync_panel" android:layout_width="match_parent"
+      android:layout_height="0dp" android:layout_weight="1" android:visibility="gone" />
+</LinearLayout>

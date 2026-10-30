@@ -1,0 +1,99 @@
+{
+  "passed": true,
+  "scope": "Focused floating drag icon regression",
+  "cases": [
+    {
+      "name": "v2_floating_clock_lifecycle",
+      "passed": true,
+      "durationMillis": 2889
+    },
+    {
+      "name": "v2_crosshair_and_one_shot",
+      "passed": true,
+      "durationMillis": 12252
+    },
+    {
+      "name": "v2_cancelled_one_shot_never_replays",
+      "passed": true,
+      "durationMillis": 17917
+    },
+    {
+      "name": "v2_landscape_large_font_stop_visible",
+      "passed": true,
+      "durationMillis": 3957
+    }
+  ],
+  "evidenceByCase": {
+    "v2_floating_clock_lifecycle": {
+      "physicalDevice": false,
+      "floatingDragIconMovedWindow": true,
+      "clockHardwareAccelerated": true,
+      "lastFloatingControl": {
+        "text": "关闭悬浮时钟",
+        "x": 974,
+        "y": 1900
+      },
+      "clockStandaloneDidNotClick": true,
+      "clockClosePausedSync": true,
+      "clockCloseIconTopRight": true
+    },
+    "v2_crosshair_and_one_shot": {
+      "physicalDevice": false,
+      "lastFloatingControl": {
+        "text": "显示时钟",
+        "x": 765,
+        "y": 1854
+      },
+      "crosshairDrag": {
+        "from": [
+          540,
+          1200
+        ],
+        "target": [
+          323,
+          442
+        ],
+        "savedX": "323.0",
+        "savedY": "442.0"
+      },
+      "floatingDragIconMovedWindow": true,
+      "oneShotReceipts": [
+        {
+          "point": "A",
+          "elapsed": 1735913,
+          "epoch": 1792995724804
+        }
+      ],
+      "oneShotReceiptDeviationMillis": 221,
+      "frozenClockAcrossSync": true,
+      "oneShotTiming": {
+        "targetEpoch": 1792995725022,
+        "plannedElapsed": 1735692,
+        "dispatchedElapsed": 1735693,
+        "callbackElapsed": 1735750
+      }
+    },
+    "v2_cancelled_one_shot_never_replays": {
+      "physicalDevice": false,
+      "floatingDragIconMovedWindow": true,
+      "lastFloatingControl": {
+        "text": "关闭浮窗并停止任务",
+        "x": 974,
+        "y": 1555
+      },
+      "armedOverlayCloseCancelledClick": true,
+      "cancelledOneShotReconnectChecked": true,
+      "cancelledOneShotReceived": 0
+    },
+    "v2_landscape_large_font_stop_visible": {
+      "physicalDevice": false,
+      "lastFloatingControl": {
+        "text": "关闭悬浮时钟",
+        "x": 556,
+        "y": 241
+      },
+      "landscapeFontScale": 1.5,
+      "pinnedCloseControlVisible": true
+    }
+  }
+}
