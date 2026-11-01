@@ -1,0 +1,214 @@
+{
+  "date": "2026-11-01",
+  "feature": "Local time source, persisted source drag order, 10ms time wheel",
+  "baseline": "908c65f",
+  "device": {
+    "kind": "emulator",
+    "api": 37
+  },
+  "unitTests": {
+    "core": {
+      "tests": 83,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "app": {
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "cases": [
+    {
+      "name": "v17_local_source_and_order",
+      "passed": true,
+      "durationMillis": 5629
+    },
+    {
+      "name": "v17_ten_millisecond_wheel",
+      "passed": true,
+      "durationMillis": 6630
+    },
+    {
+      "name": "v17_local_timed_click",
+      "passed": true,
+      "durationMillis": 5831
+    },
+    {
+      "name": "v8_overlay_defaults_to_now",
+      "passed": true,
+      "durationMillis": 8831
+    },
+    {
+      "name": "v4_time_wheels_layout",
+      "passed": true,
+      "durationMillis": 8371
+    },
+    {
+      "name": "v3_tabs_and_time_sources",
+      "passed": true,
+      "durationMillis": 5291
+    },
+    {
+      "name": "v16_feedback_interrupt",
+      "passed": true,
+      "durationMillis": 10712
+    },
+    {
+      "name": "v3_time_page_large_font_dark",
+      "passed": true,
+      "durationMillis": 4153
+    },
+    {
+      "name": "v2_cancelled_one_shot_never_replays",
+      "passed": true,
+      "durationMillis": 18420
+    },
+    {
+      "name": "v12_multipoint_overlay",
+      "passed": true,
+      "durationMillis": 27276
+    }
+  ],
+  "tdd": {
+    "initialAppFailures": 7,
+    "localProviderFailures": 4,
+    "localProviderTests": 5,
+    "nativeWheelRed": "Millisecond zero label is blank",
+    "fixedWith": "100 displayedValues instead of numeric formatter for index 0..99"
+  },
+  "localSource": {
+    "offline": true,
+    "liveZeroOffset": true,
+    "networkRequestsByLocalProvider": false,
+    "steadyReferenceUnitClockAdvance": "30 days simulated, not an Android endurance run"
+  },
+  "sourceOrder": {
+    "realLongPressDrop": true,
+    "outsideDropUnchanged": true,
+    "recreationRestored": true,
+    "selectionAndUnsavedIntervalUnchanged": true
+  },
+  "timeWheel": {
+    "stepMillis": 10,
+    "maximumMillis": 990,
+    "realSwipe": true,
+    "legacyCancelUnchanged": true,
+    "confirmationAndReopenRemembered": true
+  },
+  "localTimedClick": {
+    "offline": true,
+    "actualReceived": 1,
+    "expected": 1
+  },
+  "checks": [
+    "core:test",
+    "app:testDebugUnitTest",
+    "app:lintDebug",
+    "app:assembleDebug",
+    "app:assembleRelease",
+    "git diff --check"
+  ],
+  "testHarnessRepairs": [
+    "Old source counts 5 updated to 6",
+    "Old drag helper minimum-48dp assertion replaced by full visibility per accepted compact layout",
+    "Wait for dialog/frame presentation before real-coordinate swipe/screenshot"
+  ],
+  "cleanup": {
+    "testPackagesRemoved": true,
+    "airplaneModeRestored": true,
+    "fontScaleRestored": true,
+    "preferencesRestoredByHarness": true
+  },
+  "rawArtifactsIgnoredDirectory": ".tools/time-sources-20261101/",
+  "limitations": [
+    "Functional scenarios verified on API37 emulator; API36 phone installation/launch only",
+    "No new latency percentiles, accuracy guarantee, PSS or real-device endurance claim",
+    "Read-screen accessibility move actions not separately driven by a screen reader"
+  ],
+  "sources": [
+    {
+      "path": "app/src/androidTest/kotlin/com/ahao/clicker/acceptance/MvpAcceptance.kt",
+      "sha256": "c16b7b4d2dddcd41b0c2e3b73921ff092b88db6854128c18a70385c7c5a65c93"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/ClickService.kt",
+      "sha256": "cba3b0a0e46d2c37aa3e9ee78387619d943c91cc6f9613a20389b9d24da08913"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/SettingsStore.kt",
+      "sha256": "88f5e830440ef76e64343fbc5e025a5ceb05f846fdc1372bca2e0ffcfe4eb512"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/TimeOfDayPicker.kt",
+      "sha256": "98a0982909e5106c50e44ac26c3accb20649a55cb346252e3cdc5612a293a52a"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/TimeWheel.kt",
+      "sha256": "aa146395c5b24d643949ef87e5d0bcf37e321652b550775da3e9ef74da018bf8"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/time/LocalTimeProvider.kt",
+      "sha256": "d5d0b1dd03ca3b63f5f45f4c770742824a40e4c0c37365c226c34a74f952b587"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/time/SourceOrder.kt",
+      "sha256": "2e7bab1b8b6fb6e477eaff44b2af2694a345e77688abb370856f4f34e4e762fe"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/time/TimeProvider.kt",
+      "sha256": "a038cb78b8b18014a1d12a4115e28462e754c57fd29ce104fc0978faaa9bad83"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/time/TimeSettingsController.kt",
+      "sha256": "ac15afa351e698780f609a297ea7f11c704bc7c4ba8794e8cb9118aa00791fca"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/time/TimeSources.kt",
+      "sha256": "2c974b6ddec776175891179706add84238a3c5803410647da94cf0f11be5e734"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/time/TimeSyncManager.kt",
+      "sha256": "424302791ca990e27dfc424ec1c7337ed85906645f87e05f6d5d03634b0f5a7c"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/time/TimeSyncPanel.kt",
+      "sha256": "70290d89121dfd4edac37f438b1dcc01f6a8559fa3c84ddef2dc07233ed46d92"
+    },
+    {
+      "path": "app/src/main/res/values/strings.xml",
+      "sha256": "702f7d5afef6c24bb460c552c29464abcb6576078c64347ebb93708c63691549"
+    },
+    {
+      "path": "app/src/test/kotlin/com/ahao/clicker/TimeWheelTest.kt",
+      "sha256": "8d0244b8ab30c391509bc6be778c87cd865d236c3ed3d290d59f4bf6d22bf010"
+    },
+    {
+      "path": "app/src/test/kotlin/com/ahao/clicker/time/LocalTimeProviderTest.kt",
+      "sha256": "04dbc0acb11d26fd435aa1ef31e7eefaf6f69b85bc9780447247d7428e4a93c3"
+    },
+    {
+      "path": "app/src/test/kotlin/com/ahao/clicker/time/TimeSettingsTest.kt",
+      "sha256": "1ce8b0f27ac02cad9430886ca7b679ac976002c0d0d5da2f88e27d8925f2af42"
+    },
+    {
+      "path": "core/src/main/kotlin/com/ahao/clicker/core/TimeSync.kt",
+      "sha256": "7928eacf9a43d74b5a46ab0c51e94015c97c50c3b9c5aa1ecebd340a32e9c2ef"
+    },
+    {
+      "path": "core/src/test/kotlin/com/ahao/clicker/core/NtpPacketTest.kt",
+      "sha256": "ba3fefc1cf39253bdfa009c3885a83d50a83bf30a1ddb55e5ca6e7538f97b11e"
+    }
+  ],
+  "physicalInstallation": {
+    "api": 36,
+    "preferencesUnchanged": true,
+    "apkSha256": "81290b41bcc0fc6f74b2ba8aed26b0a8e91a4fda453dada0bbac1598a20d3d4d",
+    "launched": true,
+    "date": "2026-11-01",
+    "accessibilityServiceBound": true,
+    "scope": "Replacement installation, preference preservation and launch only; no physical click or timing test"
+  }
+}

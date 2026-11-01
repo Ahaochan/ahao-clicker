@@ -17,7 +17,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
 /** Independent provider state; all providers share two bounded network workers. */
-class TimeSyncManager {
+class TimeSyncManager : TimeProvider {
     private val time = SyncedTime()
     private val pacing = SyncPacing()
     companion object {
@@ -34,12 +34,13 @@ class TimeSyncManager {
     @Volatile private var connection: HttpURLConnection? = null
     @Volatile private var socket: DatagramSocket? = null
     @Volatile private var lookup: AddressLookup? = null
-    @Volatile var state = SyncState()
+    @Volatile override var state = SyncState()
         private set
 
-    fun reference(): TimeReference = time.snapshot(SystemClock.elapsedRealtime(), System.currentTimeMillis())
+    override fun reference(): TimeReference = time.snapshot(SystemClock.elapsedRealtime(), System.currentTimeMillis())
 
-    @Synchronized fun configure(value: TimeSourceConfig, periodic: Boolean) {
+    @Synchronized override fun configure(value: TimeSourceConfig, periodic: Boolean) {
+        require(value.builtin != com.ahao.clicker.core.BuiltinTimeSource.LOCAL)
         if (value == config && periodic == enabled) return
         generation++
         if (config?.url != value.url || config?.format != value.format || config?.field != value.field || config?.builtin != value.builtin) {
@@ -57,7 +58,7 @@ class TimeSyncManager {
         if (enabled) enqueue(generation, 0)
     }
 
-    @Synchronized fun pause() {
+    @Synchronized override fun pause() {
         generation++
         enabled = false
         scheduled?.cancel(true)
@@ -67,7 +68,7 @@ class TimeSyncManager {
         state = state.copy(syncing = false, nextAttemptElapsed = -1)
     }
 
-    @Synchronized fun syncNow(value: TimeSourceConfig, periodic: Boolean) {
+    @Synchronized override fun syncNow(value: TimeSourceConfig, periodic: Boolean) {
         configure(value, periodic)
         generation++
         scheduled?.cancel(true)
@@ -204,7 +205,7 @@ class TimeSyncManager {
         }
     }
 
-    fun hasFreshSample(): Boolean = reference().synced && state.lastSuccessElapsed >= 0 &&
+    override fun hasFreshSample(): Boolean = reference().synced && state.lastSuccessElapsed >= 0 &&
         SystemClock.elapsedRealtime() - state.lastSuccessElapsed in 0..300_000
 }
 

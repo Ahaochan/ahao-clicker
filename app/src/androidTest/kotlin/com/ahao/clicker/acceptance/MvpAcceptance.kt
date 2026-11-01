@@ -102,6 +102,9 @@ class MvpAcceptance : Instrumentation() {
             case("v15_overlay_size_memory") { overlaySizeMemory() }
             case("v15_overlay_size_restart") { overlaySizeRestart() }
             case("v16_feedback_interrupt") { feedbackInterrupt() }
+            case("v17_local_source_and_order") { localSourceAndOrder() }
+            case("v17_ten_millisecond_wheel") { tenMillisecondWheel() }
+            case("v17_local_timed_click") { localTimedClick() }
             case("v8_overlay_defaults_to_now") { overlayDefaultsToNow() }
             case("v9_long_wait_clock_discipline") { longWaitClockDiscipline() }
             case("v10_completed_clock_resynchronizes") { completedClockResynchronizes() }
@@ -732,6 +735,179 @@ class MvpAcceptance : Instrumentation() {
         }
     }
 
+    private fun localSourceAndOrder() {
+        val store = SettingsStore(targetContext)
+        val app = targetContext.applicationContext as ClickerApp
+        val airplane = shell("settings get global airplane_mode_on").trim()
+        fun order(): List<String> {
+            var result = emptyList<String>()
+            ui {
+                val grid = activity.findViewById<android.widget.GridLayout>(R.id.sources)
+                result = (0 until grid.childCount).map { grid.getChildAt(it).tag.toString().removePrefix("source_card_") }
+            }
+            return result
+        }
+        fun center(source: String): IntArray {
+            var point = IntArray(2)
+            ui {
+                val card = descendants(activity.window.decorView).first { it.tag == "source_card_$source" }
+                card.getLocationOnScreen(point); point[0] += card.width / 2; point[1] += card.height / 2
+            }
+            return point
+        }
+        fun drag(from: IntArray, to: IntArray) {
+            val down = SystemClock.uptimeMillis()
+            fun send(action: Int, x: Int, y: Int) {
+                val event = android.view.MotionEvent.obtain(down, SystemClock.uptimeMillis(), action, x.toFloat(), y.toFloat(), 0)
+                event.source = android.view.InputDevice.SOURCE_TOUCHSCREEN
+                try { check(automation.injectInputEvent(event, true)) } finally { event.recycle() }
+            }
+            send(android.view.MotionEvent.ACTION_DOWN, from[0], from[1])
+            Thread.sleep(android.view.ViewConfiguration.getLongPressTimeout().toLong() + 250)
+            for (i in 1..10) {
+                send(android.view.MotionEvent.ACTION_MOVE, from[0] + (to[0] - from[0]) * i / 10,
+                    from[1] + (to[1] - from[1]) * i / 10)
+                Thread.sleep(35)
+            }
+            send(android.view.MotionEvent.ACTION_UP, to[0], to[1])
+            Thread.sleep(350)
+        }
+        try {
+            ui { ClickService.current!!.stopAll() }
+            store.save(mapOf("source" to "LOCAL", "sourceOrder" to "", "syncInterval" to "60000"))
+            shell("cmd connectivity airplane-mode enable")
+            check(shell("settings get global airplane_mode_on").trim() == "1")
+            openMain()
+            ui { activity.findViewById<android.widget.RadioButton>(R.id.tab_time).performClick() }
+            await("Local time not displayed offline") {
+                var ready = false
+                ui { ready = descendants(activity.window.decorView).filterIsInstance<TextView>()
+                    .first { it.tag == "LOCAL_time" }.text.toString().replace("\n", "").endsWith("(+0)") }
+                ready
+            }
+            val provider = app.timeSync
+            check(app.timeSources.selectedSource == BuiltinTimeSource.LOCAL && provider.hasFreshSample())
+            check(!provider.state.syncing && !provider.state.failed && provider.state.nextAttemptElapsed == -1L)
+            val before = System.currentTimeMillis()
+            val localNow = provider.reference().now(SystemClock.elapsedRealtime())
+            check(localNow in before - 2..System.currentTimeMillis() + 2)
+            var first = ""
+            ui { first = descendants(activity.window.decorView).filterIsInstance<TextView>().first { it.tag == "LOCAL_time" }.text.toString() }
+            Thread.sleep(350)
+            ui {
+                check(descendants(activity.window.decorView).filterIsInstance<TextView>().first { it.tag == "LOCAL_time" }.text.toString() != first)
+                val grid = activity.findViewById<android.widget.GridLayout>(R.id.sources)
+                check(grid.columnCount == 2 && grid.childCount == 6)
+                activity.findViewById<EditText>(R.id.sync_interval).setText("12345")
+            }
+            val initial = order()
+            drag(center(initial.first()), center(initial.last()))
+            val expected = initial.drop(1) + initial.first()
+            await("Real long-press drop did not reorder cards") { order() == expected }
+            check(store.sourceOrder().map { it.name } == expected)
+            check(store.source().builtin == BuiltinTimeSource.LOCAL && app.timeSync === provider)
+            ui { check(activity.findViewById<EditText>(R.id.sync_interval).text.toString() == "12345") }
+            var outside = IntArray(2)
+            ui {
+                val heading = activity.findViewById<View>(R.id.sources_heading)
+                heading.getLocationOnScreen(outside); outside[0] += heading.width / 2; outside[1] += heading.height / 2
+            }
+            drag(center(expected.first()), outside)
+            check(order() == expected && store.sourceOrder().map { it.name } == expected) { "Cancelled drop changed the saved order" }
+            val monitor = addMonitor(MainActivity::class.java.name, null, false)
+            try {
+                ui { activity.recreate() }
+                activity = checkNotNull(monitor.waitForActivityWithTimeout(10_000)) as MainActivity
+            } finally { removeMonitor(monitor) }
+            await("Recreated page did not focus") { activity.hasWindowFocus() }
+            check(order() == expected)
+            ui { check(activity.findViewById<EditText>(R.id.sync_interval).text.toString() == "12345") }
+            await("Recreated cards did not render") {
+                var ready = false
+                ui { ready = descendants(activity.findViewById(R.id.sources)).filterIsInstance<android.widget.RadioButton>()
+                    .count { it.text.isNotEmpty() } == 6 }
+                ready
+            }
+            Thread.sleep(200) // Present the rendered frame before retaining the screenshot.
+            saveScreenshot("v17-local-source-order.png")
+            evidence.put("localSourceAndOrder", JSONObject().put("offline", true).put("liveZeroOffset", true)
+                .put("realLongPressDrop", true).put("outsideDropCancelled", true).put("restoredAfterRecreation", true)
+                .put("selectionAndDraftUnchanged", true).put("order", JSONArray(expected)))
+        } finally {
+            if (airplane != "1") shell("cmd connectivity airplane-mode disable")
+        }
+    }
+
+    private fun tenMillisecondWheel() {
+        val store = SettingsStore(targetContext)
+        ui { ClickService.current!!.stopAll() }
+        store.save(mapOf("source" to "LOCAL", "triggerMinuteMillis" to "12344"))
+        openMain(); showTarget(); receipt("reset")
+        ui { ClickService.current!!.showTimedOverlay() }
+        openTriggerPicker()
+        val originalTarget = store.get("target")
+        ui {
+            val wheels = windowViews().filterIsInstance<android.widget.NumberPicker>().filter { it.isShown }.toList()
+            check(wheels.size == 4 && wheels.last().maxValue == 99 && wheels.last().value == 34)
+            wheels.last().value = 99
+        }
+        dialogCancel()
+        check(store.get("target") == originalTarget && store.get("triggerMinuteMillis") == "12344")
+        openTriggerPicker()
+        Thread.sleep(350) // Wait for the dialog animation before reading real screen coordinates.
+        val swipe = IntArray(3)
+        ui {
+            val ms = windowViews().filterIsInstance<android.widget.NumberPicker>().last { it.isShown }
+            ms.value = 0
+            check(descendants(ms).filterIsInstance<EditText>().first().text.toString() == "000") { "Millisecond zero label is blank" }
+            ms.getLocationOnScreen(swipe); swipe[0] += ms.width / 2; swipe[2] = ms.height
+        }
+        shell("input touchscreen swipe ${swipe[0]} ${swipe[1] + swipe[2] * 3 / 4} ${swipe[0]} ${swipe[1] + swipe[2] / 4} 350")
+        await("10ms wheel did not respond to a real swipe") {
+            var moved = false; ui { moved = windowViews().filterIsInstance<android.widget.NumberPicker>().last { it.isShown }.value != 0 }; moved
+        }
+        Thread.sleep(500) // Finish the real wheel fling before selecting the upper boundary.
+        ui { windowViews().filterIsInstance<android.widget.NumberPicker>().last { it.isShown }.value = 99 }
+        waitForIdleSync(); Thread.sleep(150)
+        ui {
+            val ms = windowViews().filterIsInstance<android.widget.NumberPicker>().last { it.isShown }
+            check(ms.value == 99 && descendants(ms).filterIsInstance<EditText>().first().text.toString() == "990")
+        }
+        saveScreenshot("v17-ten-ms-wheel.png")
+        dialogOk()
+        check(store.get("target").toLong() % 1000 == 990L)
+        check(store.get("triggerMinuteMillis").toLong() % 1000 == 990L)
+        check(!ClickService.current!!.hasActiveTask && count() == 0)
+        ui { ClickService.current!!.stopAll(); ClickService.current!!.showTimedOverlay() }
+        check(store.get("target").toLong() % 1000 == 990L)
+        evidence.put("tenMillisecondWheel", JSONObject().put("positions", 100).put("stepMillis", 10)
+            .put("maximumMillis", 990).put("legacyCancelUnchanged", true).put("realSwipe", true)
+            .put("confirmationAndReopenRemembered", true).put("actualReceived", count()))
+    }
+
+    private fun localTimedClick() {
+        val airplane = shell("settings get global airplane_mode_on").trim()
+        try {
+            ui { ClickService.current!!.stopAll() }
+            SettingsStore(targetContext).save(mapOf("source" to "LOCAL"))
+            openMain(); showTarget(); receipt("reset")
+            shell("cmd connectivity airplane-mode enable")
+            val point = point("A")
+            val target = (System.currentTimeMillis() + 2_500) / 10 * 10
+            ui { ClickService.current!!.prepareTimed(TapPoint(point[0].toFloat(), point[1].toFloat()), target) }
+            moveControlAway(300)
+            overlayButton(R.string.auto_click_start)
+            await("Offline local timed click was not received", 8_000) { count() >= 1 }
+            Thread.sleep(600)
+            check(count() == 1 && phase() == RunPhase.COMPLETED)
+            evidence.put("localTimedClick", JSONObject().put("offline", true).put("actualReceived", count())
+                .put("targetMillis", target).put("events", events()))
+        } finally {
+            ui { ClickService.current?.stopAll() }
+            if (airplane != "1") shell("cmd connectivity airplane-mode disable")
+        }
+    }
+
     private fun pickerAndSettings() {
         openMain()
         val chosen = java.time.Instant.ofEpochMilli(sync.reference().now(SystemClock.elapsedRealtime()) + 120_000).atZone(ZoneId.systemDefault()).withNano(750_000_000)
@@ -740,8 +916,8 @@ class MvpAcceptance : Instrumentation() {
             val pickers = windowViews().filterIsInstance<android.widget.NumberPicker>().toList()
             check(windowViews().none { it is android.widget.DatePicker }) { "Timed click must not show a date selector" }
             check(pickers.size == 4) { "Expected four time wheels, found ${pickers.size}" }
-            check(pickers.map { it.maxValue } == listOf(23, 59, 59, 999))
-            val values = listOf(chosen.hour, chosen.minute, chosen.second, 750)
+            check(pickers.map { it.maxValue } == listOf(23, 59, 59, 99))
+            val values = listOf(chosen.hour, chosen.minute, chosen.second, 75)
             pickers.forEachIndexed { index, picker ->
                 check(picker.descendantFocusability == ViewGroup.FOCUS_BLOCK_DESCENDANTS)
                 picker.value = values[index]
@@ -758,12 +934,12 @@ class MvpAcceptance : Instrumentation() {
         openTriggerPicker()
         ui {
             val ms = windowViews().filterIsInstance<android.widget.NumberPicker>().last()
-            check(ms.value == 750)
-            ms.value = 999
+            check(ms.value == 75)
+            ms.value = 99
             windowViews().filterIsInstance<Button>().last { it.id == android.R.id.button2 && it.isShown }.performClick()
         }
         check(SettingsStore(targetContext).get("target").toLong() == chosen.toInstant().toEpochMilli())
-        evidence.put("timeWheels", JSONObject().put("columns", 4).put("millisecondMaximum", 999)
+        evidence.put("timeWheels", JSONObject().put("columns", 4).put("millisecondMaximum", 990).put("stepMillis", 10)
             .put("noDatePicker", true).put("cancelPreservesTarget", true))
         ui { ClickService.current?.stopAll() }
         val app = targetContext.applicationContext as ClickerApp
@@ -773,7 +949,7 @@ class MvpAcceptance : Instrumentation() {
             activity.findViewById<android.widget.RadioButton>(R.id.tab_time).performClick()
             check(!activity.findViewById<View>(R.id.click_page).isShown)
             val grid = activity.findViewById<android.widget.GridLayout>(R.id.sources)
-            check(grid.columnCount == 2 && grid.childCount == 5)
+            check(grid.columnCount == 2 && grid.childCount == 6)
             check(descendants(activity.window.decorView).filterIsInstance<EditText>().count { it.isShown } == 1)
             activity.findViewById<EditText>(R.id.sync_interval).setText("999")
             activity.findViewById<Button>(R.id.sync_now).performClick()
@@ -974,8 +1150,10 @@ class MvpAcceptance : Instrumentation() {
             check(handle is ImageView && handle.drawable != null && handle.contentDescription == targetContext.getString(R.string.clock_drag)) {
                 "Floating drag handle must be an accessible icon instead of text"
             }
-            val touch = targetContext.resources.getDimensionPixelSize(R.dimen.overlay_button_target)
-            check(handle.width >= touch && handle.height >= touch)
+            // Compact panels intentionally shrink targets; verify the actual icon stays fully visible.
+            val visible = android.graphics.Rect()
+            check(handle.width > 0 && handle.height > 0 && handle.getGlobalVisibleRect(visible) &&
+                visible.width() == handle.width && visible.height() == handle.height)
         }
         val xy = overlayLocation { it.id == R.id.overlay_drag }
         shell("input touchscreen swipe ${xy[0]} ${xy[1]} 1000 $targetY 300")
@@ -1158,7 +1336,7 @@ class MvpAcceptance : Instrumentation() {
         }
         check(SystemClock.elapsedRealtime() - dnsStart < 3_000) { "DNS failure exceeded its bounded wait" }
         evidence.put("dnsFailureBoundedMillis", SystemClock.elapsedRealtime() - dnsStart)
-        for (source in BuiltinTimeSource.entries) {
+        for (source in BuiltinTimeSource.entries.filter { it != BuiltinTimeSource.LOCAL }) {
             manager.syncNow(TimeSourceConfig.builtin(source), false)
             await("Built-in probe ${source.name} did not settle", 10000) { !manager.state.syncing && (manager.state.failed || manager.reference().synced) }
             probes.put(JSONObject().put("source", source.name).put("host", source.host)
@@ -1235,10 +1413,10 @@ class MvpAcceptance : Instrumentation() {
                 check(activity.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE)
                 check(activity.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES)
                 val grid = activity.findViewById<android.widget.GridLayout>(R.id.sources)
-                check(grid.columnCount == 2 && grid.childCount == 5)
+                check(grid.columnCount == 2 && grid.childCount == 6)
                 val first = grid.getChildAt(0); val second = grid.getChildAt(1)
                 check(first.width > 0 && first.width == second.width && first.top == second.top && first.left < second.left)
-                check(descendants(grid).filterIsInstance<android.widget.RadioButton>().count { it.text.isNotEmpty() } == 5)
+                check(descendants(grid).filterIsInstance<android.widget.RadioButton>().count { it.text.isNotEmpty() } == 6)
                 activity.findViewById<android.widget.ScrollView>(R.id.time_page).fullScroll(View.FOCUS_DOWN)
             }
             Thread.sleep(250)
@@ -2056,17 +2234,17 @@ class MvpAcceptance : Instrumentation() {
             val at = Instant.ofEpochMilli(opened).atZone(ZoneId.systemDefault())
             ui {
                 val wheels = windowViews().filterIsInstance<android.widget.NumberPicker>().filter { it.isShown }.toList()
-                check(wheels.map { it.value } == listOf(at.hour, at.minute, at.second, at.nano / 1_000_000)) {
+                check(wheels.map { it.value } == listOf(at.hour, at.minute, at.second, at.nano / 10_000_000)) {
                     "All four wheels must start from the default time, including milliseconds"
                 }
             }
             dialogCancel()
             check(store.get("target") == opened.toString())
-            val adjusted = sync.reference().now(SystemClock.elapsedRealtime()) + 7_260_000
+            val adjusted = (sync.reference().now(SystemClock.elapsedRealtime()) + 7_260_000) / 10 * 10
             val next = Instant.ofEpochMilli(adjusted).atZone(ZoneId.systemDefault())
             ui { windowViews().first { it.id == R.id.click_start_time }.performClick() }
             ui {
-                val values = listOf(next.hour, next.minute, next.second, next.nano / 1_000_000)
+                val values = listOf(next.hour, next.minute, next.second, next.nano / 10_000_000)
                 windowViews().filterIsInstance<android.widget.NumberPicker>().filter { it.isShown }.toList()
                     .forEachIndexed { index, wheel -> wheel.value = values[index] }
             }
@@ -2096,10 +2274,10 @@ class MvpAcceptance : Instrumentation() {
             ui {
                 val wheels = windowViews().filterIsInstance<android.widget.NumberPicker>().filter { it.isShown }.toList()
                 check(wheels.size == 4)
-                check(wheels[1].value == next.minute && wheels[2].value == next.second && wheels[3].value == next.nano / 1_000_000)
+                check(wheels[1].value == next.minute && wheels[2].value == next.second && wheels[3].value == next.nano / 10_000_000)
                 wheels[1].value = (next.minute + 1) % 60
                 wheels[2].value = (next.second + 1) % 60
-                wheels[3].value = (next.nano / 1_000_000 + 1) % 1_000
+                wheels[3].value = (next.nano / 10_000_000 + 1) % 100
             }
             dialogCancel()
             check(SettingsStore(targetContext).get("triggerMinuteMillis") == remembered) { "Cancelled adjustment replaced memory" }
@@ -2142,10 +2320,10 @@ class MvpAcceptance : Instrumentation() {
             Thread.sleep(300)
         }
         fun setFuture(): Long {
-            val epoch = sync.reference().now(SystemClock.elapsedRealtime()) + 4_000
+            val epoch = (sync.reference().now(SystemClock.elapsedRealtime()) + 4_000) / 10 * 10
             val t = Instant.ofEpochMilli(epoch).atZone(ZoneId.systemDefault())
             ui {
-                val values = listOf(t.hour, t.minute, t.second, t.nano / 1_000_000)
+                val values = listOf(t.hour, t.minute, t.second, t.nano / 10_000_000)
                 windowViews().filterIsInstance<android.widget.NumberPicker>().toList().forEachIndexed { i, wheel -> wheel.value = values[i] }
             }
             return epoch

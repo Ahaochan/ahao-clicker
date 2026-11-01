@@ -2,10 +2,14 @@ package com.ahao.clicker.time
 
 import com.ahao.clicker.core.BuiltinTimeSource
 import com.ahao.clicker.core.TimeSourceConfig
+import android.os.SystemClock
 
 /** Owns independent samples. Only the visible comparison page observes all providers. */
 class TimeSources {
-    private val providers = Array(BuiltinTimeSource.entries.size) { TimeSyncManager() }
+    private val providers = Array<TimeProvider>(BuiltinTimeSource.entries.size) { index ->
+        if (BuiltinTimeSource.entries[index] == BuiltinTimeSource.LOCAL)
+            LocalTimeProvider(SystemClock::elapsedRealtime, System::currentTimeMillis) else TimeSyncManager()
+    }
     var selectedSource = BuiltinTimeSource.ALIYUN
         private set
     val selected get() = manager(selectedSource)

@@ -24,8 +24,8 @@ object TimeOfDayPicker {
         val zone = ZoneId.systemDefault()
         val value = Instant.ofEpochMilli(seed).atZone(zone).toLocalTime()
         val labels = listOf(R.string.choose_hour, R.string.choose_minute, R.string.choose_second, R.string.choose_millisecond)
-        val maxima = listOf(23, 59, 59, 999)
-        val values = listOf(value.hour, value.minute, value.second, value.nano / 1_000_000)
+        val maxima = listOf(23, 59, 59, TimeWheel.maximum)
+        val values = listOf(value.hour, value.minute, value.second, TimeWheel.position(value.nano / 1_000_000))
         val pickers = ArrayList<NumberPicker>(4)
         val row = LinearLayout(context)
         labels.forEachIndexed { index, label ->
@@ -33,7 +33,9 @@ object TimeOfDayPicker {
             val picker = NumberPicker(context).apply {
                 id = View.generateViewId()
                 minValue = 0; maxValue = maxima[index]
-                setFormatter { it.toString().padStart(if (index == 3) 3 else 2, '0') }
+                // NumberPicker's numeric filter limits max=99 to two digits; explicit labels retain 000..990.
+                if (index == 3) displayedValues = Array(TimeWheel.maximum + 1, TimeWheel::label)
+                else setFormatter { it.toString().padStart(2, '0') }
                 this.value = values[index]
                 wrapSelectorWheel = true
                 descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
@@ -66,7 +68,7 @@ object TimeOfDayPicker {
             dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 runCatching {
-                    val time = LocalTime.of(pickers[0].value, pickers[1].value, pickers[2].value, pickers[3].value * 1_000_000)
+                    val time = LocalTime.of(pickers[0].value, pickers[1].value, pickers[2].value, TimeWheel.millis(pickers[3].value) * 1_000_000)
                     selected(NextTriggerTime.resolve(now(), time, zone))
                     dialog.dismiss()
                 }.onFailure(failed)

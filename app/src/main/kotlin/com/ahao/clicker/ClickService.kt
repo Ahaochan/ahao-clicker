@@ -18,7 +18,7 @@ import android.content.IntentFilter
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.os.HandlerCompat
-import com.ahao.clicker.time.TimeSyncManager
+import com.ahao.clicker.time.TimeProvider
 import com.ahao.clicker.core.*
 
 class ClickService : AccessibilityService(), GestureDriver {
@@ -57,7 +57,7 @@ class ClickService : AccessibilityService(), GestureDriver {
     private var pendingTimedTap: Runnable? = null
     private var pendingMarkerRestore: (() -> Unit)? = null
     private var markerSuspendedElapsed = 0L
-    private var timedSource: TimeSyncManager? = null
+    private var timedSource: TimeProvider? = null
     private var markerRestore: Runnable? = null
     private var timePickerGeneration = 0L
     private var timePicker: AlertDialog? = null

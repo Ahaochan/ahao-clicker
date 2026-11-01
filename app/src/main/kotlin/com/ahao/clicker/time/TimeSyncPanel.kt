@@ -1,12 +1,14 @@
 package com.ahao.clicker.time
 
 import android.graphics.Typeface
+import android.content.ClipData
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
+import android.view.DragEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.GridLayout
@@ -20,6 +22,7 @@ import com.ahao.clicker.R
 import com.ahao.clicker.SettingsStore
 import com.ahao.clicker.core.BuiltinTimeSource
 import com.ahao.clicker.core.SourceClock
+import com.ahao.clicker.core.TimeReference
 import com.ahao.clicker.databinding.TimeSyncPanelBinding
 import java.time.ZoneId
 
@@ -31,12 +34,18 @@ class TimeSyncPanel(private val binding: TimeSyncPanelBinding, private val app: 
     private val zone = ZoneId.systemDefault()
     private val names = context.resources.getStringArray(R.array.builtin_sources)
     private var visible = false
+    private val settings = TimeSettingsController({ ClickService.current?.hasActiveTask == true },
+        store::save, app::refreshTimeSources, app.timeSources::syncAll)
+    private var dragGeneration = 0L
+    private var dragging: SourceDrag? = null
+    private data class SourceDrag(val owner: TimeSyncPanel, val generation: Long,
+        val source: BuiltinTimeSource, val origin: View)
     private data class Card(val source: BuiltinTimeSource, val root: View, val title: RadioButton, val time: TextView)
-    private val cards = listOf(BuiltinTimeSource.JD, BuiltinTimeSource.TAOBAO,
-        BuiltinTimeSource.ALIYUN, BuiltinTimeSource.TENCENT, BuiltinTimeSource.CLOUDFLARE).mapIndexed { index, source ->
+    private val cards = store.sourceOrder().mapIndexed { index, source ->
         val padding = context.resources.getDimensionPixelSize(R.dimen.control_padding_vertical)
         val gap = context.resources.getDimensionPixelSize(R.dimen.source_gap)
         val root = LinearLayout(context).apply {
+            tag = "source_card_${source.name}"
             orientation = LinearLayout.VERTICAL
             setPadding(padding, padding, padding, padding)
             setBackgroundResource(R.drawable.source_background)
@@ -65,10 +74,44 @@ class TimeSyncPanel(private val binding: TimeSyncPanelBinding, private val app: 
             setMargins(gap, gap, gap, gap)
         })
         Card(source, root, title, time)
-    }
+    }.toMutableList()
 
     init {
         androidx.core.view.ViewCompat.setAccessibilityHeading(binding.sourcesHeading, true)
+        cards.forEach { card ->
+            for (view in listOf(card.root, card.title, card.time)) view.setOnLongClickListener { origin ->
+                if (!visible || dragging != null) return@setOnLongClickListener false
+                val drag = SourceDrag(this, dragGeneration, card.source, origin)
+                dragging = drag
+                val started = origin.startDragAndDrop(ClipData.newPlainText("source", card.source.name),
+                    View.DragShadowBuilder(card.root), drag, 0)
+                if (started) card.root.alpha = .5f else dragging = null
+                started
+            }
+            androidx.core.view.ViewCompat.addAccessibilityAction(card.root, context.getString(R.string.source_move_previous)) { _, _ ->
+                moveBy(card.source, -1)
+            }
+            androidx.core.view.ViewCompat.addAccessibilityAction(card.root, context.getString(R.string.source_move_next)) { _, _ ->
+                moveBy(card.source, 1)
+            }
+        }
+        binding.sources.setOnDragListener { _, event ->
+            val drag = event.localState as? SourceDrag
+            if (drag?.owner !== this) return@setOnDragListener false
+            if (event.action == DragEvent.ACTION_DRAG_ENDED) {
+                cards.forEach { it.root.alpha = 1f }; dragging = null
+                return@setOnDragListener true
+            }
+            if (!visible || drag.generation != dragGeneration) return@setOnDragListener false
+            if (event.action == DragEvent.ACTION_DROP) {
+                val target = cards.firstOrNull { card ->
+                    event.x >= card.root.left && event.x < card.root.right &&
+                        event.y >= card.root.top && event.y < card.root.bottom
+                } ?: return@setOnDragListener false
+                reorder(drag.source, target.source)
+            }
+            true
+        }
         binding.syncInterval.setText(String.format(java.util.Locale.ROOT, "%d", store.source().intervalMillis))
         binding.syncNow.setOnClickListener { saveAndSync() }
         binding.syncInterval.setOnEditorActionListener { _, action, _ ->
@@ -79,39 +122,64 @@ class TimeSyncPanel(private val binding: TimeSyncPanelBinding, private val app: 
     fun setVisible(value: Boolean) {
         if (visible == value) return
         visible = value
+        if (!value) {
+            dragGeneration++
+            dragging?.origin?.cancelDragAndDrop()
+            cards.forEach { it.root.alpha = 1f }; dragging = null
+        }
         main.removeCallbacks(refresh)
         app.observeAllTimes(this, value)
-        if (value) main.post(refresh) else {
+        if (value) refresh.run() else {
             binding.syncInterval.clearFocus()
             context.getSystemService(InputMethodManager::class.java).hideSoftInputFromWindow(binding.root.windowToken, 0)
         }
     }
 
     private fun select(source: BuiltinTimeSource) {
-        if (ClickService.current?.hasActiveTask == true) {
+        if (!settings.select(source)) {
             Toast.makeText(context, R.string.task_active, Toast.LENGTH_SHORT).show()
             render(); return
         }
-        store.save(mapOf("source" to source.name))
-        app.refreshTimeSources()
         render()
     }
 
     private fun saveAndSync() {
-        if (ClickService.current?.hasActiveTask == true) {
-            Toast.makeText(context, R.string.task_active, Toast.LENGTH_SHORT).show(); return
-        }
-        val interval = binding.syncInterval.text.toString().toLongOrNull()
-        if (interval == null || interval !in 1_000..86_400_000) {
-            binding.syncInterval.error = context.getString(R.string.interval_error); return
+        when (settings.saveAndSync(binding.syncInterval.text.toString())) {
+            TimeSettingsResult.ACTIVE_TASK -> {
+                Toast.makeText(context, R.string.task_active, Toast.LENGTH_SHORT).show(); return
+            }
+            TimeSettingsResult.INVALID_INTERVAL -> {
+                binding.syncInterval.error = context.getString(R.string.interval_error); return
+            }
+            TimeSettingsResult.SAVED -> Unit
         }
         binding.syncInterval.error = null
-        store.save(mapOf("syncInterval" to interval.toString()))
-        app.refreshTimeSources()
-        app.timeSources.syncAll(interval)
         binding.syncInterval.clearFocus()
         context.getSystemService(InputMethodManager::class.java).hideSoftInputFromWindow(binding.root.windowToken, 0)
         Toast.makeText(context, R.string.sync_saved, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun moveBy(source: BuiltinTimeSource, delta: Int): Boolean {
+        val target = cards.getOrNull(cards.indexOfFirst { it.source == source } + delta) ?: return false
+        reorder(source, target.source)
+        return true
+    }
+    private fun reorder(source: BuiltinTimeSource, target: BuiltinTimeSource) {
+        val before = cards.map { it.source }
+        val next = SourceOrder.move(before, source, target)
+        if (next == before) return
+        val reordered = next.map { item -> cards.first { it.source == item } }
+        cards.clear(); cards.addAll(reordered)
+        binding.sources.removeAllViews()
+        val gap = context.resources.getDimensionPixelSize(R.dimen.source_gap)
+        cards.forEachIndexed { index, card ->
+            binding.sources.addView(card.root, GridLayout.LayoutParams(
+                GridLayout.spec(index / 2), GridLayout.spec(index % 2, 1f)).apply {
+                width = 0; height = -2; setGravity(Gravity.FILL_HORIZONTAL)
+                setMargins(gap, gap, gap, gap)
+            })
+        }
+        store.saveSourceOrder(next)
     }
 
     private fun render() {
@@ -122,9 +190,10 @@ class TimeSyncPanel(private val binding: TimeSyncPanelBinding, private val app: 
         for (card in cards) {
             val manager = app.timeSources.manager(card.source)
             val state = manager.state
-            val reference = manager.reference()
+            val local = card.source == BuiltinTimeSource.LOCAL
+            val reference = if (local) TimeReference(device, elapsed, true) else manager.reference()
             val qualifier = when {
-                reference.synced && elapsed - state.lastSuccessElapsed > 300_000 -> R.string.source_stale
+                !local && reference.synced && elapsed - state.lastSuccessElapsed > 300_000 -> R.string.source_stale
                 reference.synced && state.failed -> R.string.source_previous
                 else -> null
             }
@@ -148,6 +217,7 @@ class TimeSyncPanel(private val binding: TimeSyncPanelBinding, private val app: 
         val manager = app.timeSync
         val state = manager.state
         val summary = context.getString(R.string.source_reference, names[selected.ordinal], context.getString(when {
+            selected == BuiltinTimeSource.LOCAL -> R.string.source_local_ready
             state.syncing -> R.string.syncing
             state.failed -> R.string.sync_failed
             manager.hasFreshSample() -> R.string.synced

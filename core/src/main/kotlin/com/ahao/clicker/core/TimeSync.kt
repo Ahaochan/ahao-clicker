@@ -8,6 +8,7 @@ enum class BuiltinTimeSource(val host: String, val url: String = "", val field: 
     ALIYUN("ntp.aliyun.com"), TENCENT("ntp.tencent.com"), CLOUDFLARE("time.cloudflare.com"),
     JD("api.m.jd.com", "https://api.m.jd.com", "X-API-Request-Id", 1_000),
     TAOBAO("acs.m.taobao.com", "https://acs.m.taobao.com/gw/mtop.common.getTimestamp/1.0/", "data.t", 1_000),
+    LOCAL(""),
     ;
     val format: TimeFormat get() = when {
         this == JD -> TimeFormat.JD_REQUEST_ID
@@ -31,16 +32,18 @@ data class TimeSourceConfig(
             require(url == builtin.url)
             if (url.isNotEmpty()) require(format == builtin.format && field == builtin.field)
         }
-        require(intervalMillis in 1_000..86_400_000)
+        require(validInterval(intervalMillis))
         require(format == TimeFormat.HTTP_DATE || field.isNotBlank())
     }
     companion object {
+        fun validInterval(value: Long): Boolean = value in 1_000..86_400_000
         fun builtin(source: BuiltinTimeSource, intervalMillis: Long = 60_000) =
             TimeSourceConfig(url = source.url, format = source.format,
                 field = source.field, intervalMillis = intervalMillis, builtin = source)
     }
 }
 
+/** synced means an explicitly usable reference, including a deliberately selected device clock. */
 data class TimeReference(val epochMillis: Long, val elapsedMillis: Long, val synced: Boolean) {
     fun now(elapsed: Long): Long = epochMillis + (elapsed - elapsedMillis)
 }

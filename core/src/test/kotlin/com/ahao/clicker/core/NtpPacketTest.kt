@@ -50,7 +50,7 @@ class NtpPacketTest {
     }
 
     @Test fun `built-in configs are bounded and have stable provider identity`() {
-        assertEquals(5, BuiltinTimeSource.entries.size)
+        assertEquals(6, BuiltinTimeSource.entries.size)
         BuiltinTimeSource.entries.forEach {
             assertEquals(it, TimeSourceConfig.builtin(it, 60_000).builtin)
         }
