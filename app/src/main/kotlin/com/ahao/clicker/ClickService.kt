@@ -84,6 +84,7 @@ class ClickService : AccessibilityService(), GestureDriver {
         else if (timedMode == TimedMode.ARMED || timedMode == TimedMode.RESULT) oneShot.status else runner.status
 
     override fun onServiceConnected() {
+        traceState("service_connected")
         stopAll()
         current = this
         lastDisplayKey = displayKey(this)
@@ -102,7 +103,10 @@ class ClickService : AccessibilityService(), GestureDriver {
     }
 
     private val interruptions = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) { stopAll() }
+        override fun onReceive(context: Context?, intent: Intent?) {
+            traceState("system_broadcast", "action=${intent?.action}")
+            stopAll()
+        }
     }
 
     private fun persistPoint(point: TapPoint) {
@@ -221,6 +225,7 @@ class ClickService : AccessibilityService(), GestureDriver {
     }
 
     fun showTimedOverlay() {
+        traceState("show_timed_requested")
         if (::multiPoint.isInitialized && multiPoint.visible) {
             check(!busy) { getString(R.string.error_busy) }
             stopAll()
@@ -229,6 +234,7 @@ class ClickService : AccessibilityService(), GestureDriver {
     }
 
     fun showMultiPointOverlay() {
+        traceState("show_multi_requested")
         check(!busy && !recording) { getString(R.string.error_busy) }
         if (multiPoint.visible) return
         stopAll()
@@ -336,6 +342,7 @@ class ClickService : AccessibilityService(), GestureDriver {
     }
 
     fun stopAll() {
+        traceState("stop_all", caller = true)
         TimingObservation.emit(TimingObservation.STOP_ALL)
         runner.stop()
         oneShot.stop()
@@ -581,19 +588,35 @@ class ClickService : AccessibilityService(), GestureDriver {
         return point.x to point.y
     }
 
+    private fun traceState(event: String, extra: String = "", caller: Boolean = false) {
+        OverlayDiagnostics.record(event) {
+            "service=${System.identityHashCode(this)} connected=${current === this} timed=$timedMode " +
+                "phase=${status.phase} timedVisible=${::timedOverlay.isInitialized && timedOverlay.isVisible} " +
+                "multiVisible=${::multiPoint.isInitialized && multiPoint.visible} recording=$recording busy=$busy " +
+                "display=${displayKey(this)} startSize=${sizeAtStart.first}x${sizeAtStart.second} locked=${locked()} " +
+                "$extra${if (caller) " caller=${OverlayDiagnostics.caller()}" else ""}"
+        }
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         val key = displayKey(this)
+        traceState("configuration_changed", "previousDisplay=$lastDisplayKey newDisplay=$key " +
+            "orientation=${newConfig.orientation} density=${newConfig.densityDpi}")
         if (key == lastDisplayKey) return
         lastDisplayKey = key
         stopAll()
         val store = SettingsStore(this)
         if (store.get("pointDisplay") != key) store.save(mapOf("pointDisplay" to ""))
     }
-    override fun onInterrupt() { stopAll() }
+    // Feedback interruption leaves this gesture-only service connected; unbind/destroy stop tasks.
+    override fun onInterrupt() { traceState("feedback_interrupt") }
     override fun onAccessibilityEvent(event: AccessibilityEvent?) = Unit
-    override fun onUnbind(intent: Intent?): Boolean { stopAll(); current = null; return super.onUnbind(intent) }
+    override fun onUnbind(intent: Intent?): Boolean {
+        traceState("service_unbind"); stopAll(); current = null; return super.onUnbind(intent)
+    }
     override fun onDestroy() {
+        traceState("service_destroy")
         stopAll(); current = null
         if (registered) { unregisterReceiver(interruptions); registered = false }
         super.onDestroy()

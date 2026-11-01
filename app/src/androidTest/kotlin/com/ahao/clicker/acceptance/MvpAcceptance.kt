@@ -50,7 +50,7 @@ class MvpAcceptance : Instrumentation() {
     private var fixturePeriodic = false
     private var classicPlan: ClickPlan? = null
     private val physical get() = options.getString("physical") == "true"
-    private val physicalSkipped = setOf("permission_and_disclosure", "v3_setup_steps", "rotation_screen_off_and_service_disconnect", "v2_landscape_large_font_stop_visible", "v3_time_page_large_font_dark")
+    private val physicalSkipped = setOf("permission_and_disclosure", "v3_setup_steps", "rotation_screen_off_and_service_disconnect", "v2_landscape_large_font_stop_visible", "v3_time_page_large_font_dark", "v16_feedback_interrupt")
 
     override fun onCreate(arguments: Bundle?) { super.onCreate(arguments); options = arguments ?: Bundle(); start() }
 
@@ -101,6 +101,7 @@ class MvpAcceptance : Instrumentation() {
             case("v14_responsive_overlay") { responsiveOverlay() }
             case("v15_overlay_size_memory") { overlaySizeMemory() }
             case("v15_overlay_size_restart") { overlaySizeRestart() }
+            case("v16_feedback_interrupt") { feedbackInterrupt() }
             case("v8_overlay_defaults_to_now") { overlayDefaultsToNow() }
             case("v9_long_wait_clock_discipline") { longWaitClockDiscipline() }
             case("v10_completed_clock_resynchronizes") { completedClockResynchronizes() }
@@ -827,6 +828,78 @@ class MvpAcceptance : Instrumentation() {
         evidence.put("pickerValue", chosen.toString()).put("timePageEditableFields", 1)
             .put("sourceColumns", 2).put("sourceCount", 5).put("sourceClockExample", text)
             .put("tabAndUnsavedIntervalRestored", true).put("hiddenSourceSchedulesCancelled", true)
+    }
+
+    private fun feedbackInterrupt() {
+        val level = shell("getprop log.tag.AhaoOverlayDiag").trim()
+        val variants = JSONArray()
+        try {
+            shell("setprop log.tag.AhaoOverlayDiag DEBUG")
+            showTarget(); receipt("reset")
+            request("/control?mode=good&offset=0"); source("/millis"); synchronize()
+            SettingsStore(targetContext).save(mapOf("timedOverlaySize" to "", "multiOverlaySize" to ""))
+            for (waiting in listOf(false, true)) for (kind in OverlayPanelKind.entries) {
+                val at = point("A").let { TapPoint(it[0].toFloat(), it[1].toFloat()) }
+                ui {
+                    ClickService.current!!.stopAll()
+                    if (kind == OverlayPanelKind.MULTI_POINT) {
+                        SettingsStore(targetContext).save(mapOf("multiPoints" to "${at.x},${at.y},60000",
+                            "multiPointDisplay" to displayKey(targetContext)))
+                        ClickService.current!!.showMultiPointOverlay()
+                    } else if (waiting) ClickService.current!!.prepareTimed(at,
+                        sync.reference().now(SystemClock.elapsedRealtime()) + 60_000)
+                    else ClickService.current!!.showTimedOverlay()
+                }
+                Thread.sleep(350)
+                if (waiting) {
+                    moveControlAway()
+                    source("/millis"); synchronize(); overlayButton(R.string.auto_click_start)
+                    await("Task did not enter waiting phase") { phase() == RunPhase.WAITING }
+                }
+                var root: View? = null
+                var markers = emptyList<View>()
+                var service: ClickService? = null
+                ui {
+                    root = sizePanel(); service = ClickService.current
+                    markers = WindowInspector.getGlobalWindowViews().filter { view ->
+                        view.contentDescription == targetContext.getString(R.string.crosshair_description) ||
+                            view.javaClass.simpleName == "NumberedMarker"
+                    }
+                    check(markers.isNotEmpty())
+                }
+                val sent = SystemClock.elapsedRealtime()
+                ui { targetContext.getSystemService(android.view.accessibility.AccessibilityManager::class.java).interrupt() }
+                await("System did not deliver feedback interruption") {
+                    Regex("event=feedback_interrupt elapsed=(\\d+)")
+                        .findAll(shell("logcat -d -v raw -s AhaoOverlayDiag:D '*:S'"))
+                        .any { it.groupValues[1].toLong() >= sent }
+                }
+                ui {
+                    check(ClickService.current === service)
+                    check(root!!.isAttachedToWindow && root!!.isShown && sizePanel() === root) {
+                        "Feedback interruption closed the $kind panel (waiting=$waiting)"
+                    }
+                    check(markers.all { it.isAttachedToWindow && it.isShown }) { "Feedback interruption removed markers" }
+                    if (waiting) check(service!!.status.phase == RunPhase.WAITING)
+                }
+                if (waiting) {
+                    serviceEnabled(false)
+                    ui { check(!root!!.isAttachedToWindow && markers.none { it.isAttachedToWindow }) }
+                    serviceEnabled(true)
+                    Thread.sleep(700)
+                    check(phase() == RunPhase.STOPPED)
+                    ui { check(windowViews().none { it.id == R.id.resize_bottom_right && it.isShown }) }
+                } else ui { ClickService.current!!.stopAll() }
+                check(count() == 0)
+                variants.put(JSONObject().put("kind", kind.name).put("waiting", waiting)
+                    .put("callbackDelivered", true).put("originalWindowsPreserved", true)
+                    .put("disconnectStopsAndDoesNotResume", waiting))
+            }
+            evidence.put("feedbackInterrupt", JSONObject().put("variants", variants).put("actualReceived", count()))
+        } finally {
+            ui { ClickService.current?.stopAll() }
+            shell("setprop log.tag.AhaoOverlayDiag ${if (level.isEmpty()) "\"\"" else level}")
+        }
     }
 
     private fun sameDisplayPreservesPoint() {

@@ -74,6 +74,7 @@ class TimedOverlay(private val service: ClickService, private val toggleClick: (
             x = (at.x - side / 2).roundToInt(); y = (at.y - side / 2).roundToInt()
         }
         marker = view; markerParams = params; shownPoint = at
+        OverlayDiagnostics.watch(view, "timed_marker")
         manager.addView(view, params)
         drag(view, view, params) { finished ->
             updatePoint()

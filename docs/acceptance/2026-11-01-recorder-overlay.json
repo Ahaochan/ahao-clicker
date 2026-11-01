@@ -1,0 +1,136 @@
+{
+  "date": "2026-11-01",
+  "feature": "Feedback interruption preserves click overlays and waiting tasks",
+  "rootCause": {
+    "beforeElapsedMillis": [
+      5651845,
+      5651846,
+      5651851,
+      5651860
+    ],
+    "sequence": [
+      "onInterrupt",
+      "stopAll",
+      "panel detach",
+      "marker detach"
+    ],
+    "serviceConnected": true,
+    "physicalDisplayUnchanged": true,
+    "locked": false
+  },
+  "tdd": {
+    "before": "Feedback interruption closed the TIMED panel (waiting=false)",
+    "after": {
+      "variants": [
+        {
+          "kind": "TIMED",
+          "waiting": false,
+          "callbackDelivered": true,
+          "originalWindowsPreserved": true,
+          "disconnectStopsAndDoesNotResume": false
+        },
+        {
+          "kind": "MULTI_POINT",
+          "waiting": false,
+          "callbackDelivered": true,
+          "originalWindowsPreserved": true,
+          "disconnectStopsAndDoesNotResume": false
+        },
+        {
+          "kind": "TIMED",
+          "waiting": true,
+          "callbackDelivered": true,
+          "originalWindowsPreserved": true,
+          "disconnectStopsAndDoesNotResume": true
+        },
+        {
+          "kind": "MULTI_POINT",
+          "waiting": true,
+          "callbackDelivered": true,
+          "originalWindowsPreserved": true,
+          "disconnectStopsAndDoesNotResume": true
+        }
+      ],
+      "actualReceived": 0
+    }
+  },
+  "functionalCases": [
+    {
+      "name": "v16_feedback_interrupt",
+      "passed": true,
+      "durationMillis": 8757
+    },
+    {
+      "name": "rotation_screen_off_and_service_disconnect",
+      "passed": true,
+      "durationMillis": 17712
+    }
+  ],
+  "physicalRetest": {
+    "userConfirmedOverlayStayedVisible": true,
+    "observedFeedbackElapsedMillis": 6261993,
+    "observedState": "ARMED/WAITING, timedVisible=true, connected=true",
+    "firstSubsequentCloseElapsedMillis": 6280156,
+    "firstSubsequentCloseOrigin": "UI close button, not onInterrupt",
+    "retentionUntilUserCloseMillis": 18163,
+    "apkSha256MatchesInstalled": "c59dd54afbb5fc440ab566e530a5a3dde5e516687f899bafc46c348a1a41f3d7",
+    "androidApi": "36",
+    "scope": "Timed overlay while waiting; multipoint covered by emulator, no new timing benchmark"
+  },
+  "unitTests": {
+    "core": {
+      "tests": 83,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "app": {
+      "tests": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "checks": [
+    "core:test",
+    "app:testDebugUnitTest",
+    "app:lintDebug",
+    "app:assembleDebug",
+    "app:assembleRelease",
+    "git diff --check"
+  ],
+  "captureStopped": true,
+  "logPropertyRestored": true,
+  "emulatorTestPackagesRemoved": true,
+  "rawArtifactsIgnoredDirectory": ".tools/recorder-overlay-20261101/",
+  "limitations": [
+    "One physical-device reproduction and retest",
+    "No new click accuracy or performance claim"
+  ],
+  "sources": [
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/ClickService.kt",
+      "sha256": "44e8e02c44d71e932fb89ea40d14e3c70956a1d77b9eaabf3076b15b7995eb0e"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/OverlayDiagnostics.kt",
+      "sha256": "884eb9eaefed8d9a90211e4ac4dfabd7a5924a912e56018c6a469e784d98df2f"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/OverlayPanel.kt",
+      "sha256": "5d76344982aace75b1ca001f33798a223e2a93b0931f1b7497ee44d2a2301091"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/TimedOverlay.kt",
+      "sha256": "3b3ac437dea96db1ff5630a512fd01935407e91e06b36b132e7c6330c260f638"
+    },
+    {
+      "path": "app/src/main/kotlin/com/ahao/clicker/MultiPointOverlay.kt",
+      "sha256": "136296c5d384d204c028ce0d3fa2845f21c9bec6c050a5a175dd2c8e9e9c783c"
+    },
+    {
+      "path": "app/src/androidTest/kotlin/com/ahao/clicker/acceptance/MvpAcceptance.kt",
+      "sha256": "7bdb9349d1d0c22e6e8537685afc78bc0e95a42e97fc0305a8819486bfca7b2e"
+    }
+  ]
+}

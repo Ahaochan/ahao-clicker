@@ -28,6 +28,7 @@ internal fun overlayAvailableBounds(window: View): OverlayRect {
 /** Limits the initial height, but respects an explicit user resize. Header/footer never scroll. */
 internal class OverlayPanel(context: Context) : LinearLayout(context) {
     var compactChanged: ((Boolean) -> Unit)? = null
+    var diagnosticKind: OverlayPanelKind? = null
     private var compact: Boolean? = null
     init {
         orientation = VERTICAL
@@ -54,6 +55,10 @@ internal class OverlayPanel(context: Context) : LinearLayout(context) {
         }
         super.onMeasure(widthMeasureSpec, limit)
     }
+    override fun onWindowVisibilityChanged(visibility: Int) {
+        super.onWindowVisibilityChanged(visibility)
+        OverlayDiagnostics.record("window_visibility") { OverlayDiagnostics.state(this, "panel_$diagnosticKind") }
+    }
     fun minimumHeightFor(width: Int, controls: Int): Int {
         val small = width < resources.getDimensionPixelSize(R.dimen.overlay_compact_width)
         val horizontal = resources.getDimensionPixelSize(if (small) R.dimen.overlay_compact_padding else R.dimen.control_padding_horizontal)
@@ -69,6 +74,8 @@ internal class OverlayPanel(context: Context) : LinearLayout(context) {
 @Suppress("ClickableViewAccessibility")
 internal fun OverlayPanel.addResizeHandles(params: WindowManager.LayoutParams, controls: Int,
     kind: OverlayPanelKind, enabled: () -> Boolean) {
+    diagnosticKind = kind
+    OverlayDiagnostics.watch(this, "panel_$kind")
     val manager = context.getSystemService(WindowManager::class.java)
     val footer = LayoutInflater.from(context).inflate(R.layout.overlay_resize_handles, this, false)
     addView(footer)

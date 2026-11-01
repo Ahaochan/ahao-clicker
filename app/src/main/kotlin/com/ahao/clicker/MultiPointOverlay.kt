@@ -91,6 +91,7 @@ class MultiPointOverlay(private val service: ClickService, private val toggle: (
         }
         val marker = Marker(view, layout, step)
         markers.add(marker)
+        OverlayDiagnostics.watch(view, "multi_marker_${markers.size}")
         renumber()
         view.setOnClickListener { view.post {
             if (editing && markers.contains(marker)) edit(markers.indexOf(marker))
