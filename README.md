@@ -87,6 +87,7 @@ python -B tools/profiling/overlay_diagnostics.py --serial SERIAL
 | 内容 | 入口 |
 | --- | --- |
 | 当前计划与验证记录 | [PLAN](docs/PLAN.md)、[VERIFICATION](docs/VERIFICATION.md) |
+| 按需整理的架构问题 | [审查记录与触发条件](docs/ARCHITECTURE_REVIEW.md) |
 | 功能与最新交互 | [FEATURES](docs/FEATURES.md)、[UI/UX V4](docs/UI_UX_V4.md) |
 | 架构与浮窗决策 | [工程架构](docs/decisions/0002-android-project.md)、[多点规则](docs/decisions/0014-multipoint-overlay.md)、[尺寸记忆](docs/decisions/0017-overlay-size-memory.md) |
 | 性能采集与方法 | [分析方法](docs/PERFORMANCE_ANALYSIS_METHODS.md)、[采集计划](docs/PERFORMANCE_ANALYSIS_PLAN.md)、[工具说明](tools/profiling/README.md) |
