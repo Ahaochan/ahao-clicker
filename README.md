@@ -6,9 +6,11 @@
 
 ## 下载安装
 
-到[版本下载页](https://github.com/Ahaochan/ahao-clicker/releases)选择APK，下载后在手机上打开安装。
+推荐直接[下载最新APK](https://github.com/Ahaochan/ahao-clicker/releases/latest/download/Ahao-clicker-latest.apk)，下载后在手机上打开安装。也可以到[版本下载页](https://github.com/Ahaochan/ahao-clicker/releases)查看历史每日版。
 
-每日测试版的[固定下载入口](https://github.com/Ahaochan/ahao-clicker/releases/latest/download/Ahao-clicker-latest.apk)会在首次成功发布后可用。每日打包工作流已写好，尚未确认GitHub首次发布；如果页面里还没有APK，可以按下方说明从源码构建。
+如果想下载某次提交的测试包，登录GitHub，打开[构建记录](https://github.com/Ahaochan/ahao-clicker/actions/workflows/android.yml)，选择成功的运行，在页面底部“构建产物（Artifacts）”下载`debug-apk`，解压得到`app-debug.apk`。
+
+两条工作流分工不同：**Android checks负责检查和上传测试包，Daily APK负责发布Release。** 因此，普通检查成功后没有新Release是正常的；需要持续覆盖更新时，优先使用Release里的每日版。
 
 更新时直接覆盖安装，保留已有设置。如果提示“签名不一致”，先确认下载的版本和原安装来源，不要急着卸载，以免丢失设置。每日版本使用固定的公开测试签名，不属于正式稳定版。
 
@@ -107,7 +109,7 @@ adb -s SERIAL install -r -t .\app\build\outputs\apk\debug\app-debug.apk
 adb -s SERIAL shell am start -n com.ahao.clicker/.MainActivity
 ```
 
-每日打包计划在北京时间08:17执行，默认使用固定公开测试签名，密码`android`，无需配置Secret。工作流推送到默认分支后，需要手动运行一次确认发布成功；GitHub定时任务可能延迟。签名兼容、可选自定义签名和发布配置见[每日打包说明](docs/decisions/0020-daily-apk.md)。
+每日打包计划在北京时间08:17执行，也可进入[Daily APK](https://github.com/Ahaochan/ahao-clicker/actions/workflows/daily-apk.yml)，点击“Run workflow”，选择`master`手动运行。它使用固定公开测试签名，密码`android`，无需配置Secret；成功后创建Release，附带APK、SHA-256校验文件和构建来源信息。首次手动发布已验证成功，GitHub定时任务仍可能延迟。签名兼容、可选自定义签名和发布配置见[每日打包说明](docs/decisions/0020-daily-apk.md)。
 
 ## 开发与详细资料
 

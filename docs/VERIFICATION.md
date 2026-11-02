@@ -2,7 +2,13 @@
 
 更新日期：2026-11-02。下方保留此前 MVP、真机与性能历史记录。
 
-## GitHub SDK初始化失败修复（2026-11-02，待远程验证）
+## 远程构建产物与首次Release确认（2026-11-02）
+
+- 源码提交为`78a8a22af7b72f61772cee41039f59265363dca8`。[Android checks运行41409580046](https://github.com/Ahaochan/ahao-clicker/actions/runs/41409580046)已成功，SDK初始化、五项Gradle检查及两项产物上传均通过；`debug-apk`构建产物ID为13124399938、ZIP大小2672670字节，另有check-reports。构建日志同时确认BUILD SUCCESSFUL和上传成功；这条工作流没有Release发布步骤。
+- [Daily APK运行41411020832](https://github.com/Ahaochan/ahao-clicker/actions/runs/41411020832)已成功，[Latest Release daily-41411020832-1](https://github.com/Ahaochan/ahao-clicker/releases/tag/daily-41411020832-1)在2026-11-02 16:12:52（北京时间）发布，目标为同一源码提交，非草稿。资产包括`Ahao-clicker-latest.apk`（2778200字节）、`.apk.sha256`（90字节）和`build-info.json`（254字节）。GitHub记录的APK摘要为`c32c89f2b643b5858a17cbd5a745effac6e6671bc679d280b720fe2353e29ce6`；本次未另行下载APK并复核本机哈希。
+- 已据此更新README下载入口和工作流分工，AGENTS补充分别验证产物及Release的要求。此结果证明首次手动发布成功，不代表连续每日定时运行、安装兼容或新的设备/精度测试已验证。本次仅只读检查远程并修改本地文档，未触发额外工作流、发布或推送。
+
+## GitHub SDK初始化失败修复（2026-11-02，本地阶段记录；后续远程结果见上节）
 
 - 经已授权GitHub插件读取[最新失败运行41403804543](https://github.com/Ahaochan/ahao-clicker/actions/runs/41403804543/job/125141207062)的完整日志，对应提交`3a3e893`。失败发生于`android-actions/setup-android@v3`，其实际解析到`9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407`；该版本输入默认值为`tools platform-tools`。日志明确记录`Warning: Failed to find package 'tools'`，随后sdkmanager退出1，编译、测试和APK上传未执行。
 - 两份工作流均改为显式`packages: platform-tools`，后续继续安装`platforms;android-36`和`build-tools;36.0.0`。没有修改应用代码、签名、发布权限或触发时间。日志中的Node弃用和Ubuntu迁移提醒不是本次直接退出原因，本轮没有顺带升级全部Actions或更换运行环境。

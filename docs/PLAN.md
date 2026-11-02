@@ -2,12 +2,17 @@
 
 更新日期：2026-11-02。
 
-## 已完成本地修复：GitHub Actions的Android SDK初始化（待远程验证）
+## 已完成：补充构建产物与Release下载说明
+
+- [x] README提供最新Release APK和普通检查Artifacts两个入口，说明ZIP解压和两条工作流分工；AGENTS明确构建成功、产物上传和Release发布必须分别核实。
+- [x] GitHub已确认提交78a8a22的普通检查41409580046通过并上传debug-apk；Daily APK41411020832通过，Latest Release daily-41411020832-1包含APK、校验文件及构建来源。首次手动发布通过，连续每日定时运行仍未验证，详见[验证记录](VERIFICATION.md)。
+
+## 已完成：GitHub Actions的Android SDK初始化修复与远程验证
 
 - [x] 经GitHub插件读取最新失败运行41403804543的完整日志：setup-android默认请求`tools platform-tools`，`sdkmanager tools`因找不到旧包退出，尚未执行编译和测试。
 - [x] 普通检查和每日打包显式指定`platform-tools`，保留后续API36及Build Tools安装，不调整应用或签名行为。
 - [x] 对失败版本和修复版本执行SDK输入对照：旧配置2项均失败，修复后2项通过；actionlint和既有9项签名、打包/模拟发布回归通过。日志及失败源版本保留于忽略目录`.tools/workflow-sdk-fix-20261102/`，结论见[验证记录](VERIFICATION.md)。
-- [ ] 推送修复后的本地提交并确认远程检查结果；当前未推送，不能把本地检查当作GitHub构建成功，重跑旧提交也不会应用修复。
+- [x] 修复提交78a8a22已由用户推送；普通检查41409580046的SDK初始化、构建和APK上传通过，随后Daily APK41411020832构建与Release发布通过。不能把单次手动成功表述为连续每日定时运行已验证。
 
 ## 已完成：面向读者整理项目文档
 
