@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="source_last_sync">上次成功：%1$s</string>
+    <string name="source_never_synced">尚无成功同步</string>
+    <string name="source_local_no_sync">本地时间，无需同步</string>
   <string name="setup_accessibility_heading">第一步 · 设置无障碍服务</string>
   <string name="setup_accessibility_ready">可用 · 无障碍服务已连接</string>
   <string name="setup_accessibility_unavailable">不可用 · 无障碍服务未连接</string>
@@ -20,7 +23,7 @@
   <string name="source_clock_hint">括号内为相对本机的毫秒差，正数表示来源更快。本地时间直接使用手机系统时间，无需联网。数字每100毫秒刷新，毫秒显示不代表绝对精度。离开此页后暂停其他来源同步。</string>
   <string name="source_reference">当前参考：%1$s · %2$s</string>
   <string name="source_waiting">尚未同步</string>
-  <string name="source_unavailable">同步失败，等待重试</string>
+  <string name="source_unavailable">同步失败</string>
   <string name="source_stale">样本已过期</string>
   <string name="source_previous">上次样本 · 本次失败</string>
   <string name="source_card_title">%1$s · %2$s</string>

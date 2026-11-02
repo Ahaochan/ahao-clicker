@@ -30,6 +30,8 @@ class TimeSyncManager : TimeProvider {
     private var scheduled: ScheduledFuture<*>? = null
     private var config: TimeSourceConfig? = null
     private var enabled = false
+    private var running = false
+    private var pendingOneShot = false
     private var generation = 0L
     @Volatile private var connection: HttpURLConnection? = null
     @Volatile private var socket: DatagramSocket? = null
@@ -42,19 +44,16 @@ class TimeSyncManager : TimeProvider {
     @Synchronized override fun configure(value: TimeSourceConfig, periodic: Boolean) {
         require(value.builtin != com.ahao.clicker.core.BuiltinTimeSource.LOCAL)
         if (value == config && periodic == enabled) return
-        generation++
         if (config?.url != value.url || config?.format != value.format || config?.field != value.field || config?.builtin != value.builtin) {
+            pause()
             time.reset()
             state = SyncState()
         }
         config = value
         enabled = periodic
-        state = state.copy(syncing = false, nextAttemptElapsed = -1)
-        scheduled?.cancel(true)
-        connection?.disconnect()
-        socket?.close()
-        lookup?.close()
-        scheduled = null
+        // Mode/interval changes keep a page request or in-flight response alive.
+        if (running || pendingOneShot) return
+        cancelScheduled()
         if (enabled) enqueue(generation, 0)
     }
 
@@ -62,6 +61,9 @@ class TimeSyncManager : TimeProvider {
         generation++
         enabled = false
         scheduled?.cancel(true)
+        scheduled = null
+        running = false
+        pendingOneShot = false
         connection?.disconnect()
         socket?.close()
         lookup?.close()
@@ -70,18 +72,23 @@ class TimeSyncManager : TimeProvider {
 
     @Synchronized override fun syncNow(value: TimeSourceConfig, periodic: Boolean) {
         configure(value, periodic)
-        generation++
-        scheduled?.cancel(true)
-        connection?.disconnect()
-        socket?.close()
-        lookup?.close()
-        enqueue(generation, 0)
+        if (running || pendingOneShot) return
+        cancelScheduled()
+        enqueue(generation, 0, oneShot = true)
     }
 
-    @Synchronized private fun enqueue(token: Long, delay: Long) {
+    private fun cancelScheduled() {
+        generation++
+        scheduled?.cancel(false)
+        scheduled = null
+        state = state.copy(nextAttemptElapsed = -1)
+    }
+
+    @Synchronized private fun enqueue(token: Long, delay: Long, oneShot: Boolean = false) {
         val elapsed = SystemClock.elapsedRealtime()
         val wait = maxOf(delay, pacing.delay(config?.builtin, elapsed))
         state = state.copy(nextAttemptElapsed = elapsed + wait)
+        pendingOneShot = oneShot
         scheduled = worker.schedule({ synchronize(token) }, wait, TimeUnit.MILLISECONDS)
     }
 
@@ -89,6 +96,8 @@ class TimeSyncManager : TimeProvider {
         val attemptElapsed = SystemClock.elapsedRealtime()
         val source = synchronized(this) {
             if (token != generation) return
+            pendingOneShot = false
+            running = true
             state = state.copy(syncing = true, failed = false, nextAttemptElapsed = -1)
             pacing.attempted(config?.builtin, SystemClock.elapsedRealtime())
             config ?: return
@@ -149,7 +158,8 @@ class TimeSyncManager : TimeProvider {
             synchronized(this) {
                 if (token == generation) {
                     require(time.accept(epoch, sent, received))
-                    state = SyncState(lastSuccessElapsed = received, rttMillis = received - sent)
+                    state = SyncState(lastSuccessElapsed = received, rttMillis = received - sent,
+                        lastSuccessEpoch = System.currentTimeMillis())
                     TimingObservation.emit(TimingObservation.SYNC_ACCEPT, epoch, sent, received, token)
                 }
             }
@@ -161,8 +171,12 @@ class TimeSyncManager : TimeProvider {
             client?.disconnect()
             synchronized(this) {
                 if (connection === client) connection = null
-                if (token == generation && enabled) enqueue(token,
-                    (source.intervalMillis - (SystemClock.elapsedRealtime() - attemptElapsed)).coerceAtLeast(0))
+                if (token == generation) {
+                    scheduled = null
+                    running = false
+                    if (enabled) enqueue(token,
+                        (checkNotNull(config).intervalMillis - (SystemClock.elapsedRealtime() - attemptElapsed)).coerceAtLeast(0))
+                }
             }
         }
     }
@@ -199,7 +213,8 @@ class TimeSyncManager : TimeProvider {
                 synchronized(this) {
                     if (token != generation) return
                     require(time.accept(sample.epochAtReceipt, received, received))
-                    state = SyncState(lastSuccessElapsed = received, rttMillis = received - sent)
+                    state = SyncState(lastSuccessElapsed = received, rttMillis = received - sent,
+                        lastSuccessEpoch = System.currentTimeMillis())
                 }
             } finally { synchronized(this) { if (socket === udp) socket = null } }
         }
@@ -211,4 +226,4 @@ class TimeSyncManager : TimeProvider {
 
 enum class SyncFailure { NONE, TIMEOUT, NETWORK_OR_SAMPLE }
 data class SyncState(val syncing: Boolean = false, val failed: Boolean = false, val lastSuccessElapsed: Long = -1, val rttMillis: Long = 0,
-    val failure: SyncFailure = SyncFailure.NONE, val nextAttemptElapsed: Long = -1)
+    val failure: SyncFailure = SyncFailure.NONE, val nextAttemptElapsed: Long = -1, val lastSuccessEpoch: Long = -1)

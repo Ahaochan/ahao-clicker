@@ -1,0 +1,243 @@
+{
+  "date": "2026-11-02",
+  "feature": "One-shot page initialization and selected-source overlay periodic synchronization",
+  "baseline": "1663300",
+  "device": {
+    "kind": "emulator",
+    "api": 37
+  },
+  "unitTests": {
+    "core": {
+      "tests": 83,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "app": {
+      "tests": 41,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "cases": [
+    {
+      "name": "v18_sync_request_lifecycle",
+      "passed": true,
+      "durationMillis": 16399
+    },
+    {
+      "name": "v18_sync_page_overlay",
+      "passed": true,
+      "durationMillis": 18583
+    },
+    {
+      "name": "https_time_formats_periodic_failure_recovery",
+      "passed": true,
+      "durationMillis": 8854
+    },
+    {
+      "name": "v3_independent_samples_and_cancellation",
+      "passed": true,
+      "durationMillis": 4444
+    },
+    {
+      "name": "v17_local_source_and_order",
+      "passed": true,
+      "durationMillis": 6398
+    },
+    {
+      "name": "v17_local_timed_click",
+      "passed": true,
+      "durationMillis": 5543
+    },
+    {
+      "name": "v3_tabs_and_time_sources",
+      "passed": true,
+      "durationMillis": 6606
+    },
+    {
+      "name": "v3_time_page_large_font_dark",
+      "passed": true,
+      "durationMillis": 4756
+    },
+    {
+      "name": "v2_cancelled_one_shot_never_replays",
+      "passed": true,
+      "durationMillis": 18455
+    },
+    {
+      "name": "v12_multipoint_overlay",
+      "passed": true,
+      "durationMillis": 28846
+    },
+    {
+      "name": "v9_long_wait_clock_discipline",
+      "passed": true,
+      "durationMillis": 14861
+    }
+  ],
+  "tdd": {
+    "initialCoordinatorTests": 4,
+    "initialFailures": 3,
+    "savedSourceRed": "Homepage did not load saved source without a sync subscription",
+    "preservedRaw": [
+      "unit-red.txt",
+      "saved-source-red-forced.txt"
+    ]
+  },
+  "lifecycle": {
+    "physicalDevice": false,
+    "syncLifecycle": [
+      {
+        "stage": "page_initialized_once",
+        "requests": {
+          "ALIYUN": 1,
+          "TENCENT": 1,
+          "CLOUDFLARE": 1,
+          "JD": 1,
+          "TAOBAO": 1
+        }
+      },
+      {
+        "stage": "failed_once_preserving_success",
+        "requests": {
+          "ALIYUN": 3,
+          "TENCENT": 3,
+          "CLOUDFLARE": 3,
+          "JD": 3,
+          "TAOBAO": 3
+        }
+      },
+      {
+        "stage": "overlay_only_jd_periodic",
+        "requests": {
+          "ALIYUN": 3,
+          "TENCENT": 3,
+          "CLOUDFLARE": 3,
+          "JD": 6,
+          "TAOBAO": 3
+        }
+      },
+      {
+        "stage": "all_closed_no_requests",
+        "requests": {
+          "ALIYUN": 3,
+          "TENCENT": 3,
+          "CLOUDFLARE": 3,
+          "JD": 6,
+          "TAOBAO": 7
+        }
+      }
+    ],
+    "coalescedInFlight": true,
+    "coalescedQueued": true,
+    "cancelledResponseIgnored": true
+  },
+  "pageOverlay": {
+    "physicalDevice": false,
+    "pageOverlaySync": {
+      "idleHomepageRequests": 0,
+      "lastSuccessLabel": "上次成功：11-02 03:03:58:973",
+      "failurePreservesSuccessTime": true,
+      "reentryRespectsNtpMinimum": true,
+      "bothOverlayModesStopPeriodic": true,
+      "attempts": [
+        {
+          "source": "ALIYUN",
+          "elapsed": 751809
+        },
+        {
+          "source": "TENCENT",
+          "elapsed": 751809
+        },
+        {
+          "source": "CLOUDFLARE",
+          "elapsed": 751905
+        },
+        {
+          "source": "JD",
+          "elapsed": 752136
+        },
+        {
+          "source": "TAOBAO",
+          "elapsed": 752293
+        },
+        {
+          "source": "JD",
+          "elapsed": 755710
+        },
+        {
+          "source": "JD",
+          "elapsed": 756711
+        },
+        {
+          "source": "JD",
+          "elapsed": 757710
+        },
+        {
+          "source": "JD",
+          "elapsed": 758711
+        },
+        {
+          "source": "TAOBAO",
+          "elapsed": 758750
+        },
+        {
+          "source": "JD",
+          "elapsed": 762453
+        },
+        {
+          "source": "JD",
+          "elapsed": 763454
+        },
+        {
+          "source": "JD",
+          "elapsed": 764455
+        }
+      ]
+    }
+  },
+  "checks": {
+    "lintErrors": 0,
+    "lintWarnings": 0,
+    "lintHints": 5,
+    "debug": true,
+    "release": true
+  },
+  "artifactSha256": {
+    "debug": "b5d2915fe579bbab9aa5955b85c3f499d2ac984d01c2a55f80ec846e0c7582c1",
+    "releaseUnsigned": "5de976ce99e29500a5cd2dd5cc255a1f6ac2da3555d5cf9cae2edb1fc61f5046"
+  },
+  "sourceSha256": {
+    "app/src/main/kotlin/com/ahao/clicker/MainActivity.kt": "31d7eb5eea7016d538e5c751e77f48c21ec58b616ce55d39f6a1749e4c16b9ef",
+    "app/src/main/kotlin/com/ahao/clicker/time/TimeSources.kt": "88a5773bfaa305936275bce4001485e4476b0da6a5cc8b4064de84de611702f5",
+    "app/src/main/kotlin/com/ahao/clicker/time/TimeSyncManager.kt": "91b516c6fb141495cc1dd13070bc706dfd61869a52f8432106b6c2df1d2d29ee",
+    "app/src/main/kotlin/com/ahao/clicker/time/TimeSyncPanel.kt": "f824b56d2a8c11bbc47bf064abf8b38b3e53792eda2d68af460a87416bf2deae",
+    "app/src/main/res/values/strings.xml": "979cc32a46854fa0908ed45d0dbbf68f448541d0965b84a7295161d5d19140a0",
+    "app/src/test/kotlin/com/ahao/clicker/time/TimeSourcesTest.kt": "a641035a6e3548f7e39e5c7d23e63f0a6a45f7858f8d3802f943d514c827c270",
+    "app/src/androidTest/kotlin/com/ahao/clicker/acceptance/MvpAcceptance.kt": "2ca03024db81ebe8d9a1ea32a063d3c8cd76841b34a8b843517595769bc41486",
+    "tools/acceptance/TimeServer.java": "abc35f1fc023f40e960b28102d1c8db7deaa055ab6d902dce3feb006b4479456"
+  },
+  "rawEvidence": ".tools/sync-lifecycle-20261102/",
+  "installedDebug": {
+    "debugSha256": "b5d2915fe579bbab9aa5955b85c3f499d2ac984d01c2a55f80ec846e0c7582c1",
+    "installedSha256": "b5d2915fe579bbab9aa5955b85c3f499d2ac984d01c2a55f80ec846e0c7582c1",
+    "matches": true
+  },
+  "cleanup": {
+    "temporaryPackagesRemoved": true,
+    "testServerStopped": true,
+    "currentRunPrivateKeysRemoved": true,
+    "reversePortsRemoved": true,
+    "fontScale": 1.0,
+    "airplaneMode": false,
+    "priorServiceSettingRestored": true
+  },
+  "limitations": [
+    "Functional emulator acceptance only; no physical-device acceptance or new timing percentiles.",
+    "TLS per-source fixtures validate HTTP lifecycle and server receipt counts, not public API accuracy.",
+    "Production NTP floor verified by future queued attempts plus existing pacing unit tests; no full 60-second live NTP interval measurement.",
+    "Local source does not perform network synchronization; success timestamps are device wall-clock completion times, not source-time accuracy."
+  ]
+}

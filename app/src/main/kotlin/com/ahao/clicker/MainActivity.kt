@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
         }
     }
     override fun onResume() {
-        super.onResume(); resumed = true; app.observeTime(this, true); showTab()
+        super.onResume(); resumed = true; app.refreshTimeSources(); showTab()
     }
     private fun showTab() {
         val time = binding.tabs.checkedRadioButtonId == R.id.tab_time
@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
     }
     override fun onPause() {
         resumed = false; timePanel.setVisible(false)
-        main.removeCallbacks(refresh); app.observeTime(this, false); super.onPause()
+        main.removeCallbacks(refresh); super.onPause()
     }
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putInt("selectedTab", binding.tabs.checkedRadioButtonId)

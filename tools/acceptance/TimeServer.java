@@ -15,6 +15,7 @@ import javax.net.ssl.SSLContext;
 public final class TimeServer {
     private static final AtomicInteger requests = new AtomicInteger();
     private static final AtomicInteger options = new AtomicInteger();
+    private static final java.util.concurrent.ConcurrentHashMap<String, AtomicInteger> paths = new java.util.concurrent.ConcurrentHashMap<>();
     private static volatile String mode = "good";
     private static volatile long offset = 5000;
 
@@ -42,8 +43,10 @@ public final class TimeServer {
                     }
                 } else if (!path.equals("/stats")) {
                     int count = requests.incrementAndGet();
+                    paths.computeIfAbsent(path, key -> new AtomicInteger()).incrementAndGet();
                     if (count <= 1000) System.out.println("request=" + count + " mode=" + mode + " path=" + path);
                     if (mode.equals("slow")) Thread.sleep(2500);
+                    if (mode.equals("delayed")) Thread.sleep(500);
                 }
                 long now = System.currentTimeMillis() + offset;
                 if (path.equals("/jd")) {
@@ -58,7 +61,11 @@ public final class TimeServer {
                 }
                 String body = "{\"data\":{\"timestamp\":" + (path.equals("/seconds") ? now / 1000 : now)
                     + "},\"requests\":" + requests.get() + "}";
-                if (path.equals("/stats") || path.equals("/control")) body = "{\"requests\":" + requests.get() + ",\"jdOptions\":" + options.get() + "}";
+                if (path.equals("/stats") || path.equals("/control")) {
+                    String counts = paths.entrySet().stream().sorted(java.util.Map.Entry.comparingByKey())
+                        .map(entry -> "\"" + entry.getKey() + "\":" + entry.getValue().get()).collect(java.util.stream.Collectors.joining(","));
+                    body = "{\"requests\":" + requests.get() + ",\"jdOptions\":" + options.get() + ",\"paths\":{" + counts + "}}";
+                }
                 else if (mode.equals("malformed")) body = "{\"data\":{\"timestamp\":\"invalid\"}}";
                 else if (mode.equals("oversize")) body = "x".repeat(70000);
                 response.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");

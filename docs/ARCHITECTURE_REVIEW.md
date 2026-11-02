@@ -7,6 +7,8 @@
 
 ## 跟进记录
 
+2026-11-02调整同步生命周期时，将页面一次性需求和浮窗选中源周期需求统一留在TimeSources，网络管理器负责在途复用和取消；MainActivity只加载配置，不以在前台为由订阅网络。TimeSettingsController仍集中现有配置操作。没有调整A1任务算法或A4协议映射，未据此声称点击精度收益。见[ADR 0019](decisions/0019-time-sync-demand.md)。
+
 2026-11-01新增本地来源和排序时，顺带完成A2当前配置入口的整理：`TimeSettingsController`统一来源选择、间隔校验、活动任务限制、保存和应用，使用无View的单测验证；`TimeSyncPanel`负责展示及错误提示，来源顺序作为独立展示偏好保存。后续新增生产配置入口应复用该操作边界。见[ADR 0018](decisions/0018-local-source-order-and-ten-ms.md)。
 
 A4本轮完成本地/网络适配接口隔离，既有网络URL和解析映射尚未迁移；A1、A3继续按需跟进。未调整点击调度算法，不能据此声称性能提升。

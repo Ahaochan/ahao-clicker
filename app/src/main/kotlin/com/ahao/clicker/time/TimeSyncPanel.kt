@@ -32,6 +32,7 @@ class TimeSyncPanel(private val binding: TimeSyncPanelBinding, private val app: 
     private val store = SettingsStore(context)
     private val main = Handler(Looper.getMainLooper())
     private val zone = ZoneId.systemDefault()
+    private val syncDate = java.time.format.DateTimeFormatter.ofPattern("MM-dd HH:mm:ss:SSS").withZone(zone)
     private val names = context.resources.getStringArray(R.array.builtin_sources)
     private var visible = false
     private val settings = TimeSettingsController({ ClickService.current?.hasActiveTask == true },
@@ -40,7 +41,8 @@ class TimeSyncPanel(private val binding: TimeSyncPanelBinding, private val app: 
     private var dragging: SourceDrag? = null
     private data class SourceDrag(val owner: TimeSyncPanel, val generation: Long,
         val source: BuiltinTimeSource, val origin: View)
-    private data class Card(val source: BuiltinTimeSource, val root: View, val title: RadioButton, val time: TextView)
+    private data class Card(val source: BuiltinTimeSource, val root: View, val title: RadioButton, val time: TextView,
+        val lastSync: TextView, var renderedSuccess: Long = Long.MIN_VALUE)
     private val cards = store.sourceOrder().mapIndexed { index, source ->
         val padding = context.resources.getDimensionPixelSize(R.dimen.control_padding_vertical)
         val gap = context.resources.getDimensionPixelSize(R.dimen.source_gap)
@@ -66,20 +68,26 @@ class TimeSyncPanel(private val binding: TimeSyncPanelBinding, private val app: 
             minLines = 2
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
         }
+        val lastSync = TextView(context).apply {
+            tag = "${source.name}_last_sync"
+            setTextColor(context.getColor(R.color.text_primary))
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.caption_text))
+        }
         root.addView(title, LinearLayout.LayoutParams(-1, -2))
         root.addView(time, LinearLayout.LayoutParams(-1, -2))
+        root.addView(lastSync, LinearLayout.LayoutParams(-1, -2))
         binding.sources.addView(root, GridLayout.LayoutParams(
             GridLayout.spec(index / 2), GridLayout.spec(index % 2, 1f)).apply {
             width = 0; height = -2; setGravity(Gravity.FILL_HORIZONTAL)
             setMargins(gap, gap, gap, gap)
         })
-        Card(source, root, title, time)
+        Card(source, root, title, time, lastSync)
     }.toMutableList()
 
     init {
         androidx.core.view.ViewCompat.setAccessibilityHeading(binding.sourcesHeading, true)
         cards.forEach { card ->
-            for (view in listOf(card.root, card.title, card.time)) view.setOnLongClickListener { origin ->
+            for (view in listOf(card.root, card.title, card.time, card.lastSync)) view.setOnLongClickListener { origin ->
                 if (!visible || dragging != null) return@setOnLongClickListener false
                 val drag = SourceDrag(this, dragGeneration, card.source, origin)
                 dragging = drag
@@ -191,6 +199,15 @@ class TimeSyncPanel(private val binding: TimeSyncPanelBinding, private val app: 
             val manager = app.timeSources.manager(card.source)
             val state = manager.state
             val local = card.source == BuiltinTimeSource.LOCAL
+            if (card.renderedSuccess != state.lastSuccessEpoch) {
+                card.renderedSuccess = state.lastSuccessEpoch
+                card.lastSync.text = when {
+                    local -> context.getString(R.string.source_local_no_sync)
+                    state.lastSuccessEpoch < 0 -> context.getString(R.string.source_never_synced)
+                    else -> context.getString(R.string.source_last_sync,
+                        syncDate.format(java.time.Instant.ofEpochMilli(state.lastSuccessEpoch)))
+                }
+            }
             val reference = if (local) TimeReference(device, elapsed, true) else manager.reference()
             val qualifier = when {
                 !local && reference.synced && elapsed - state.lastSuccessElapsed > 300_000 -> R.string.source_stale

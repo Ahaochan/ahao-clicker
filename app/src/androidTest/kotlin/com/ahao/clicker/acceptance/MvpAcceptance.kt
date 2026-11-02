@@ -105,6 +105,8 @@ class MvpAcceptance : Instrumentation() {
             case("v17_local_source_and_order") { localSourceAndOrder() }
             case("v17_ten_millisecond_wheel") { tenMillisecondWheel() }
             case("v17_local_timed_click") { localTimedClick() }
+            case("v18_sync_request_lifecycle") { syncRequestLifecycle() }
+            case("v18_sync_page_overlay") { syncPageOverlay() }
             case("v8_overlay_defaults_to_now") { overlayDefaultsToNow() }
             case("v9_long_wait_clock_discipline") { longWaitClockDiscipline() }
             case("v10_completed_clock_resynchronizes") { completedClockResynchronizes() }
@@ -445,6 +447,200 @@ class MvpAcceptance : Instrumentation() {
             check(sync.state.lastSuccessElapsed == lastSuccess && sync.reference().synced)
         }
         request("/control?mode=good"); synchronize()
+    }
+
+    private fun syncRequestLifecycle() {
+        val remote = BuiltinTimeSource.entries.filter { it != BuiltinTimeSource.LOCAL }
+        val catalog = TimeSources { source ->
+            if (source == BuiltinTimeSource.LOCAL) LocalTimeProvider(SystemClock::elapsedRealtime, System::currentTimeMillis)
+            else {
+                val provider = TimeSyncManager()
+                fun fixture(value: TimeSourceConfig) = TimeSourceConfig(base + "/lifecycle/${source.name}",
+                    TimeFormat.JSON_MILLIS, "data.timestamp", value.intervalMillis)
+                object : TimeProvider by provider {
+                    override fun configure(value: TimeSourceConfig, periodic: Boolean) = provider.configure(fixture(value), periodic)
+                    override fun syncNow(value: TimeSourceConfig, periodic: Boolean) = provider.syncNow(fixture(value), periodic)
+                }
+            }
+        }
+        val snapshots = JSONArray()
+        fun counts(): Map<BuiltinTimeSource, Int> {
+            val paths = request("/stats").getJSONObject("paths")
+            return remote.associateWith { paths.optInt("/lifecycle/${it.name}") }
+        }
+        fun snapshot(label: String) { snapshots.put(JSONObject().put("stage", label).put("requests", JSONObject(counts().mapKeys { it.key.name }))) }
+        fun observe(overlay: Boolean, page: Boolean, source: BuiltinTimeSource = BuiltinTimeSource.JD) =
+            catalog.observe(TimeSourceConfig.builtin(source, 1000), overlay, page)
+        try {
+            request("/control?mode=good&offset=0")
+            val before = counts()
+            observe(false, true)
+            await("Page initialization failed", 10_000) { remote.all { catalog.manager(it).state.lastSuccessEpoch > 0 } }
+            val first = counts()
+            check(remote.all { first.getValue(it) == before.getValue(it) + 1 })
+            snapshot("page_initialized_once")
+            Thread.sleep(1300)
+            check(counts() == first) { "Comparison page repeated requests" }
+            check(remote.all { catalog.manager(it).state.nextAttemptElapsed == -1L })
+            observe(false, false); observe(false, true)
+            await("Reentry did not sync all sources", 10_000) { remote.all { counts().getValue(it) == first.getValue(it) + 1 } }
+            await("Reentry responses incomplete") { remote.none { catalog.manager(it).state.syncing } }
+            val successTimes = remote.associateWith { catalog.manager(it).state.lastSuccessEpoch }
+            val second = counts()
+            request("/control?mode=error")
+            catalog.syncAll(1000)
+            await("One-shot failures incomplete", 10_000) { remote.all { catalog.manager(it).state.failed } }
+            Thread.sleep(1300)
+            check(remote.all { catalog.manager(it).state.lastSuccessEpoch == successTimes.getValue(it) })
+            check(remote.all { counts().getValue(it) == second.getValue(it) + 1 }) { "Failure retried without periodic demand" }
+            snapshot("failed_once_preserving_success")
+            request("/control?mode=good")
+            val baseCounts = counts()
+            observe(true, true)
+            await("Overlay did not periodically sync selected source", 8000) {
+                counts().getValue(BuiltinTimeSource.JD) >= baseCounts.getValue(BuiltinTimeSource.JD) + 3
+            }
+            check(remote.filter { it != BuiltinTimeSource.JD }.all { counts().getValue(it) == baseCounts.getValue(it) })
+            snapshot("overlay_only_jd_periodic")
+            observe(true, true, BuiltinTimeSource.TAOBAO)
+            val switched = counts()
+            await("Selected source subscription did not move", 8000) {
+                counts().getValue(BuiltinTimeSource.TAOBAO) >= switched.getValue(BuiltinTimeSource.TAOBAO) + 2
+            }
+            check(counts().getValue(BuiltinTimeSource.JD) == switched.getValue(BuiltinTimeSource.JD))
+            observe(true, false, BuiltinTimeSource.TAOBAO)
+            val left = counts()
+            await("Leaving page stopped overlay subscription", 6000) { counts().getValue(BuiltinTimeSource.TAOBAO) > left.getValue(BuiltinTimeSource.TAOBAO) }
+            observe(false, false)
+            Thread.sleep(200)
+            val stopped = counts()
+            Thread.sleep(1300)
+            check(counts() == stopped && remote.all { catalog.manager(it).state.nextAttemptElapsed == -1L })
+            snapshot("all_closed_no_requests")
+
+            // Real delayed response: toggling periodic demand and repeated page requests must coalesce.
+            val manager = TimeSyncManager()
+            val config = TimeSourceConfig(base + "/coalesced", TimeFormat.JSON_MILLIS, "data.timestamp", 1000)
+            try {
+                request("/control?mode=delayed")
+                val old = request("/stats").getJSONObject("paths").optInt("/coalesced")
+                manager.syncNow(config, false)
+                await("Delayed request did not begin") { manager.state.syncing }
+                manager.configure(config, true); manager.syncNow(config, true); manager.configure(config, false)
+                await("Mode transition cancelled the in-flight response") { manager.state.lastSuccessEpoch > 0 }
+                Thread.sleep(1200)
+                check(request("/stats").getJSONObject("paths").getInt("/coalesced") == old + 1)
+                val accepted = manager.state.lastSuccessEpoch
+                manager.syncNow(config, true)
+                await("Cancellation request did not begin") { manager.state.syncing }
+                manager.pause()
+                Thread.sleep(1600)
+                check(manager.state.lastSuccessEpoch == accepted && manager.state.nextAttemptElapsed == -1L && !manager.state.syncing)
+            } finally { manager.pause() }
+            // Saturate both shared workers so a third one-shot is queued rather than in flight.
+            val blockers = List(2) { TimeSyncManager() }
+            val queued = TimeSyncManager()
+            val queuedConfig = TimeSourceConfig(base + "/queued-once", TimeFormat.JSON_MILLIS, "data.timestamp", 1000)
+            try {
+                request("/control?mode=delayed")
+                blockers.forEachIndexed { index, blocker -> blocker.syncNow(
+                    TimeSourceConfig(base + "/blocker/$index", TimeFormat.JSON_MILLIS, "data.timestamp"), false) }
+                await("Both network workers were not occupied") { blockers.all { it.state.syncing } }
+                queued.syncNow(queuedConfig, false)
+                check(!queued.state.syncing && queued.state.nextAttemptElapsed >= 0)
+                queued.configure(queuedConfig, true); queued.syncNow(queuedConfig, true); queued.configure(queuedConfig, false)
+                await("Queued one-shot lost during mode changes") { queued.state.lastSuccessEpoch > 0 }
+                Thread.sleep(1100)
+                check(request("/stats").getJSONObject("paths").getInt("/queued-once") == 1)
+            } finally { queued.pause(); blockers.forEach { it.pause() } }
+            evidence.put("syncLifecycle", snapshots).put("coalescedInFlight", true).put("coalescedQueued", true)
+                .put("cancelledResponseIgnored", true)
+        } finally { observe(false, false); request("/control?mode=good&offset=5000") }
+    }
+
+    private fun syncPageOverlay() {
+        val app = targetContext.applicationContext as ClickerApp
+        val starts = java.util.concurrent.CopyOnWriteArrayList<Pair<BuiltinTimeSource, Long>>()
+        val oldObserver = TimingObservation.observer
+        val store = SettingsStore(targetContext)
+        ui { ClickService.current!!.stopAll() }
+        store.save(mapOf("source" to "ALIYUN"))
+        ui { app.refreshTimeSources() }
+        store.save(mapOf("source" to "JD", "syncInterval" to "1000"))
+        openMain()
+        TimingObservation.observer = TimingObserver { event, source, _, _, _ ->
+            if (event == TimingObservation.SYNC_BEGIN && source >= 0)
+                starts.add(BuiltinTimeSource.entries[source.toInt()] to SystemClock.elapsedRealtime())
+        }
+        try {
+            Thread.sleep(1200)
+            check(starts.isEmpty()) { "Idle homepage must not sync" }
+            check(app.timeSources.selectedSource == BuiltinTimeSource.JD) { "Homepage did not load saved source without a sync subscription" }
+            ui { activity.findViewById<android.widget.RadioButton>(R.id.tab_time).performClick() }
+            val remote = BuiltinTimeSource.entries.filter { it != BuiltinTimeSource.LOCAL }
+            await("Page did not initialize every network source", 15_000) { remote.all { source -> starts.any { it.first == source } } }
+            Thread.sleep(2200)
+            check(remote.all { source -> starts.count { it.first == source } == 1 }) { "Page repeatedly initialized: $starts" }
+            ui {
+                val labels = descendants(activity.window.decorView).filterIsInstance<TextView>().filter { it.tag?.toString()?.endsWith("_last_sync") == true }.toList()
+                check(labels.size == 6 && labels.all { it.text.isNotBlank() })
+                check(labels.first { it.tag == "LOCAL_last_sync" }.text == targetContext.getString(R.string.source_local_no_sync))
+            }
+            // Deterministic UI success/failure timestamp with real TLS fixture; stop before reconfiguring source demand.
+            request("/control?mode=good&offset=0")
+            val manager = app.timeSources.manager(BuiltinTimeSource.JD)
+            val config = TimeSourceConfig(base + "/ui-success", TimeFormat.JSON_MILLIS, "data.timestamp", 1000)
+            manager.syncNow(config, false)
+            await("UI fixture not synchronized") { manager.state.lastSuccessEpoch > 0 && !manager.state.syncing }
+            val accepted = manager.state.lastSuccessEpoch
+            val expectedLabel = targetContext.getString(R.string.source_last_sync,
+                DateTimeFormatter.ofPattern("MM-dd HH:mm:ss:SSS").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(accepted)))
+            var label = ""
+            await("Last successful sync time not rendered") {
+                ui { label = descendants(activity.window.decorView).filterIsInstance<TextView>().first { it.tag == "JD_last_sync" }.text.toString() }
+                label == expectedLabel
+            }
+            Thread.sleep(250)
+            ui { check(descendants(activity.window.decorView).filterIsInstance<TextView>().first { it.tag == "JD_last_sync" }.text.toString() == label) }
+            request("/control?mode=error"); manager.syncNow(config, false)
+            await("UI failure not recorded") { manager.state.failed }
+            Thread.sleep(200)
+            ui { check(descendants(activity.window.decorView).filterIsInstance<TextView>().first { it.tag == "JD_last_sync" }.text.toString() == label) }
+            check(manager.state.lastSuccessEpoch == accepted)
+            saveScreenshot("v18-time-sync.png")
+            request("/control?mode=good")
+            ui { activity.findViewById<android.widget.RadioButton>(R.id.tab_click).performClick(); ClickService.current!!.showTimedOverlay() }
+            val before = starts.count { it.first == BuiltinTimeSource.JD }
+            await("Timed overlay does not periodically request selected source", 12_000) { starts.count { it.first == BuiltinTimeSource.JD } >= before + 3 }
+            check(remote.filter { it != BuiltinTimeSource.JD }.all { source -> starts.count { it.first == source } == 1 })
+            // Return to page while overlay remains open: HTTP gets one initialization; NTP respects 60s floor.
+            ui { activity.findViewById<android.widget.RadioButton>(R.id.tab_time).performClick() }
+            await("HTTP source did not initialize on reentry", 6000) { starts.count { it.first == BuiltinTimeSource.TAOBAO } == 2 }
+            check(remote.filter { it.minimumIntervalMillis == 60_000L }.all { app.timeSources.manager(it).state.nextAttemptElapsed > SystemClock.elapsedRealtime() })
+            ui { ClickService.current!!.stopAll() }
+            Thread.sleep(2200)
+            val stopped = starts.size
+            Thread.sleep(1300)
+            check(starts.size == stopped) { "Closing overlay left periodic requests on comparison page" }
+            ui { activity.findViewById<android.widget.RadioButton>(R.id.tab_click).performClick() }
+            check(remote.all { app.timeSources.manager(it).state.nextAttemptElapsed == -1L && !app.timeSources.manager(it).state.syncing })
+            ui { ClickService.current!!.showMultiPointOverlay() }
+            val multiBefore = starts.size
+            await("Multi-point overlay missing selected-source sync", 8000) { starts.size >= multiBefore + 2 }
+            ui { ClickService.current!!.stopAll() }
+            Thread.sleep(2200)
+            val allStopped = starts.size
+            Thread.sleep(1300); check(starts.size == allStopped)
+            evidence.put("pageOverlaySync", JSONObject().put("idleHomepageRequests", 0).put("lastSuccessLabel", label)
+                .put("failurePreservesSuccessTime", true).put("reentryRespectsNtpMinimum", true)
+                .put("bothOverlayModesStopPeriodic", true).put("attempts", JSONArray(starts.map {
+                    JSONObject().put("source", it.first.name).put("elapsed", it.second)
+                })))
+        } finally {
+            TimingObservation.observer = oldObserver
+            ui { ClickService.current?.stopAll(); activity.findViewById<android.widget.RadioButton>(R.id.tab_click).performClick() }
+            request("/control?mode=good&offset=5000")
+        }
     }
     private fun jdOptions() {
         val manager = TimeSyncManager()
