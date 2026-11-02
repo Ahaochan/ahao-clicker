@@ -13,6 +13,7 @@ object TriggerTimeDefaults {
     fun seed(now: Long, saved: String, zone: ZoneId): Long {
         val millis = saved.toIntOrNull()?.takeIf { it in 0..3_599_999 } ?: return now
         return Instant.ofEpochMilli(now).atZone(zone)
+            .plusHours(if (millis <= 30_000) 1 else 0)
             .withMinute(millis / 60_000).withSecond(millis / 1_000 % 60)
             .withNano(millis % 1_000 * 1_000_000).toInstant().toEpochMilli()
     }

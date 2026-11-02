@@ -26,9 +26,36 @@ class TriggerTimeDefaultsTest {
             TriggerTimeDefaults.seed(epoch("2027-01-01T00:00:00+08:00"), "3599999", zone))
     }
 
-    @Test fun `past minute is a draft in current hour and does not silently roll forward`() {
-        assertEquals(epoch("2026-10-30T12:00:00+08:00"),
-            TriggerTimeDefaults.seed(epoch("2026-10-30T12:59:59.999+08:00"), "0", zone))
+    @Test fun `remembered position at or below thirty seconds uses next hour`() {
+        val now = epoch("2026-10-30T12:59:59.999+08:00")
+        for ((saved, expected) in listOf(
+            "0" to "2026-10-30T13:00:00+08:00",
+            "29999" to "2026-10-30T13:00:29.999+08:00",
+            "30000" to "2026-10-30T13:00:30+08:00"
+        )) {
+            assertEquals(epoch(expected), TriggerTimeDefaults.seed(now, saved, zone))
+        }
+    }
+
+    @Test fun `remembered position above thirty seconds uses current hour including minutes`() {
+        val now = epoch("2026-10-30T12:59:59.999+08:00")
+        for ((saved, expected) in listOf(
+            "30001" to "2026-10-30T12:00:30.001+08:00",
+            "60000" to "2026-10-30T12:01:00+08:00",
+            "3599999" to "2026-10-30T12:59:59.999+08:00"
+        )) {
+            assertEquals(epoch(expected), TriggerTimeDefaults.seed(now, saved, zone))
+        }
+    }
+
+    @Test fun `next hour at midnight advances date including year`() {
+        assertEquals(epoch("2027-01-01T00:00:30+08:00"),
+            TriggerTimeDefaults.seed(epoch("2026-12-31T23:13:14.123+08:00"), "30000", zone))
+    }
+
+    @Test fun `next hour is chosen regardless of current minute`() {
+        assertEquals(epoch("2026-10-30T13:00:29.999+08:00"),
+            TriggerTimeDefaults.seed(epoch("2026-10-30T12:00:00+08:00"), "29999", zone))
     }
 
     @Test fun `absent or corrupt memory leaves current time unchanged`() {

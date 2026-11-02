@@ -2458,8 +2458,9 @@ class MvpAcceptance : Instrumentation() {
                 ClickService.current!!.showTimedOverlay()
                 val current = Instant.ofEpochMilli(sync.reference().now(SystemClock.elapsedRealtime())).atZone(ZoneId.systemDefault())
                 val reopened = Instant.ofEpochMilli(store.get("target").toLong()).atZone(ZoneId.systemDefault())
-                check(reopened.hour == current.hour && reopened.toLocalDate() == current.toLocalDate()) {
-                    "Reopened overlay must use current reference date and hour: reopened=$reopened current=$current"
+                val expectedHour = current.plusHours(if (remembered.toInt() <= 30_000) 1 else 0)
+                check(reopened.hour == expectedHour.hour && reopened.toLocalDate() == expectedHour.toLocalDate()) {
+                    "Reopened overlay must choose hour by remembered position: reopened=$reopened expectedHour=$expectedHour"
                 }
                 check(reopened.hour != next.hour) { "Test must distinguish current hour from confirmed hour" }
                 check(reopened.minute == next.minute && reopened.second == next.second && reopened.nano == next.nano) {
@@ -2481,8 +2482,30 @@ class MvpAcceptance : Instrumentation() {
             check(count() == 0) { "Opening, editing or cancelling the default must not inject a click" }
             defaults.put(opened)
         }
+        val hourCases = JSONArray()
+        for (saved in listOf(0, 29_999, 30_000, 30_001, 60_000, 3_599_999)) {
+            store.save(mapOf("triggerMinuteMillis" to saved.toString()))
+            ui {
+                val current = Instant.ofEpochMilli(sync.reference().now(SystemClock.elapsedRealtime())).atZone(ZoneId.systemDefault())
+                ClickService.current!!.showTimedOverlay()
+                val actual = Instant.ofEpochMilli(store.get("target").toLong()).atZone(ZoneId.systemDefault())
+                val expectedHour = current.plusHours(if (saved <= 30_000) 1 else 0)
+                check(actual.toLocalDate() == expectedHour.toLocalDate() && actual.hour == expectedHour.hour)
+                check(actual.minute * 60_000 + actual.second * 1_000 + actual.nano / 1_000_000 == saved)
+                val row = windowViews().filterIsInstance<TextView>().first { it.id == R.id.click_start_time }
+                check(row.text.contains(ClockDigits.format(actual.toInstant().toEpochMilli(), ZoneId.systemDefault())))
+                check(!ClickService.current!!.hasActiveTask)
+                hourCases.put(JSONObject().put("savedMillis", saved).put("default", actual.toString()))
+            }
+            check(store.get("triggerMinuteMillis") == saved.toString()) { "Opening a draft changed memory" }
+            waitForIdleSync()
+            Thread.sleep(150) // Let the new input window reach system_server before the close tap.
+            closeDefaultOverlay()
+        }
+        check(count() == 0) { "Default hour selection injected a click" }
         evidence.put("overlayDefaultTime", JSONObject().put("newWindowsUseCurrentReference", true)
-            .put("confirmedMinuteSecondMillisPersist", true).put("reopeningUsesCurrentHour", true).put("cancelKeepsMemory", true)
+            .put("confirmedMinuteSecondMillisPersist", true).put("reopeningChoosesHourByRememberedPosition", true).put("cancelKeepsMemory", true)
+            .put("rememberedPositionThresholdMillis", 30_000).put("hourCases", hourCases)
             .put("futurePastAndMissingReplaced", true).put("millisecondWheelSeedPreserved", true)
             .put("adjustmentOnlySaves", true).put("visibleWindowKeepsAdjustment", true)
             .put("actualReceived", count()).put("openedDefaults", defaults))

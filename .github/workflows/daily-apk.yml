@@ -1,0 +1,135 @@
+name: Daily APK
+
+on:
+  schedule:
+    # 00:17 UTC = 08:17 Asia/Shanghai; avoid the busy start of the hour.
+    - cron: '17 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-apk
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GRADLE_USER_HOME: ${{ github.workspace }}/.gradle-user-home
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set temporary Android directory
+        shell: bash
+        run: printf 'ANDROID_USER_HOME=%s/ahao-android\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK packages
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Restore fixed test signing key
+        env:
+          ANDROID_DEBUG_KEYSTORE_BASE64: ${{ secrets.ANDROID_DEBUG_KEYSTORE_BASE64 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$ANDROID_USER_HOME"
+          if [[ -n "$ANDROID_DEBUG_KEYSTORE_BASE64" ]]; then
+            printf '%s' "$ANDROID_DEBUG_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_USER_HOME/debug.keystore"
+          else
+            # Intentionally public test-only key, stable across runs; password: android.
+            base64 --decode "$GITHUB_WORKSPACE/.github/signing/default-debug.keystore.b64" > "$ANDROID_USER_HOME/debug.keystore"
+          fi
+          keytool -list -keystore "$ANDROID_USER_HOME/debug.keystore" -storepass android -alias androiddebugkey > /dev/null
+      - name: Test, lint and build
+        run: bash ./gradlew :core:test :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease -PuseChinaMirrors=false --stacktrace
+      - name: Prepare APK and provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk dist/Ahao-clicker-latest.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose dist/Ahao-clicker-latest.apk
+          (
+            cd dist
+            sha256sum Ahao-clicker-latest.apk > Ahao-clicker-latest.apk.sha256
+          )
+          python3 - <<'PY'
+          import datetime, json, os, pathlib
+          info = {
+              "application": "Ahao点击器",
+              "build_type": "debug",
+              "commit": os.environ["GITHUB_SHA"],
+              "built_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              "run_url": f'{os.environ["GITHUB_SERVER_URL"]}/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]}',
+          }
+          pathlib.Path("dist/build-info.json").write_text(json.dumps(info, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          PY
+      - name: Upload daily APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-apk-${{ github.run_id }}-${{ github.run_attempt }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload check reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-check-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            core/build/reports/
+            app/build/reports/
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Remove temporary signing key
+        if: always()
+        shell: bash
+        run: |
+          if [[ -n "${ANDROID_USER_HOME:-}" ]]; then
+            rm -f -- "$ANDROID_USER_HOME/debug.keystore"
+          fi
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: daily-apk-${{ github.run_id }}-${{ github.run_attempt }}
+          path: dist
+      - name: Publish daily release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum --check Ahao-clicker-latest.apk.sha256
+          test -s build-info.json
+          tag="daily-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          title="Ahao点击器 · 每日构建 $(TZ=Asia/Shanghai date +%F)"
+          notes="$RUNNER_TEMP/daily-apk-notes.md"
+          {
+            printf '%s\n\n' '每日测试版（Debug），默认使用仓库公开测试签名，可由Secret覆盖；仅供测试。'
+            printf '源码提交：`%s`\n\n' "$GITHUB_SHA"
+            printf '构建记录：%s/%s/actions/runs/%s\n\n' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
+            printf '%s\n' '安装包：Ahao-clicker-latest.apk；校验文件及构建来源一并附后。'
+          } > "$notes"
+          gh release create "$tag" Ahao-clicker-latest.apk Ahao-clicker-latest.apk.sha256 build-info.json \
+            --target "$GITHUB_SHA" --title "$title" --notes-file "$notes" --latest
+          printf '### 最新APK\n\n[下载](%s/%s/releases/latest/download/Ahao-clicker-latest.apk)\n' \
+            "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" >> "$GITHUB_STEP_SUMMARY"

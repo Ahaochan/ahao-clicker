@@ -10,7 +10,7 @@
   <string name="setup_overlay_ready">可用 · 浮窗已就绪</string>
   <string name="setup_overlay_unavailable">不可用 · 请先完成第一步</string>
   <string name="setup_overlay_hint">选择定时或多点点击浮窗，无需额外悬浮窗权限。</string>
-  <string name="app_name">阿浩点击器</string>
+  <string name="app_name">Ahao点击器</string>
   <string name="tab_click">自动点击</string>
   <string name="source_selection_hint">点选来源用于定时和时钟，长按卡片拖动排序</string>
   <string name="source_local_ready">手机系统时间 · 无需联网</string>
