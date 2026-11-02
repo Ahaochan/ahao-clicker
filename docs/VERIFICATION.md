@@ -2,6 +2,13 @@
 
 更新日期：2026-11-02。下方保留此前 MVP、真机与性能历史记录。
 
+## GitHub SDK初始化失败修复（2026-11-02，待远程验证）
+
+- 经已授权GitHub插件读取[最新失败运行41403804543](https://github.com/Ahaochan/ahao-clicker/actions/runs/41403804543/job/125141207062)的完整日志，对应提交`3a3e893`。失败发生于`android-actions/setup-android@v3`，其实际解析到`9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407`；该版本输入默认值为`tools platform-tools`。日志明确记录`Warning: Failed to find package 'tools'`，随后sdkmanager退出1，编译、测试和APK上传未执行。
+- 两份工作流均改为显式`packages: platform-tools`，后续继续安装`platforms;android-36`和`build-tools;36.0.0`。没有修改应用代码、签名、发布权限或触发时间。日志中的Node弃用和Ubuntu迁移提醒不是本次直接退出原因，本轮没有顺带升级全部Actions或更换运行环境。
+- 保存失败Action的精确版本清单与两份修复前工作流，按真实默认输入解析进行离线回归：旧配置2项均失败，当前配置2项均通过；同时确认所需SDK/Build Tools和五项Gradle检查保持。actionlint检查两份YAML通过，原有9项离线签名、打包和模拟发布场景通过。该输入检查不是在线安装SDK或执行GitHub runner的替代证明。
+- 原始日志、固定源清单、失败/通过检查及actionlint结果在忽略目录`.tools/workflow-sdk-fix-20261102/`。本轮尚未推送或重跑远程，也未重跑应用构建/设备验收。需将修复后的新提交送入远程检查才能确认执行结果；只重跑`3a3e893`会继续使用旧配置。
+
 ## 定时浮窗默认小时选择（2026-11-02）
 
 - 新开定时浮窗时，记忆的分秒毫秒在小时内合计大于30000ms使用当前参考小时，否则使用下一小时，23点时日期顺延。无有效记忆仍使用当前参考时间；规则位于纯Kotlin的TriggerTimeDefaults，只生成草稿，不启动点击。README、功能说明、UI方案及ADR0009已同步；A1已评估，本次没有扩大任务编排重构。

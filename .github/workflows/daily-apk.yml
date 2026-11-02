@@ -32,6 +32,8 @@ jobs:
         shell: bash
         run: printf 'ANDROID_USER_HOME=%s/ahao-android\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - name: Install Android SDK packages
         run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
       - uses: gradle/actions/setup-gradle@v4
