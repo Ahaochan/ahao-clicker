@@ -12,16 +12,13 @@
   <string name="setup_overlay_hint">选择定时或多点点击浮窗，无需额外悬浮窗权限。</string>
   <string name="app_name">Ahao点击器</string>
   <string name="tab_click">自动点击</string>
-  <string name="source_selection_hint">点选来源用于定时和时钟，长按卡片拖动排序</string>
-  <string name="source_local_ready">手机系统时间 · 无需联网</string>
   <string name="source_move_previous">向前移动时间源</string>
   <string name="source_move_next">向后移动时间源</string>
-  <string name="sync_interval_millis">同步间隔（毫秒）</string>
-  <string name="interval_range">1000～86400000 毫秒。京东、淘宝至少间隔 1000 毫秒；NTP 来源至少间隔 60000 毫秒。</string>
+  <string name="sync_interval_millis">悬浮时间同步间隔（毫秒）</string>
+  <string name="interval_range">范围：1000～86400000 毫秒。京东、淘宝最短1秒，其他网络来源最短1分钟。</string>
   <string name="interval_error">请输入 1000～86400000 之间的整数</string>
   <string name="save_and_sync">保存并同步</string>
-  <string name="source_clock_hint">括号内为相对本机的毫秒差，正数表示来源更快。本地时间直接使用手机系统时间，无需联网。数字每100毫秒刷新，毫秒显示不代表绝对精度。离开此页后暂停其他来源同步。</string>
-  <string name="source_reference">当前参考：%1$s · %2$s</string>
+  <string name="source_clock_hint">括号内为与手机的时间差（毫秒），正数表示快于手机，负数表示慢于手机。</string>
   <string name="source_waiting">尚未同步</string>
   <string name="source_unavailable">同步失败</string>
   <string name="source_stale">样本已过期</string>
@@ -65,7 +62,6 @@
   <string name="click_start_time">定时 %1$s</string>
   <string name="click_start_unset">定时 未设置</string>
   <string name="click_start_unset_compact">未设置</string>
-  <string name="builtin_source">内置数据源</string>
   <string name="sync_saved">时间同步设置已保存</string>
   <string name="choose_millisecond">毫秒</string>
   <string name="time_of_day_hint">毫秒每格10ms。按所选时间源确定下一次触发：尚未到达的时间为今天，已过的时间为明天；仅执行一次。</string>
@@ -85,8 +81,6 @@
   <string name="status_failed">执行失败、取消或超时，已停止</string>
   <string name="progress">已完成 %1$d / %2$d 次手势</string>
   <string name="syncing">正在同步</string>
-  <string name="sync_failed">同步失败，本次未更新时间</string>
-  <string name="synced">已同步</string>
   <string name="accessibility_settings">启用无障碍点击服务</string>
   <string name="accessibility_description">仅执行用户主动启动的定时点击与录制点击，显示录制层和停止控制。不会读取屏幕内容。</string>
   <string name="accessibility_disclosure">本应用使用无障碍服务，在其他应用上显示准星和控制条，并发送你指定的点击。只有点击浮窗的播放按钮后才执行，可能触发目标页面的操作。拖动或设置准星不会点击下层应用。不会读取页面文字或截图，也不会上传点位。你可随时通过浮动停止按钮或系统无障碍设置关闭服务。是否同意并打开系统设置？</string>

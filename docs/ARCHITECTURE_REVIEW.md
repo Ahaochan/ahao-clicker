@@ -7,6 +7,10 @@
 
 ## 跟进记录
 
+2026-11-03迁移悬浮时间同步间隔到自动点击页：提取TimeIntervalPanel负责控件与键盘，TimeSyncPanel保留卡片，二者共用同一TimeSettingsController。ClickerApp持有显式手动单次需求，进入比较页移交或后台释放，TimeSources继续协调请求复用而不增加首页周期同步；未改变授时估算或点击调度。A2当前入口保持集中，详见[ADR 0023](decisions/0023-interval-on-click-page.md)。
+
+2026-11-03增加整卡点击校时时，活动任务保护、保存选择和单次请求入口仍集中到TimeSettingsController，TimeSources只请求选中源并保留浮窗周期需求；拖动预览、让位动画和取消回滚由页面持有，只有有效放下写入独立排序偏好。A2没有新增绕行入口，A1/A4算法和协议映射未改动。见[ADR 0022](decisions/0022-source-card-interaction.md)。
+
 2026-11-02调整同步生命周期时，将页面一次性需求和浮窗选中源周期需求统一留在TimeSources，网络管理器负责在途复用和取消；MainActivity只加载配置，不以在前台为由订阅网络。TimeSettingsController仍集中现有配置操作。没有调整A1任务算法或A4协议映射，未据此声称点击精度收益。见[ADR 0019](decisions/0019-time-sync-demand.md)。
 
 2026-11-01新增本地来源和排序时，顺带完成A2当前配置入口的整理：`TimeSettingsController`统一来源选择、间隔校验、活动任务限制、保存和应用，使用无View的单测验证；`TimeSyncPanel`负责展示及错误提示，来源顺序作为独立展示偏好保存。后续新增生产配置入口应复用该操作边界。见[ADR 0018](decisions/0018-local-source-order-and-ten-ms.md)。

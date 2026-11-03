@@ -8,6 +8,7 @@ class ClickerApp : Application() {
     val timeSync get() = timeSources.selected
     private val observers = mutableSetOf<Any>()
     private val comparisonObservers = mutableSetOf<Any>()
+    private val manualObservers = mutableSetOf<Any>()
     fun observeTime(owner: Any, active: Boolean) {
         if (active) {
             observers.add(owner)
@@ -21,6 +22,14 @@ class ClickerApp : Application() {
         refreshTimeSources()
     }
     fun refreshTimeSources() {
-        timeSources.observe(SettingsStore(this).source(), observers.isNotEmpty(), comparisonObservers.isNotEmpty())
+        timeSources.observe(SettingsStore(this).source(), observers.isNotEmpty(), comparisonObservers.isNotEmpty(), manualObservers.isNotEmpty())
+    }
+    fun syncAllTimes(owner: Any, intervalMillis: Long) {
+        manualObservers.add(owner)
+        refreshTimeSources()
+        timeSources.syncAll(intervalMillis)
+    }
+    fun releaseManualTimes(owner: Any) {
+        if (manualObservers.remove(owner)) refreshTimeSources()
     }
 }

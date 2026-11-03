@@ -25,6 +25,7 @@
           android:text="@string/show_clock" />
       <Button android:id="@+id/show_recording_overlay" android:layout_width="match_parent" android:layout_height="wrap_content"
           android:minHeight="@dimen/touch_target" android:text="@string/show_recording_overlay" />
+      <include android:id="@+id/time_interval" layout="@layout/time_interval_panel" />
     </LinearLayout>
   </ScrollView>
   <include android:id="@+id/time_page" layout="@layout/time_sync_panel" android:layout_width="match_parent"

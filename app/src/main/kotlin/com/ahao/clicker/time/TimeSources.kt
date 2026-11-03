@@ -19,7 +19,7 @@ class TimeSources(create: (BuiltinTimeSource) -> TimeProvider = { source ->
     private var comparisonVisible = false
     private var overlayVisible = false
 
-    fun observe(config: TimeSourceConfig, selectedVisible: Boolean, allVisible: Boolean) {
+    fun observe(config: TimeSourceConfig, selectedVisible: Boolean, allVisible: Boolean, manualVisible: Boolean = false) {
         val entered = allVisible && !comparisonVisible
         comparisonVisible = allVisible
         overlayVisible = selectedVisible
@@ -30,7 +30,7 @@ class TimeSources(create: (BuiltinTimeSource) -> TimeProvider = { source ->
             val periodic = selectedVisible && source == selectedSource
             when {
                 entered -> manager.syncNow(value, periodic)
-                allVisible || periodic -> manager.configure(value, periodic)
+                allVisible || periodic || manualVisible -> manager.configure(value, periodic)
                 else -> manager.pause()
             }
         }
@@ -39,5 +39,9 @@ class TimeSources(create: (BuiltinTimeSource) -> TimeProvider = { source ->
     fun syncAll(intervalMillis: Long) {
         for (source in BuiltinTimeSource.entries) manager(source).syncNow(
             TimeSourceConfig.builtin(source, intervalMillis), overlayVisible && source == selectedSource)
+    }
+
+    fun syncSelected(intervalMillis: Long) {
+        selected.syncNow(TimeSourceConfig.builtin(selectedSource, intervalMillis), overlayVisible)
     }
 }

@@ -16,10 +16,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import com.ahao.clicker.databinding.ActivityMainBinding
 import com.ahao.clicker.time.TimeSyncPanel
+import com.ahao.clicker.time.TimeIntervalPanel
+import com.ahao.clicker.time.TimeSettingsController
 
 class MainActivity : ComponentActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var timePanel: TimeSyncPanel
+    private lateinit var intervalPanel: TimeIntervalPanel
     private var resumed = false
     private val main = Handler(Looper.getMainLooper())
     private val app get() = application as ClickerApp
@@ -30,8 +33,13 @@ class MainActivity : ComponentActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.root.applySafeInsets()
-        timePanel = TimeSyncPanel(binding.timePage, app)
-        savedInstanceState?.getString("timeInterval")?.let(binding.timePage.syncInterval::setText)
+        val store = SettingsStore(this)
+        val settings = TimeSettingsController({ ClickService.current?.hasActiveTask == true },
+            store::save, app::refreshTimeSources, { app.syncAllTimes(this, it) },
+            { app.timeSources.syncSelected(store.source().intervalMillis) })
+        timePanel = TimeSyncPanel(binding.timePage, app, settings)
+        intervalPanel = TimeIntervalPanel(binding.timeInterval, settings, store.source().intervalMillis)
+        savedInstanceState?.getString("timeInterval")?.let(binding.timeInterval.syncInterval::setText)
         binding.tabs.setOnCheckedChangeListener { _, _ -> showTab() }
         binding.tabs.check(savedInstanceState?.getInt("selectedTab", R.id.tab_click) ?: R.id.tab_click)
         showTab()
@@ -81,6 +89,7 @@ class MainActivity : ComponentActivity() {
             if (!resumed || binding.tabs.checkedRadioButtonId != R.id.tab_click) return
             updateSetupStatus()
             binding.showClock.isEnabled = ClickService.current?.hasActiveTask != true
+            intervalPanel.setEditable(ClickService.current?.hasActiveTask != true)
             main.postDelayed(this, 500)
         }
     }
@@ -92,16 +101,20 @@ class MainActivity : ComponentActivity() {
         binding.clickPage.visibility = if (time) View.GONE else View.VISIBLE
         binding.timePage.root.visibility = if (time) View.VISIBLE else View.GONE
         timePanel.setVisible(time && resumed)
+        if (time && resumed) app.releaseManualTimes(this)
+        intervalPanel.setVisible(!time && resumed)
         main.removeCallbacks(refresh)
         if (resumed && !time) refresh.run()
     }
     override fun onPause() {
         resumed = false; timePanel.setVisible(false)
+        intervalPanel.setVisible(false)
+        app.releaseManualTimes(this)
         main.removeCallbacks(refresh); super.onPause()
     }
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putInt("selectedTab", binding.tabs.checkedRadioButtonId)
-        outState.putString("timeInterval", binding.timePage.syncInterval.text.toString())
+        outState.putString("timeInterval", binding.timeInterval.syncInterval.text.toString())
         super.onSaveInstanceState(outState)
     }
 }

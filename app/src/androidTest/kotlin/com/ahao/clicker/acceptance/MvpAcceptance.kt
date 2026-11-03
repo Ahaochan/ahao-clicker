@@ -103,6 +103,8 @@ class MvpAcceptance : Instrumentation() {
             case("v15_overlay_size_restart") { overlaySizeRestart() }
             case("v16_feedback_interrupt") { feedbackInterrupt() }
             case("v17_local_source_and_order") { localSourceAndOrder() }
+            case("v20_source_card_click") { sourceCardClick() }
+            case("v21_interval_on_click_page") { intervalOnClickPage() }
             case("v17_ten_millisecond_wheel") { tenMillisecondWheel() }
             case("v17_local_timed_click") { localTimedClick() }
             case("v18_sync_request_lifecycle") { syncRequestLifecycle() }
@@ -469,19 +471,66 @@ class MvpAcceptance : Instrumentation() {
             return remote.associateWith { paths.optInt("/lifecycle/${it.name}") }
         }
         fun snapshot(label: String) { snapshots.put(JSONObject().put("stage", label).put("requests", JSONObject(counts().mapKeys { it.key.name }))) }
-        fun observe(overlay: Boolean, page: Boolean, source: BuiltinTimeSource = BuiltinTimeSource.JD) =
-            catalog.observe(TimeSourceConfig.builtin(source, 1000), overlay, page)
+        fun observe(overlay: Boolean, page: Boolean, source: BuiltinTimeSource = BuiltinTimeSource.JD, manual: Boolean = false) =
+            catalog.observe(TimeSourceConfig.builtin(source, 1000), overlay, page, manual)
         try {
             request("/control?mode=good&offset=0")
+            observe(false, false)
+            val idle = counts()
+            Thread.sleep(300)
+            check(counts() == idle)
+            observe(false, false, manual = true)
+            catalog.syncAll(1000)
+            await("Manual homepage sync did not complete", 10_000) { remote.all { catalog.manager(it).state.lastSuccessEpoch > 0 } }
+            val manualFirst = counts()
+            check(manualFirst == idle.mapValues { it.value + 1 })
+            Thread.sleep(1300)
+            check(counts() == manualFirst) { "Manual homepage demand became periodic" }
+            request("/control?mode=delayed")
+            catalog.syncAll(1000)
+            await("Manual sync did not start") { remote.any { catalog.manager(it).state.syncing } }
+            repeat(3) { observe(false, false, manual = true); catalog.syncAll(1000) }
+            await("Manual queued requests did not finish", 10_000) { remote.all { catalog.manager(it).state.let { !it.syncing && it.nextAttemptElapsed == -1L } } }
+            check(counts() == manualFirst.mapValues { it.value + 1 }) { "Manual save cancelled or duplicated pending requests" }
+            snapshot("manual_homepage_once_and_coalesced")
+            catalog.syncAll(1000)
+            await("Manual cancellation fixture did not start") { remote.any { catalog.manager(it).state.syncing } }
+            val manualSuccess = remote.associateWith { catalog.manager(it).state.lastSuccessEpoch }
+            observe(false, false)
+            Thread.sleep(900)
+            check(remote.all { catalog.manager(it).state.let { !it.syncing && it.nextAttemptElapsed == -1L } })
+            check(remote.all { catalog.manager(it).state.lastSuccessEpoch == manualSuccess.getValue(it) })
+            snapshot("manual_demand_released")
+            request("/control?mode=good")
             val before = counts()
             observe(false, true)
-            await("Page initialization failed", 10_000) { remote.all { catalog.manager(it).state.lastSuccessEpoch > 0 } }
-            val first = counts()
+            await("Page initialization failed", 10_000) { remote.all { source ->
+                catalog.manager(source).state.let { it.lastSuccessEpoch > manualSuccess.getValue(source) && !it.syncing }
+            } }
+            var first = counts()
             check(remote.all { first.getValue(it) == before.getValue(it) + 1 })
             snapshot("page_initialized_once")
             Thread.sleep(1300)
             check(counts() == first) { "Comparison page repeated requests" }
             check(remote.all { catalog.manager(it).state.nextAttemptElapsed == -1L })
+            catalog.syncSelected(1000)
+            await("Selected source one-shot did not finish") {
+                counts().getValue(BuiltinTimeSource.JD) == first.getValue(BuiltinTimeSource.JD) + 1 &&
+                    !catalog.selected.state.syncing && catalog.selected.state.nextAttemptElapsed == -1L
+            }
+            check(remote.filter { it != BuiltinTimeSource.JD }.all { counts().getValue(it) == first.getValue(it) })
+            snapshot("selected_only_once")
+            first = counts()
+            request("/control?mode=delayed")
+            catalog.syncSelected(1000)
+            await("Selected source request did not start") { catalog.selected.state.syncing }
+            repeat(3) { catalog.syncSelected(1000) }
+            await("Coalesced selected source did not finish") { !catalog.selected.state.syncing }
+            Thread.sleep(700)
+            check(counts() == first.mapValues { (source, count) -> count + if (source == BuiltinTimeSource.JD) 1 else 0 })
+            snapshot("selected_repeated_clicks_coalesced")
+            request("/control?mode=good")
+            first = counts()
             observe(false, false); observe(false, true)
             await("Reentry did not sync all sources", 10_000) { remote.all { counts().getValue(it) == first.getValue(it) + 1 } }
             await("Reentry responses incomplete") { remote.none { catalog.manager(it).state.syncing } }
@@ -931,6 +980,104 @@ class MvpAcceptance : Instrumentation() {
         }
     }
 
+    private fun intervalOnClickPage() {
+        val store = SettingsStore(targetContext)
+        openMain()
+        val saved = store.source().intervalMillis
+        ui {
+            activity.findViewById<android.widget.RadioButton>(R.id.tab_click).performClick()
+            val page = activity.findViewById<View>(R.id.click_page)
+            val input = activity.findViewById<EditText>(R.id.sync_interval)
+            check(descendants(page).any { it === input } && input.isShown) { "Interval configuration must be on auto-click tab" }
+            check(descendants(activity.findViewById(R.id.time_page)).none { it is EditText || it.id == R.id.sync_now })
+            input.setText("999")
+            activity.findViewById<Button>(R.id.sync_now).performClick()
+            check(input.error != null && store.source().intervalMillis == saved)
+            input.setText("7777")
+            activity.findViewById<android.widget.RadioButton>(R.id.tab_time).performClick()
+            activity.findViewById<android.widget.RadioButton>(R.id.tab_click).performClick()
+            check(input.text.toString() == "7777" && store.source().intervalMillis == saved)
+        }
+        val monitor = addMonitor(MainActivity::class.java.name, null, false)
+        try {
+            ui { activity.recreate() }
+            activity = checkNotNull(monitor.waitForActivityWithTimeout(10_000)) as MainActivity
+        } finally { removeMonitor(monitor) }
+        await("Recreated auto-click page not focused") { activity.hasWindowFocus() }
+        ui {
+            val input = activity.findViewById<EditText>(R.id.sync_interval)
+            check(input.isShown && input.text.toString() == "7777")
+            activity.findViewById<Button>(R.id.sync_now).performClick()
+            check(input.error == null && store.source().intervalMillis == 7777L)
+            input.setText(saved.toString())
+        }
+        saveScreenshot("interval-on-click-page.png")
+        ui { activity.moveTaskToBack(true) }
+        val app = targetContext.applicationContext as ClickerApp
+        await("Background retained manual requests") { BuiltinTimeSource.entries.all { source ->
+            app.timeSources.manager(source).state.let { !it.syncing && it.nextAttemptElapsed == -1L }
+        } }
+        openMain()
+        evidence.put("intervalOnClickPage", true).put("intervalValidation", true)
+            .put("intervalDraftSurvivesTabsAndRecreation", true).put("intervalExplicitSave", true)
+            .put("intervalManualRequestsReleasedOnPause", true)
+    }
+    private fun sourceCardClick() {
+        val store = SettingsStore(targetContext)
+        val app = targetContext.applicationContext as ClickerApp
+        val starts = java.util.concurrent.CopyOnWriteArrayList<BuiltinTimeSource>()
+        val observer = TimingObservation.observer
+        val remote = BuiltinTimeSource.entries.filter { it != BuiltinTimeSource.LOCAL }
+        fun counts() = remote.associateWith { source -> starts.count { it == source } }
+        fun click(tag: String) = ui {
+            check(descendants(activity.window.decorView).first { it.tag == tag }.performClick()) { "Card area is not clickable: $tag" }
+        }
+        try {
+            ui { ClickService.current!!.stopAll() }
+            store.save(mapOf("source" to "LOCAL", "syncInterval" to "60000"))
+            openMain()
+            TimingObservation.observer = TimingObserver { event, source, _, _, _ ->
+                if (event == TimingObservation.SYNC_BEGIN && source >= 0) starts.add(BuiltinTimeSource.entries[source.toInt()])
+            }
+            ui { activity.findViewById<android.widget.RadioButton>(R.id.tab_time).performClick() }
+            await("Initial source requests did not finish", 25_000) {
+                remote.all { source -> starts.contains(source) && app.timeSources.manager(source).state.let {
+                    !it.syncing && it.nextAttemptElapsed == -1L
+                } }
+            }
+            ui { activity.findViewById<EditText>(R.id.sync_interval).setText("7777") }
+            for ((tag, selected) in listOf("source_card_JD" to BuiltinTimeSource.JD,
+                "JD_time" to BuiltinTimeSource.JD, "TAOBAO_last_sync" to BuiltinTimeSource.TAOBAO)) {
+                val before = counts()
+                click(tag)
+                check(store.source().builtin == selected && app.timeSources.selectedSource == selected)
+                check(store.source().intervalMillis == 60_000L)
+                await("Click did not request the selected source", 10_000) { starts.count { it == selected } == before.getValue(selected) + 1 }
+                await("Selected request did not finish", 10_000) { !app.timeSources.selected.state.syncing }
+                Thread.sleep(1200)
+                check(counts() == before.mapValues { (source, count) -> count + if (source == selected) 1 else 0 }) {
+                    "Card click requested other sources or repeated: ${counts()}"
+                }
+            }
+            val beforeLocal = counts()
+            click("source_card_ALIYUN")
+            val pending = app.timeSources.selected.state.nextAttemptElapsed
+            check(pending > SystemClock.elapsedRealtime()) { "NTP click bypassed minimum interval" }
+            click("source_card_ALIYUN")
+            check(app.timeSources.selected.state.nextAttemptElapsed == pending) { "Repeated NTP click duplicated or moved pending request" }
+            click("LOCAL_time")
+            check(store.source().builtin == BuiltinTimeSource.LOCAL && app.timeSources.selectedSource == BuiltinTimeSource.LOCAL)
+            Thread.sleep(1200)
+            check(counts() == beforeLocal)
+            ui { check(activity.findViewById<EditText>(R.id.sync_interval).text.toString() == "7777") }
+            evidence.put("sourceCardClick", JSONObject().put("wholeCard", true).put("timeAndLastSync", true)
+                .put("sameSourceRefresh", true).put("selectedOnlyOnce", true).put("unsavedIntervalPreserved", true)
+                .put("localWithoutNetwork", true).put("ntpPendingReused", true).put("attempts", JSONObject(counts().mapKeys { it.key.name })))
+        } finally {
+            runCatching { ui { activity.findViewById<android.widget.RadioButton>(R.id.tab_click).performClick() } }
+            TimingObservation.observer = observer
+        }
+    }
     private fun localSourceAndOrder() {
         val store = SettingsStore(targetContext)
         val app = targetContext.applicationContext as ClickerApp
@@ -951,7 +1098,8 @@ class MvpAcceptance : Instrumentation() {
             }
             return point
         }
-        fun drag(from: IntArray, to: IntArray) {
+        var animated = false
+        fun drag(from: IntArray, to: IntArray, drop: IntArray = to, beforeDrop: () -> Unit = {}) {
             val down = SystemClock.uptimeMillis()
             fun send(action: Int, x: Int, y: Int) {
                 val event = android.view.MotionEvent.obtain(down, SystemClock.uptimeMillis(), action, x.toFloat(), y.toFloat(), 0)
@@ -960,12 +1108,23 @@ class MvpAcceptance : Instrumentation() {
             }
             send(android.view.MotionEvent.ACTION_DOWN, from[0], from[1])
             Thread.sleep(android.view.ViewConfiguration.getLongPressTimeout().toLong() + 250)
-            for (i in 1..10) {
-                send(android.view.MotionEvent.ACTION_MOVE, from[0] + (to[0] - from[0]) * i / 10,
-                    from[1] + (to[1] - from[1]) * i / 10)
-                Thread.sleep(35)
+            var released = false
+            try {
+                for (i in 1..10) {
+                    send(android.view.MotionEvent.ACTION_MOVE, from[0] + (to[0] - from[0]) * i / 10,
+                        from[1] + (to[1] - from[1]) * i / 10)
+                    Thread.sleep(35)
+                    ui {
+                        val grid = activity.findViewById<android.widget.GridLayout>(R.id.sources)
+                        animated = animated || (0 until grid.childCount).any { kotlin.math.abs(grid.getChildAt(it).translationY) > 1f }
+                    }
+                }
+                beforeDrop()
+                if (drop !== to) send(android.view.MotionEvent.ACTION_MOVE, drop[0], drop[1])
+                send(android.view.MotionEvent.ACTION_UP, drop[0], drop[1]); released = true
+            } finally {
+                if (!released) send(android.view.MotionEvent.ACTION_CANCEL, to[0], to[1])
             }
-            send(android.view.MotionEvent.ACTION_UP, to[0], to[1])
             Thread.sleep(350)
         }
         try {
@@ -993,23 +1152,40 @@ class MvpAcceptance : Instrumentation() {
             ui {
                 check(descendants(activity.window.decorView).filterIsInstance<TextView>().first { it.tag == "LOCAL_time" }.text.toString() != first)
                 val grid = activity.findViewById<android.widget.GridLayout>(R.id.sources)
-                check(grid.columnCount == 2 && grid.childCount == 6)
+                check(grid.columnCount == 1 && grid.childCount == 6)
                 activity.findViewById<EditText>(R.id.sync_interval).setText("12345")
             }
             val initial = order()
-            drag(center(initial.first()), center(initial.last()))
-            val expected = initial.drop(1) + initial.first()
+            val expected = listOf(initial[1], initial.first()) + initial.drop(2)
+            drag(center(initial.first()), center(initial[1])) {
+                check(order() == expected) { "Cards must move before the pointer is released" }
+                check(store.sourceOrder().map { it.name } == initial) { "Preview persisted before drop" }
+                check(animated) { "Reordering did not animate card positions" }
+                saveScreenshot("source-drag-preview.png")
+            }
             await("Real long-press drop did not reorder cards") { order() == expected }
             check(store.sourceOrder().map { it.name } == expected)
             check(store.source().builtin == BuiltinTimeSource.LOCAL && app.timeSync === provider)
-            ui { check(activity.findViewById<EditText>(R.id.sync_interval).text.toString() == "12345") }
+            ui {
+                check(activity.findViewById<EditText>(R.id.sync_interval).text.toString() == "12345")
+                checkSourceCardLayout()
+            }
             var outside = IntArray(2)
             ui {
-                val heading = activity.findViewById<View>(R.id.sources_heading)
-                heading.getLocationOnScreen(outside); outside[0] += heading.width / 2; outside[1] += heading.height / 2
+                val tab = activity.findViewById<View>(R.id.tab_time)
+                tab.getLocationOnScreen(outside); outside[0] += tab.width / 2; outside[1] += tab.height / 2
             }
-            drag(center(expected.first()), outside)
+            drag(center(expected.first()), center(expected[1]), outside) {
+                check(order() != expected) { "Cancellation must exercise a changed preview" }
+                check(store.sourceOrder().map { it.name } == expected)
+            }
             check(order() == expected && store.sourceOrder().map { it.name } == expected) { "Cancelled drop changed the saved order" }
+            drag(center(expected.first()), center(expected[1])) {
+                check(order() != expected)
+                ui { activity.findViewById<android.widget.RadioButton>(R.id.tab_click).performClick() }
+            }
+            ui { activity.findViewById<android.widget.RadioButton>(R.id.tab_time).performClick() }
+            check(order() == expected && store.sourceOrder().map { it.name } == expected) { "Leaving the page committed drag preview" }
             val monitor = addMonitor(MainActivity::class.java.name, null, false)
             try {
                 ui { activity.recreate() }
@@ -1029,6 +1205,8 @@ class MvpAcceptance : Instrumentation() {
             evidence.put("localSourceAndOrder", JSONObject().put("offline", true).put("liveZeroOffset", true)
                 .put("realLongPressDrop", true).put("outsideDropCancelled", true).put("restoredAfterRecreation", true)
                 .put("selectionAndDraftUnchanged", true).put("order", JSONArray(expected)))
+            evidence.put("sourceDragPreview", true).put("sourceDragAnimated", animated).put("previewCancelledWithoutSaving", true)
+                .put("pageExitRollsBackPreview", true)
         } finally {
             if (airplane != "1") shell("cmd connectivity airplane-mode disable")
         }
@@ -1145,8 +1323,10 @@ class MvpAcceptance : Instrumentation() {
             activity.findViewById<android.widget.RadioButton>(R.id.tab_time).performClick()
             check(!activity.findViewById<View>(R.id.click_page).isShown)
             val grid = activity.findViewById<android.widget.GridLayout>(R.id.sources)
-            check(grid.columnCount == 2 && grid.childCount == 6)
-            check(descendants(activity.window.decorView).filterIsInstance<EditText>().count { it.isShown } == 1)
+            check(grid.columnCount == 1 && grid.childCount == 6)
+            check(descendants(activity.window.decorView).filterIsInstance<EditText>().none { it.isShown })
+            activity.findViewById<android.widget.RadioButton>(R.id.tab_click).performClick()
+            check(activity.findViewById<EditText>(R.id.sync_interval).isShown)
             activity.findViewById<EditText>(R.id.sync_interval).setText("999")
             activity.findViewById<Button>(R.id.sync_now).performClick()
             check(activity.findViewById<EditText>(R.id.sync_interval).error != null)
@@ -1155,6 +1335,7 @@ class MvpAcceptance : Instrumentation() {
             check(SettingsStore(targetContext).source().intervalMillis == 1_000L)
             activity.findViewById<EditText>(R.id.sync_interval).setText("60000")
             activity.findViewById<Button>(R.id.sync_now).performClick()
+            activity.findViewById<android.widget.RadioButton>(R.id.tab_time).performClick()
             descendants(grid).filterIsInstance<android.widget.RadioButton>().first { it.tag == "JD" }.performClick()
         }
         check(SettingsStore(targetContext).source().builtin == BuiltinTimeSource.JD)
@@ -1167,8 +1348,8 @@ class MvpAcceptance : Instrumentation() {
         var text = ""
         ui {
             val grid = activity.findViewById<android.widget.GridLayout>(R.id.sources)
-            val jd = grid.getChildAt(0); val taobao = grid.getChildAt(1)
-            check(jd.width == taobao.width && jd.left < taobao.left && jd.top == taobao.top)
+            val jd = grid.getChildAt(0)
+            checkSourceCardLayout()
             text = descendants(jd).filterIsInstance<TextView>().first { it.tag == "JD_time" }.text.toString().replace("\n", "")
             check(text.matches(Regex("[0-2][0-9]:[0-5][0-9]:[0-5][0-9]:[0-9]{3}\\([+-][0-9]+\\)"))) { text }
         }
@@ -1191,14 +1372,17 @@ class MvpAcceptance : Instrumentation() {
         ui {
             activity.findViewById<android.widget.RadioButton>(R.id.tab_click).performClick()
             check(!activity.findViewById<View>(R.id.time_page).isShown)
+            activity.moveTaskToBack(true)
         }
-        check(BuiltinTimeSource.entries.filter { it != BuiltinTimeSource.JD }.all { app.timeSources.manager(it).state.nextAttemptElapsed == -1L })
+        await("Background did not release manual source demand") {
+            BuiltinTimeSource.entries.filter { it != BuiltinTimeSource.JD }.all { app.timeSources.manager(it).state.nextAttemptElapsed == -1L }
+        }
         SettingsStore(targetContext).save(mapOf("source" to "ALIYUN", "syncInterval" to "60000"))
         ui { app.refreshTimeSources() }
         request("/control?mode=good&offset=5000")
         openMain()
-        evidence.put("pickerValue", chosen.toString()).put("timePageEditableFields", 1)
-            .put("sourceColumns", 2).put("sourceCount", 5).put("sourceClockExample", text)
+        evidence.put("pickerValue", chosen.toString()).put("timePageEditableFields", 0).put("clickPageEditableFields", 1)
+            .put("sourceColumns", 1).put("sourceCount", 6).put("sourceClockExample", text)
             .put("tabAndUnsavedIntervalRestored", true).put("hiddenSourceSchedulesCancelled", true)
     }
 
@@ -1584,12 +1768,54 @@ class MvpAcceptance : Instrumentation() {
             HttpsURLConnection.setDefaultSSLSocketFactory(fixtureTls)
         }
     }
+    private fun checkSourceCardLayout() {
+        val grid = activity.findViewById<android.widget.GridLayout>(R.id.sources)
+        check(grid.columnCount == 1 && grid.childCount == 6)
+        for (index in 0 until grid.childCount) {
+            val card = grid.getChildAt(index)
+            check(card.width > 0 && card.width == grid.getChildAt(0).width)
+            if (index > 0) {
+                val previous = grid.getChildAt(index - 1)
+                check(previous.bottom < card.top && previous.left == card.left)
+            }
+            val title = descendants(card).filterIsInstance<android.widget.RadioButton>().single()
+            check(title.height >= targetContext.resources.getDimensionPixelSize(R.dimen.source_title_height))
+            if (targetContext.resources.configuration.fontScale == 1f && '·' !in title.text) {
+                check(title.layout.lineCount == 1) { "Source name wrapped: ${title.text}" }
+            }
+            val time = descendants(card).filterIsInstance<TextView>().single { it.tag?.toString()?.endsWith("_time") == true }
+            check(time.parent === title.parent && title.right <= time.left)
+            check(kotlin.math.abs(title.top + title.height / 2 - time.top - time.height / 2) <= 1)
+            val layout = checkNotNull(time.layout)
+            check(time.text.isNotEmpty() && layout.lineCount == 1 && '\n' !in time.text)
+            check(layout.getEllipsisCount(0) == 0 && layout.getLineEnd(0) == time.text.length)
+            check(layout.getLineWidth(0) <= time.width - time.compoundPaddingLeft - time.compoundPaddingRight + 1) {
+                "Source time clipped: ${time.text}"
+            }
+        }
+    }
     private fun timePageLayout() {
         val font = shell("settings get system font_scale").trim()
         val rotation = shell("settings get system user_rotation").trim()
         val auto = shell("settings get system accelerometer_rotation").trim()
         val night = shell("cmd uimode night").substringAfter(":").trim()
         try {
+            shell("settings put system accelerometer_rotation 0")
+            shell("settings put system user_rotation 0")
+            for (scale in listOf(1f, 1.5f)) {
+                shell("settings put system font_scale $scale")
+                await("Portrait time page configuration did not apply") {
+                    targetContext.resources.configuration.let {
+                        it.fontScale == scale && it.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
+                    }
+                }
+                waitForIdleSync()
+                openMain()
+                ui { activity.findViewById<android.widget.RadioButton>(R.id.tab_time).performClick() }
+                Thread.sleep(300)
+                ui { checkSourceCardLayout() }
+                saveScreenshot("source-cards-portrait-$scale.png")
+            }
             shell("settings put system font_scale 1.5")
             shell("settings put system accelerometer_rotation 0")
             shell("settings put system user_rotation 1")
@@ -1608,21 +1834,22 @@ class MvpAcceptance : Instrumentation() {
                 check(activity.resources.configuration.fontScale == 1.5f)
                 check(activity.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE)
                 check(activity.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES)
+                checkSourceCardLayout()
                 val grid = activity.findViewById<android.widget.GridLayout>(R.id.sources)
-                check(grid.columnCount == 2 && grid.childCount == 6)
-                val first = grid.getChildAt(0); val second = grid.getChildAt(1)
-                check(first.width > 0 && first.width == second.width && first.top == second.top && first.left < second.left)
                 check(descendants(grid).filterIsInstance<android.widget.RadioButton>().count { it.text.isNotEmpty() } == 6)
-                activity.findViewById<android.widget.ScrollView>(R.id.time_page).fullScroll(View.FOCUS_DOWN)
+                activity.findViewById<android.widget.RadioButton>(R.id.tab_click).performClick()
+                activity.findViewById<android.widget.ScrollView>(R.id.click_page).fullScroll(View.FOCUS_DOWN)
             }
             Thread.sleep(250)
             ui {
                 val save = activity.findViewById<Button>(R.id.sync_now)
                 val rect = android.graphics.Rect()
-                check(save.getGlobalVisibleRect(rect) && rect.height() == save.height) { "Save button clipped in large-font landscape" }
+                check(save.getGlobalVisibleRect(rect) && rect.height() == save.height) { "Auto-click interval save button clipped in large-font landscape" }
             }
-            saveScreenshot("v3-time-large-font-dark.png")
-            evidence.put("timePageLargeFontScale", 1.5).put("timePageLandscapeDark", true).put("timePageSaveReachable", true)
+            saveScreenshot("interval-click-large-font-dark.png")
+            evidence.put("timePageLargeFontScale", 1.5).put("timePageLandscapeDark", true).put("clickPageSaveReachable", true)
+                .put("singleColumnCards", true).put("portraitScales", JSONArray(listOf(1f, 1.5f)))
+                .put("sourceTimesCompleteOnOneLine", true)
         } finally {
             if (font == "null") shell("settings delete system font_scale") else shell("settings put system font_scale $font")
             if (rotation == "null") shell("settings delete system user_rotation") else shell("settings put system user_rotation $rotation")

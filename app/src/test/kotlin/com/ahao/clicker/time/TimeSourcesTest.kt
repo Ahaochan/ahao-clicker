@@ -26,6 +26,20 @@ class TimeSourcesTest {
     private fun observe(overlay: Boolean, page: Boolean, source: BuiltinTimeSource = BuiltinTimeSource.JD, interval: Long = 1000) =
         sources.observe(TimeSourceConfig.builtin(source, interval), overlay, page)
 
+    @Test fun `card selection requests only chosen source including repeated selection`() {
+        var chosen = BuiltinTimeSource.JD
+        observe(false, true, chosen, 60000)
+        val actions = TimeSettingsController({ false }, { values -> chosen = BuiltinTimeSource.valueOf(values.getValue("source")) },
+            { observe(false, true, chosen, 60000) }, sources::syncAll, { sources.syncSelected(60000) })
+        assertTrue(actions.select(BuiltinTimeSource.TAOBAO))
+        assertEquals(2, providers.getValue(BuiltinTimeSource.TAOBAO).requests)
+        assertTrue(providers.filterKeys { it != BuiltinTimeSource.TAOBAO }.values.all { it.requests == 1 })
+        assertTrue(actions.select(BuiltinTimeSource.TAOBAO))
+        assertEquals(3, providers.getValue(BuiltinTimeSource.TAOBAO).requests)
+        assertTrue(providers.values.none { it.periodic })
+        assertEquals(60000L, providers.getValue(BuiltinTimeSource.TAOBAO).interval)
+    }
+
     @Test fun `entering page initializes once and staying does not create periodic requests`() {
         observe(false, true)
         assertTrue(providers.values.all { it.requests == 1 && !it.periodic && !it.paused })
@@ -56,11 +70,38 @@ class TimeSourcesTest {
         observe(false, true)
         assertTrue(providers.values.none { it.periodic || it.paused })
     }
+    @Test fun `selected one shot keeps overlay demand and leaves other providers untouched`() {
+        observe(true, true, BuiltinTimeSource.TAOBAO, 7777)
+        sources.syncSelected(7777)
+        assertEquals(2, providers.getValue(BuiltinTimeSource.TAOBAO).requests)
+        assertTrue(providers.filterKeys { it != BuiltinTimeSource.TAOBAO }.values.all { it.requests == 1 })
+        assertEquals(setOf(BuiltinTimeSource.TAOBAO), providers.filterValues { it.periodic }.keys)
+        assertEquals(7777L, providers.getValue(BuiltinTimeSource.TAOBAO).interval)
+        observe(false, true, BuiltinTimeSource.LOCAL)
+        sources.syncSelected(1000)
+        assertEquals(2, providers.getValue(BuiltinTimeSource.LOCAL).requests)
+        assertEquals(2, providers.getValue(BuiltinTimeSource.TAOBAO).requests)
+        assertTrue(providers.values.none { it.periodic })
+    }
     @Test fun `homepage without overlay never synchronizes`() {
         observe(false, false)
         assertTrue(providers.values.all { it.requests == 0 && it.paused })
         observe(true, false, BuiltinTimeSource.LOCAL)
         assertEquals(setOf(BuiltinTimeSource.LOCAL), providers.filterValues { it.periodic }.keys)
         assertTrue(providers.values.all { it.requests == 0 })
+    }
+    @Test fun `manual demand keeps one shot configured without making homepage periodic`() {
+        val config = TimeSourceConfig.builtin(BuiltinTimeSource.JD, 7777)
+        sources.observe(config, false, false, true)
+        sources.syncAll(7777)
+        repeat(3) { sources.observe(config, false, false, true) }
+        assertTrue(providers.values.all { it.requests == 1 && !it.paused && !it.periodic && it.interval == 7777L })
+        sources.observe(config, true, false, true)
+        assertEquals(setOf(BuiltinTimeSource.JD), providers.filterValues { it.periodic }.keys)
+        sources.observe(config, true, false, false)
+        assertTrue(providers.filterKeys { it != BuiltinTimeSource.JD }.values.all { it.paused })
+        assertFalse(providers.getValue(BuiltinTimeSource.JD).paused)
+        sources.observe(config, false, false, false)
+        assertTrue(providers.values.all { it.paused })
     }
 }
