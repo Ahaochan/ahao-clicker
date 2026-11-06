@@ -294,6 +294,7 @@ class ClickService : AccessibilityService(), GestureDriver {
                     timedOverlay.setPlaying(false)
                     notifyClick(if (oneShot.status.phase == RunPhase.COMPLETED) getString(R.string.click_completed) else statusText())
                 }
+                timedOverlay.updateStartReminder(now, elapsed, timedMode == TimedMode.ARMED)
             }
             val active = timedMode == TimedMode.ARMED &&
                 (oneShot.status.phase == RunPhase.WAITING || oneShot.status.phase == RunPhase.RUNNING)

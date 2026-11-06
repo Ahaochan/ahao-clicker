@@ -60,6 +60,7 @@
   <string name="auto_click_disabled">自动点击已关闭</string>
   <string name="auto_click_start_failed">无法开启自动点击：%1$s</string>
   <string name="click_start_time">定时 %1$s</string>
+  <string name="timed_start_reminder">点击器没有启动</string>
   <string name="click_start_unset">定时 未设置</string>
   <string name="click_start_unset_compact">未设置</string>
   <string name="sync_saved">时间同步设置已保存</string>

@@ -13,5 +13,6 @@
   <color name="control_background">#EE18231E</color>
   <color name="control_panel_background">#B318231E</color>
   <color name="control_text">#FFFFFF</color>
+  <color name="clock_start_warning">#FF7770</color>
   <color name="capture_tint">#09216E4A</color>
 </resources>

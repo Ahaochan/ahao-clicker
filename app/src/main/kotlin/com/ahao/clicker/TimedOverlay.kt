@@ -1,5 +1,7 @@
 package com.ahao.clicker
 
+import android.app.ActivityManager
+import android.app.NotificationManager
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PixelFormat
@@ -14,6 +16,7 @@ import com.ahao.clicker.core.TapPoint
 import kotlin.math.roundToInt
 import androidx.core.graphics.withScale
 import com.ahao.clicker.core.TimingObservation
+import com.ahao.clicker.core.TimedStartReminder
 
 /** Small independent windows: the marker never shares a touchable window with Stop. */
 class TimedOverlay(private val service: ClickService, private val toggleClick: () -> Unit,
@@ -29,9 +32,15 @@ class TimedOverlay(private val service: ClickService, private val toggleClick: (
     private var toggle: ImageButton? = null
     private var startTime: TextView? = null
     private var startEpoch: Long? = null
+    private val startReminder = TimedStartReminder()
+    private var startReminderToast: Toast? = null
     private var compact = false
     private var feedback: TextView? = null
-    private val hideFeedback = Runnable { feedback?.visibility = View.GONE }
+    private var feedbackIsStartReminder = false
+    private val hideFeedback = Runnable {
+        feedback?.visibility = View.GONE
+        feedbackIsStartReminder = false
+    }
     private var draggable = true
     private val side = service.resources.getDimensionPixelSize(R.dimen.crosshair_size)
     private var shownPoint: TapPoint? = null
@@ -174,10 +183,45 @@ class TimedOverlay(private val service: ClickService, private val toggleClick: (
             it.contentDescription = service.getString(if (playing) R.string.auto_click_stop else R.string.auto_click_start)
         }
         draggable = !playing
+        if (playing) clearStartReminder()
     }
     fun showStartTime(epoch: Long?) {
+        if (startEpoch != epoch) clearStartReminder()
         startEpoch = epoch
         renderStartTime()
+    }
+    internal fun updateStartReminder(now: Long, elapsed: Long, playing: Boolean) {
+        val face = clock ?: return
+        if (playing || !face.isShown || face.windowVisibility != View.VISIBLE) {
+            clearStartReminder()
+            return
+        }
+        val allowNotice = feedback?.visibility != View.VISIBLE || feedbackIsStartReminder
+        when (startReminder.update(startEpoch, now, elapsed, allowNotice)) {
+            TimedStartReminder.State.NONE -> clearStartReminder()
+            TimedStartReminder.State.WARNING -> face.setStartWarning(true)
+            TimedStartReminder.State.NOTIFY -> {
+                face.setStartWarning(true)
+                startReminderToast?.cancel()
+                val message = service.getString(R.string.timed_start_reminder)
+                val process = ActivityManager.RunningAppProcessInfo()
+                ActivityManager.getMyMemoryState(process)
+                val canToast = service.getSystemService(NotificationManager::class.java).areNotificationsEnabled() ||
+                    process.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                startReminderToast = if (canToast) Toast.makeText(service, message, Toast.LENGTH_SHORT).also { it.show() }
+                    else { showFeedback(message, startReminder = true); null }
+            }
+        }
+    }
+    private fun clearStartReminder() {
+        startReminder.reset()
+        clock?.setStartWarning(false)
+        startReminderToast?.cancel()
+        startReminderToast = null
+        if (feedbackIsStartReminder) {
+            feedback?.removeCallbacks(hideFeedback)
+            hideFeedback.run()
+        }
     }
     private fun renderStartTime() {
         val time = startEpoch?.let { com.ahao.clicker.core.ClockDigits.format(it, java.time.ZoneId.systemDefault()) }
@@ -188,9 +232,10 @@ class TimedOverlay(private val service: ClickService, private val toggleClick: (
             startTime?.contentDescription = service.getString(R.string.edit_trigger_time_value, fullLabel)
         }
     }
-    fun showFeedback(message: String): Boolean {
+    fun showFeedback(message: String, startReminder: Boolean = false): Boolean {
         val view = feedback ?: return false
         view.removeCallbacks(hideFeedback)
+        feedbackIsStartReminder = startReminder
         view.text = message
         view.visibility = View.VISIBLE
         view.postDelayed(hideFeedback, 2_000)
@@ -243,6 +288,7 @@ class TimedOverlay(private val service: ClickService, private val toggleClick: (
         marker = null; markerParams = null; shownPoint = null
     }
     private fun closePanel() {
+        clearStartReminder()
         feedback?.removeCallbacks(hideFeedback)
         (panel as? OverlayPanel)?.compactChanged = null
         panel?.let { manager.removeViewImmediate(it) }
@@ -266,10 +312,18 @@ class TimedOverlay(private val service: ClickService, private val toggleClick: (
 @android.annotation.SuppressLint("ViewConstructor") // Programmatic view requires the selected clock; never inflated from XML.
 internal class ClockFace(context: android.content.Context, private val readTime: () -> Long) : View(context) {
     private val chars = "00:00:00:000".toCharArray()
+    private val clockColor = context.getColor(R.color.control_text)
+    private val warningColor = context.getColor(R.color.clock_start_warning)
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = context.getColor(R.color.control_text)
+        color = clockColor
         typeface = Typeface.MONOSPACE
         textSize = resources.getDimension(R.dimen.clock_text)
+    }
+    fun setStartWarning(value: Boolean) {
+        val color = if (value) warningColor else clockColor
+        if (paint.color == color) return
+        paint.color = color
+        invalidate()
     }
     private val zone = java.util.TimeZone.getDefault()
     private val textWidth = paint.measureText(chars, 0, chars.size)

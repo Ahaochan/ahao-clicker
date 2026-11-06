@@ -107,6 +107,7 @@ class MvpAcceptance : Instrumentation() {
             case("v21_interval_on_click_page") { intervalOnClickPage() }
             case("v17_ten_millisecond_wheel") { tenMillisecondWheel() }
             case("v17_local_timed_click") { localTimedClick() }
+            case("v22_timed_start_reminder") { timedStartReminder() }
             case("v18_sync_request_lifecycle") { syncRequestLifecycle() }
             case("v18_sync_page_overlay") { syncPageOverlay() }
             case("v8_overlay_defaults_to_now") { overlayDefaultsToNow() }
@@ -1279,6 +1280,84 @@ class MvpAcceptance : Instrumentation() {
         } finally {
             ui { ClickService.current?.stopAll() }
             if (airplane != "1") shell("cmd connectivity airplane-mode disable")
+        }
+    }
+
+    private fun timedStartReminder() {
+        SettingsStore(targetContext).save(mapOf("source" to "LOCAL"))
+        openMain(); showTarget(); receipt("reset")
+        val at = point("A").let { TapPoint(it[0].toFloat(), it[1].toFloat()) }
+        val notices = java.util.concurrent.CopyOnWriteArrayList<Long>()
+        val message = targetContext.getString(R.string.timed_start_reminder)
+        automation.setOnAccessibilityEventListener { event ->
+            if (event.eventType == android.view.accessibility.AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED &&
+                event.text.any { it.toString() == message }) notices.add(SystemClock.elapsedRealtime())
+        }
+        fun prepare(delay: Long) = ui {
+            ClickService.current!!.prepareTimed(at, System.currentTimeMillis() + delay)
+        }
+        fun clockDraws(color: Int): Boolean {
+            var found = false
+            ui {
+                val face = windowViews().firstOrNull { it is ClockFace && it.isShown && it.width > 0 && it.height > 0 }
+                    ?: return@ui
+                val bitmap = android.graphics.Bitmap.createBitmap(face.width, face.height, android.graphics.Bitmap.Config.ARGB_8888)
+                try {
+                    face.draw(android.graphics.Canvas(bitmap))
+                    val pixels = IntArray(face.width * face.height)
+                    bitmap.getPixels(pixels, 0, face.width, 0, 0, face.width, face.height)
+                    found = pixels.any { it == color }
+                } finally { bitmap.recycle() }
+            }
+            return found
+        }
+        val normal = targetContext.getColor(R.color.control_text)
+        val warning = targetContext.getColor(R.color.clock_start_warning)
+        val fallback = !targetContext.getSystemService(android.app.NotificationManager::class.java).areNotificationsEnabled()
+        fun inPanelNotice(): Boolean {
+            var shown = false
+            ui { shown = windowViews().filterIsInstance<TextView>().any {
+                it.id == R.id.overlay_feedback && it.isShown && it.text.toString() == message
+            } }
+            return shown
+        }
+        try {
+            prepare(62_500)
+            await("Clock was not normal before the last minute", 2_000) { clockDraws(normal) }
+            check(notices.isEmpty() && !inPanelNotice())
+            moveControlAway()
+            await("Current time did not turn red") { clockDraws(warning) }
+            await("Initial reminder was not shown") { if (fallback) inPanelNotice() else notices.size == 1 }
+            val first = if (fallback) SystemClock.elapsedRealtime() else notices[0]
+            Thread.sleep(300) // Let the displayed frame catch up with the View state before capturing it.
+            saveScreenshot("v22-timed-start-reminder.png")
+            if (fallback) await("Fallback reminder did not hide") { !inPanelNotice() }
+            await("Reminder did not repeat", 12_000) { if (fallback) inPanelNotice() else notices.size >= 2 }
+            val interval = (if (fallback) SystemClock.elapsedRealtime() else notices[1]) - first
+            check(interval in 9_700..11_500) { "Unexpected reminder interval: $interval" }
+            overlayButton(R.string.auto_click_start)
+            await("Starting did not clear the reminder") { phase() == RunPhase.WAITING && clockDraws(normal) && !inPanelNotice() }
+            overlayButton(R.string.auto_click_stop)
+            await("Stopping did not restore the red clock") { clockDraws(warning) }
+            ui { ClickService.current!!.stopAll() }
+            prepare(1_500)
+            await("Short unstarted timer did not turn red") { clockDraws(warning) }
+            await("Expired timer kept the reminder") { clockDraws(normal) && !inPanelNotice() }
+            check(count() == 0) { "Reminder triggered an unsolicited click" }
+            ui { ClickService.current!!.stopAll() }
+            openMain()
+            val toastCountBefore = notices.size
+            prepare(8_000)
+            await("Foreground reminder toast was not shown") { notices.size > toastCountBefore }
+            check(!inPanelNotice())
+            evidence.put("timedStartReminder", JSONObject().put("backgroundFallback", fallback)
+                .put("reminderIntervalMillis", interval).put("foregroundToast", true)
+                .put("normalBeforeMinute", true).put("redWhenUnstarted", true)
+                .put("normalWhileArmed", true).put("redAfterStop", true).put("normalAfterExpiry", true)
+                .put("actualReceived", count()))
+        } finally {
+            automation.setOnAccessibilityEventListener(null)
+            ui { ClickService.current?.stopAll() }
         }
     }
 

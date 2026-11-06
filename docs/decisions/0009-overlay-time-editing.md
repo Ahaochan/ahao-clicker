@@ -20,3 +20,7 @@
 方案与验收边界见 [UI/UX V4](../UI_UX_V4.md) 和 [验证记录](../VERIFICATION.md)。
 
 2026-10-27 后续：长等待校时与提前输入准备由 [ADR 0010](0010-deadline-and-clock-discipline.md) 更新，取代整段等待冻结参考和到点后固定等待 50 ms 的规则。
+
+2026-11-06 补充未启动提醒：单点定时浮窗可见、距显示的目标剩余1～60000ms且任务未启动时，将当前时间变红，立即发一次“点击器没有启动”的Toast，之后每10秒提示一次。使用现有定时状态检查，以浮窗参考时间判断剩余时间、以单调时间限频，延迟后不补发。启动、过期、超出提醒区间或浮窗关闭时恢复原色并取消提示；改设目标时重新判断。按停止后若目标仍在最后1分钟则恢复提醒。颜色由时钟控件绘制，提醒不参与任务调度，不新增定时器，不影响多点浮窗。已对照A1审查，保持既有启停与手势边界。
+
+Android在应用处于后台且通知被禁用时会拦截系统Toast。该情况下复用浮窗内的短提示，仍使用相同文案与节奏，不申请通知权限。启停等操作反馈优先；反馈期间仍更新时钟颜色，等反馈消失再提示，间隔从实际提示开始计算。依据：[Android通知服务的Toast检查](https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/services/core/java/com/android/server/notification/NotificationManagerService.java#3817)。
